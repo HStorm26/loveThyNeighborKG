@@ -20,9 +20,9 @@ date_default_timezone_set('America/New_York');
 
 function connect() {
     $host = "localhost"; 
-    $database = "whiskeydb";
-    $user = "whiskeydb";
-    $pass = "whiskeydb";
+    $database = "neighbordb";
+    $user = "neighbordb";
+    $pass = "neighbordb";
     // if ($_SERVER['SERVER_NAME'] == 'jenniferp160.sg-host.com') {
     //     $user = 'generated';
     //     $database = 'generated';
