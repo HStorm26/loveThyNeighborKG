@@ -71,7 +71,7 @@ if (date("H:i:s") > "18:19:59") {
 
         .full-width-bar {
             width: 100%;
-            background: rgb(31,31,33);
+            /* background: rgb(31,31,33); */
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -80,7 +80,7 @@ if (date("H:i:s") > "18:19:59") {
         }
         .full-width-bar-sub {
             width: 100%;
-            background: white;
+            /* background: white; */
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
