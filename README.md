@@ -1,9 +1,11 @@
 # Student Names
-Michael Glanzmann  
-Blue Shojinaga
-Jake Lipinski
-Kassandra Williams
-Alia Carmicheal 
+Josh Sullivan
+Emily Halferty
+DT Nesimi
+Brooke Breneman
+Henry Zeigler
+Oscar Sheehe
+
 
 # Fredericksburg SPCA Volunteer Management Web Application 
 
