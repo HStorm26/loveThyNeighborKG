@@ -424,7 +424,7 @@
 
         
         .full-width-bar-sub{
-            /* background-color: #1F1F21 !important; */
+            /* background-color: #1F1F21 !important; */ 
             }
 
 
