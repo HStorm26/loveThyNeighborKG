@@ -1,10 +1,11 @@
 # Student Names
-Joshua Sullivan
+Josh Sullivan
 Emily Halferty
 DT Nesimi
 Brooke Breneman
 Henry Zeigler
 Oscar Sheehe
+
 
 # Fredericksburg SPCA Volunteer Management Web Application 
 
