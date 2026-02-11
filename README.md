@@ -1,5 +1,5 @@
 # Student Names
-Josh Sullivan
+Joshua Sullivan
 Emily Halferty
 DT Nesimi
 Brooke Breneman
