@@ -43,7 +43,7 @@
 
         body {
             font-family: Quicksand, sans-serif;
-            background-color: #1F1F21;
+            /* background-color: #1F1F21; */
         }
 
         h2 {
@@ -62,7 +62,7 @@
         }
         .full-width-bar-sub {
             width: 100%;
-            background: #1F1F21;
+            /* background: #1F1F21; */
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -95,7 +95,7 @@
         .content-box img {
             width: 100%;
             height: auto;
-            background: white;
+            /* background: white; */
             border-radius: 5px;
             border-bottom-right-radius: 50px;
             border: 0.5px solid #828282;
@@ -104,7 +104,7 @@
         .content-box-sub img {
             width: 105%;
             height: auto;
-            background: white;
+            /* background: white; */
             border-radius: 5px;
             border-bottom-right-radius: 50px;
             border: 1px solid #828282;
@@ -424,7 +424,7 @@
 
         
         .full-width-bar-sub{
-            background-color: #1F1F21 !important;
+            /* background-color: #1F1F21 !important; */ 
             }
 
 
@@ -758,7 +758,7 @@
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
             </div>
-            <img class="background-image" src="images/blank-white-background.jpg" />
+            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
             <div class="large-text-sub">Calendar</div>
             <div class="graph-text">See upcoming events/trainings.</div>
             <button class="arrow-button">→</button>
@@ -777,7 +777,7 @@
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Calendar Icon">
             </div>
-            <img class="background-image" src="images/blank-white-background.jpg" />
+            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
             <div class="large-text-sub">Documentation Upload</div>
             <div class="graph-text">Upload an ID for verification.</div>
             <button class="arrow-button">→</button>
@@ -787,7 +787,7 @@
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Report Icon">
             </div>
-            <img class="background-image" src="images/blank-white-background.jpg" />
+            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
             <div class="large-text-sub">Suggestions</div>
             <div class="graph-text">Suggest opportunities for charity events.</div>
             <button class="arrow-button">→</button>
@@ -797,7 +797,7 @@
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
             </div>
-            <img class="background-image" src="images/blank-white-background.jpg" />
+            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
             <div class="large-text-sub">Notifications</div>
             <div class="graph-text">Stay up to date.</div>
             <button class="arrow-button">→</button>

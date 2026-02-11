@@ -55,7 +55,7 @@ $suggestions = get_all_suggestions();
             text-decoration: underline;
         }
     
-        body,main{
+        /* body,main{
             background-color: #1F1F21;
         }
     
@@ -65,26 +65,26 @@ $suggestions = get_all_suggestions();
     
         table {
             background-color: #1F1F21;
-        }
+        } */
     
         tbody td {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
+            /* background-color: #1F1F21 !important; */
+            /* color: #C9AB81 !important; */
             border-bottom: 1px solid #C9AB81 !important;
         }
     
         thead th {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
+            /* background-color: #1F1F21 !important; */
+            /* color: #C9AB81 !important; */
             border-bottom: 2px solid #C9AB81 !important;
         }
 
         tr {
-            background-color: #1F1F21 !important;
+            /* background-color: #1F1F21 !important; */
         }
 
         td, th {
-            border-bottom: 1px solid #C9AB81 !important;
+            /* border-bottom: 1px solid #C9AB81 !important; */
         }
     </style>
 </head>
