@@ -48,59 +48,63 @@ table, td, tr, th, form, fieldset, em, button, a {
 }
 
 :root {
-    /* CSS variables that will be used across the page */
-    --page-background-color: rgb(31, 31, 33);
-    --page-font-color: white;
-    --inactive-font-color: #d0d0d0;
-    --inactive-background-color: rgb(31,31,33);
-    --standout-background: #fafafa;
+    /* Page + base colors */
+    --page-background-color: #f5f5f7;
+    --page-font-color: #111111;
+    --inactive-font-color: #6b6b6b;
+    --inactive-background-color: #eeeeee;
+    --standout-background: #ffffff;
 
-    --happy-toast-background-color: #5D7E61;
-    --happy-toast-font-color: rgb(255, 255, 255);
+    /* Toasts */
+    --happy-toast-background-color: #7fa88a;
+    --happy-toast-font-color: #ffffff;
 
-    --info-toast-background-color: #2f2f2f;
-    --info-toast-font-color: white;
+    --info-toast-background-color: #e6e6e6;
+    --info-toast-font-color: #111111;
 
-    --error-toast-background-color: #A66654;
-    --error-toast-font-color: rgb(255, 255, 255);
+    --error-toast-background-color: #c97b67;
+    --error-toast-font-color: #ffffff;
 
+    /* Borders / shadows */
+    --shadow-and-border-color: #d6d6d6;
 
-    --shadow-and-border-color: #e8e8e8;
-
+    /* Core theme colors */
     --main-color: #2A435A; 
-
     --accent-color: rgb(201, 171, 129);
- 
     --secondary-accent-color: rgb(175, 141, 92);
 
-    /* Accessibility / WV theme variables */
-    --wv-accent-color: #C9AB81; /* gold */
-    --wv-accent-foreground: #111111;
+    /* Accessibility / WV theme */
+    --wv-accent-color: #C9AB81;
+    --wv-accent-foreground: #ffffff;
     --wv-bg-light: #ffffff;
     --wv-text-dark: #111111;
     --wv-muted-text: #6b6b6b;
 
-    --calendar-event-color: #808080;
+    /* Calendar */
+    --calendar-event-color: #b0b0b0;
     --calendar-event-color-hover: var(--accent-color);
     --calendar-today-border: 2px solid var(--secondary-accent-color);
 
-    --button-font-color: rgb(255, 255, 255);
+    /* Buttons */
+    --button-font-color: #ffffff;
     --button-padding: 0.5rem 1.5rem;
     --button-border-radius: 0.25rem;
 
-    --standard-border: 1px solid #333333;
+    /* Borders */
+    --standard-border: 1px solid #cccccc;
     --light-border: 1px solid var(--shadow-and-border-color);
-    --text-field-border: 2px solid #e8e8e8;
+    --text-field-border: 2px solid #cccccc;
 
-    --cancel-button-background-color: #A66654;
-
-    --error-color: #A66654;
+    /* Errors / destructive */
+    --cancel-button-background-color: #c97b67;
+    --error-color: #c97b67;
 
     /* Global rules */
     font-size: 18px;
     font-family: Montserrat;
     font-weight: 300;
 }
+
 
 /* Utility classes used for accessibility/light mode conversions */
 .bg-wv-accent { background-color: var(--wv-accent-color) !important; }
@@ -1227,13 +1231,12 @@ table.general th, table.general td {
 
 /* Profile picture */
 
-
 img.profile-pic {
 	object-fit: cover;
 }
 
 .pic_update_message {
-  color: green;
+    color: green;
 }
 
 .link-like {
