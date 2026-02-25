@@ -157,10 +157,10 @@
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1 style="color: white;">Create Event</h1>
+        <h1 style="color: Black;">Create Event</h1>
         <main class="date">
             <h2>New Event Form</h2>
-            <form id="new-event-form" method="POST">
+            <form id="new-event-form" method="POST" style="color: Black;">
                 <div class="event-sect">
                 <label for="name">* Event Name </label>
                 <input type="text" id="name" name="name" required placeholder="Enter name"> 

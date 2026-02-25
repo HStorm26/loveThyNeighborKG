@@ -219,11 +219,11 @@ nav {
 }
 
 a {
-    color: white;
+    color: black;
 }
 
 a:visited {
-    color: rgb(226, 226, 226);
+    color: rgb(14, 2, 2);
 }
 
 a:hover {
@@ -298,8 +298,8 @@ input[type=tel], select, textarea, .pseudo-input, .pseudo-input-disabled {
     background-color: var(--page-background-color);
     margin-bottom: 0.5rem;
     scroll-margin: 7.5rem;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    color: white;
+    box-shadow: 0px 4px 8px rgba(250, 248, 248, 0.2);
+    color: black;
 
 }
 

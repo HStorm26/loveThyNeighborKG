@@ -247,7 +247,7 @@ if (date("H:i:s") > "18:19:59") {
             border-radius: 5px;
             min-width: 150px;
             padding: 10px;
-            color: white;
+            color: Black;
         }
         .dropdown div {
             padding: 8px;
@@ -269,7 +269,7 @@ if (date("H:i:s") > "18:19:59") {
             padding: 10px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            color: Black;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
