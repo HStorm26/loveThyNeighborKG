@@ -153,7 +153,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Create Event</title>
+        <title>Love Thy Neighbor KG | Create Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
@@ -178,11 +178,11 @@
                         <input type="time" id="start-time" name="start-time" required>
                         </div>
                     </div>
-                    <div class="event-time">
-                        <div class="event-date">
+                    <div class="event-time"> 
+                        <!-- <div class="event-date">
                         <label for="name">* End Date</label>
                         <input type="date" id="end-date" name="end-date" <?php if ($date) echo 'value="' . $date . '"'; ?> min="<?php echo date('Y-m-d'); ?>" required>
-                        </div>
+                        </div> -->
                         <div class="event-date">
                         <label for="name">* End Time </label>
                         <input type="time" id="end-time" name="end-time" required>
@@ -194,14 +194,17 @@
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
 
-                <label for="name">* Event Type </label>
+                <label for="name">* Role </label>
                 <select id="type" name="type">
-                    <option value="Normal">Normal</option>
-                    <option value="Retreat">Retreat</option>
+                    <option value="Truck Unloader">Truck Unloader</option>
+                    <option value="Sorting">Sorting</option>
+                    <option value="Distribution">Distribution</option>
+                    <option value="Setup">Setup</option>
+                    <option value="Cleanup">Cleanup</option>
                 </select>
                 </div>
 
-                <div class="event-sect">
+                <!-- <div class="event-sect">
                 <label for="name">* Event Visibility</label>
                 <p class="sub-text" style="margin-bottom: 1rem;">Visibility controls who can see the event listing on the calendar.</p>
                 <div class="radio-group">
@@ -216,9 +219,9 @@
                     </label>
                     </div>
                 </div>
-                </div>
-
-                <div class="event-sect">
+                </div> -->
+<!-- I am Josh and I commented this out becasue Brooke didnt let me delete this -->
+                <!-- <div class="event-sect">
                 <label for="name">* Sign-up Restrictions</label>
                 <p class="sub-text">Restrictions control who can sign up for your event.</p>
                 <div class="dropdown-group">
@@ -247,7 +250,7 @@
                     </div>
                 </div>
                 </div>
-
+ -->
                 <div class="event-sect">
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">
