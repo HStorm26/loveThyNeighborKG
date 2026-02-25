@@ -26,7 +26,7 @@
         require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
-            "name", "date", "start-time", "end-time", "description", "type",
+            "name", "date", "start-time", "end-time", "description", "type"
         );
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
