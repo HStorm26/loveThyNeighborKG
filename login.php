@@ -100,7 +100,7 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Whiskey Valor Foundation | Log In</title>
+        <title>Love They Neighbor | Log In</title>
     </head>
     <body>
 <div class="h-screen flex">
