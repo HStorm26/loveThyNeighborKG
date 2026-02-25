@@ -12,4 +12,8 @@
         <script src="css/header.js"></script>
         
 
+<<<<<<< HEAD
+        <link rel="icon" type="image/x-icon" href="images\ltn-logo1-circle.jpg">
+=======
         <link rel="icon" type="image/x-icon" href="images/kg_logo.webpg">
+>>>>>>> 9dc14cc (Added the KG logo and linked it to the universal.inc file.)
