@@ -69,8 +69,8 @@ table, td, tr, th, form, fieldset, em, button, a {
     --shadow-and-border-color: #d6d6d6;
 
     /* Core theme colors */
-    --main-color: #2A435A; 
-    --accent-color: rgb(201, 171, 129);
+    --main-color: rgb(59,125,35);/*#2A435A; */ 
+    --accent-color: rgb(0, 74, 173); /* Love Thy Neighbor KG blue */
     --secondary-accent-color: rgb(175, 141, 92);
 
     /* Accessibility / WV theme */
@@ -96,13 +96,14 @@ table, td, tr, th, form, fieldset, em, button, a {
     --text-field-border: 2px solid #cccccc;
 
     /* Errors / destructive */
-    --cancel-button-background-color: #c97b67;
+    --cancel-button-background-color: rgb(127,127,127);
     --error-color: #c97b67;
 
     /* Global rules */
     font-size: 18px;
     font-family: Montserrat;
     font-weight: 300;
+    
 }
 
 
@@ -744,7 +745,7 @@ button.cancel, a.cancel {
 }
 
 button.cancel:hover, a.cancel:hover {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color);   
 }
 
 #calendar-heading-month {
