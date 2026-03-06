@@ -21,14 +21,21 @@ SET time_zone = "+00:00";
 -- Database: `test`
 --
 
+-- This is a sandbox for testing the changes to dbpersons 
+-- to make this useable, we will need to run it against the actual db. I want to make sure that 
+-- I avoid breaking things as I do this 
+
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `dbpersonstest`
 --
+drop table if EXISTS dbpersons;
 
-CREATE TABLE `dbpersonstest` (
-  `id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+CREATE TABLE `dbpersons` (
+ `id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL, -- This will need to 
+  -- change as it turns out that we use this as the username
   `first_name` text NOT NULL,
   `last_name` text DEFAULT NULL,
   `phone_number` varchar(12) NOT NULL,
@@ -39,7 +46,7 @@ CREATE TABLE `dbpersonstest` (
   `city` text DEFAULT NULL,
   `street_address` text DEFAULT NULL,
   `zip_code` text DEFAULT NULL,
-  `emergency_contact_name` text DEFAULT NULL,
+  `emergency_contact_first_name` text DEFAULT NULL,
   `emergency_contact_phone` varchar(12) DEFAULT NULL,
   `emergency_contact_relation` text DEFAULT NULL,
   `archived` tinyint(1) DEFAULT NULL,
@@ -58,10 +65,12 @@ CREATE TABLE `dbpersonstest` (
 --
 -- Indexes for table `dbpersonstest`
 --
-ALTER TABLE `dbpersonstest`
+ALTER TABLE `dbpersons`
   ADD PRIMARY KEY (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+Insert into `dbpersons` (`id`,`password`) VALUES
+('vmsroot','$2y$10$VzLJcSjn/WFh0jeI9iFAw.McczukN4ovZuzg9vgtKFlXL3i/O9oOq');
