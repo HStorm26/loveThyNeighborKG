@@ -33,7 +33,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="./css/base.css" rel="stylesheet">
-    <title>Whiskey Valor Volunteer Management | Dashboard</title>
+    <title>Love Thy Neighbor KG Volunteer Management | Dashboard</title>
     <style>
         * {
             box-sizing: border-box;
@@ -53,7 +53,7 @@
 
         .full-width-bar {
             width: 100%;
-            background: #C9AB81;
+            background: rgb(0, 74, 173); /*Love Thy Neighbor Blue*/
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -262,8 +262,7 @@
     .circle {
         width: 30px;
         height: 30px;
-        /*background-color:; /* Blue color */
-        background-color: #C9AB81;
+        background-color: rgb(0, 74, 173); /* Love Thy Neighbor Blue */
         color: white;
         border-radius: 50%;
         display: flex;
@@ -402,7 +401,8 @@
     
         .content-box-test {
             position: relative;
-            background-color: #C9AB81;   /* tan background */
+            background-color: #C9AB81;  /* tan background */
+
             border-radius: 12px;
             padding: 20px;
             color: black;                 /* default text color */
@@ -474,8 +474,8 @@
 
     <div class="full-width-bar">
     <div class="content-box">
-        <img src="images/whiskeyBarrels.png" style="filter:brightness(3) contrast(25%) blur(4px);">
-        <div class="small-text" style="color: #3A3A3A;">Make a difference.</div>
+        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
+        <div class="small-text" style="color: rgb(0,74,173);">Make a difference!</div>
         <div class="large-text">User Management</div>
 <button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
     <span class="button-text">Go</span>
@@ -496,8 +496,8 @@
     </div>
 
     <div class="content-box">
-        <img src="images/whiskeyBarrels.png" style="filter:brightness(3) contrast(25%) blur(4px);">
-        <div class="small-text" style="color: #3A3A3A;">Let’s have some fun!</div>
+        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
+        <div class="small-text" style="color: rgb(0,74,173);">Let’s have some fun!</div>
         <div class="large-text">Event Management</div>
 <button class="circle-arrow-button" onclick="window.location.href='eventManagement.php'">
     <span class="button-text"><?php 
@@ -514,8 +514,8 @@
     </div>
 
     <div class="content-box">
-        <img src="images/whiskeyBarrels.png" style="filter:brightness(3) contrast(25%) blur(4px);">
-        <div class="small-text" style="color: #3A3A3A;">Get away from it all.</div>
+        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
+        <div class="small-text" style="color: rgb(0,74,173);">Get away from it all!</div>
         <div class="large-text">Retreat Applications</div>
 <button class="circle-arrow-button" onclick="window.location.href='viewAllApplications.php'">
     <span class="button-text">Go</span>
@@ -546,97 +546,97 @@
     ?>
 
     <!-- Calendar -->
-    <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
         </div>
         
-        <div class="large-text-sub" style="color:#black;">Calendar</div>
-        <div class="graph-text" style="color:#3A3A3A;">See upcoming events/trainings.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
+        <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- Manage Documents -->
-    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black; position: relative;">
+    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black; position: relative;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
         </div>
        
-        <div class="large-text-sub" style="color:black;">View Pending IDs </div>
-        <div class="graph-text" style="color:#3A3A3A;">View pending and arbitrate user submitted IDs.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">View Pending IDs </div>
+        <div class="graph-text" style="color:#FFFFFF;">View pending and arbitrate user submitted IDs.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- System Notifications -->
-    <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
         </div>
         
-        <div class="large-text-sub">
+        <div class="large-text-sub" style="color:#FFFFFF;">
             System Notifications<?php 
                 if ($unreadMessageCount > 0) {
                     echo ' (' . $unreadMessageCount . ')';
                 }
             ?>
         </div>
-        <div class="graph-text" style="color:#3A3A3A;">Stay up to date.</div>
-        <button class="arrow-button">→</button>
+        <div class="graph-text" style="color:#FFFFFF;">Stay up to date.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- Generate Report -->
-    <div class="content-box-test" onclick="window.location.href='generateReport.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='generateReport.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
         </div>
         
-        <div class="large-text-sub"style="color:black;">Generate Report</div>
-        <div class="graph-text"style="color:#3A3A3A;">From this quarter or annual.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub"style="color:#FFFFFF;">Generate Report</div>
+        <div class="graph-text"style="color:#FFFFFF;">From this quarter or annual.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- Create Email -->
-    <div class="content-box-test" onclick="window.location.href='createEmail.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='createEmail.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
         </div>
         
-        <div class="large-text-sub" style="color:black;">Create Email</div>
-        <div class="graph-text" style="color:#3A3A3A;">Send new messages to volunteers.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">Create Email</div>
+        <div class="graph-text" style="color:#FFFFFF;">Send new messages to volunteers.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- View Drafts -->
-    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
         </div>
         
-        <div class="large-text-sub" style="color:black;">View Drafts</div>
-        <div class="graph-text" style="color:#3A3A3A;">Check saved email drafts.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">View Drafts</div>
+        <div class="graph-text" style="color:#FFFFFF;">Check saved email drafts.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- Generate Email List -->
-    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
         </div>
          
-        <div class="large-text-sub" style="color:black;">Generate Email List</div>
-        <div class="graph-text" style="color:#3A3A3A;">Volunteer Emails</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">Generate Email List</div>
+        <div class="graph-text" style="color:#FFFFFF;">Volunteer Emails</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
     <!-- Discussions -->
-    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
         </div>
         
-        <div class="large-text-sub" style="color:black;">User Suggestions</div>
-        <div class="graph-text" style="color:#3A3A3A;">View user submitted suggestions.</div>
-        <button class="arrow-button">→</button>
+        <div class="large-text-sub" style="color:#FFFFFF;">User Suggestions</div>
+        <div class="graph-text" style="color:#FFFFFF;">View user submitted suggestions.</div>
+        <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
 </div>
@@ -657,7 +657,7 @@
     <footer class="footer" style="margin-top: 100px;">
         <!-- Left Side: Logo & Socials -->
         <div class="footer-left">
-            <img src="images/whiskeyLogoBlack.png" alt="Logo" class="footer-logo">
+            <img src="images/LoveThyNeighbor_logo1.jpeg" alt="Logo" class="footer-logo">
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -670,13 +670,14 @@
         <div class="footer-right">
             <div class="footer-section">
                 <div class="footer-topic">Connect</div>
-                <a href="https://www.facebook.com/profile.php?id=61566628001672&mibextid=LQQJ4d">Facebook</a>
-                <a href="https://www.instagram.com/whiskeyvalor/#">Instagram</a>
-                <a href="https://whiskeyvalor.org">Main Website</a>
+                <a href="https://www.facebook.com/kglovethyneighbor/">Facebook</a>
+                <a href="https://www.instagram.com/love_thy_neighbor_kg/">Instagram</a>
+                <a href="https://www.kgfood.org/">Main Website</a>
             </div>
             <div class="footer-section">
                 <div class="footer-topic">Contact Us</div>
-                <a href="https://whiskeyvalor.org/pages/contact">Send Us An Email</a>
+                <a href="https://www.kgfood.org/contact">Email: kgc.ltn@gmail.com</a>
+                <a href="https://www.kgfood.org/contact">Phone: (540) 709–1130</a>
                 <!-- <a href="tel:5408981500">540-898-1500 (ext 117)</a> -->
             </div>
         </div>
