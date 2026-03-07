@@ -100,80 +100,85 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Whiskey Valor Foundation | Log In</title>
+        <title>Love Thy Neighbor | Log In</title>
     </head>
-    <body>
-<div class="h-screen flex">
+  <body>
+    <div class="min-h-screen relative">
 
-  <!-- Left: Image Section (Hidden on small screens) -->
-  <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px] bg-[#1F1F21]">
-      <img src="images/whiskeyBarrels.png"
-            alt="Barrels"
-            style="height: 100%;">
-  </div>
+      <!-- Left: Image Section (Hidden on small screens) -->
+      <!-- Background Image Now -->
+      <div class="absolute inset-0">
+          <img src="images/whiskeyBarrels.png"
+                alt="Barrels"
+                style="height: 100%;"
+                class="w-full h-full object-cover">
 
-  <!-- Right: Form Section -->
-
-  <div class="w-full md:w-1/2 flex flex-col justify-center items-center bg-white relative ">
-
-
-    <div class="w-2/3 max-w-md flex flex-col items-center">
-
-      <!-- Logo Placeholder (Now the same width as inputs and centered) -->
-      <div class="w-full flex justify-center mb-6">
-        <img src="images\ltn-logo1-circle.jpg"
-             alt="Logo"
-             class="w-full max-w-xs">
       </div>
 
-      <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
-	<span class="wave">👋</span> Nice to see you again.
-      </h2>
+      <!-- dark overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
 
-      <form class="w-full" method="post">
-                <?php
-                    if ($badLogin) {
-                        echo '<span class="text-white bg-red-700 text-center block p-2 rounded-lg mb-2">No login with that username and password combination currently exists.</span>';
-                    }
-                    if ($archivedAccount) {
-                        echo '<span class="text-white bg-red-700 block p-2 rounded-lg mb-2">This account has either been archived or not yet approved by managment. For help, notify <a href="mailto:volunteer@fredspca.org">volunteer@fredspca.org</a>.</span>';
-                    }
-		    if (isset($_GET['registerSuccess'])) {
-                        echo '<span class="text-white text-center bg-green-700 block p-2 rounded-lg mb-2">Registration Successful! Please login below.</span>';
-		    } 
-                ?>
-        <div class="mb-4">
-          <label class="block text-gray-700 font-medium mb-2" for="username">Login</label>
-          <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" name="username" placeholder="Enter your username" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 font-medium mb-2" for="password">Password</label>
-          <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
-        </div>
-        <div class="flex justify-between items-center mb-4">
-          <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
-          <a href="https://whiskeyvalor.org" class="text-[#22654D] text-sm hover:underline">Whiskey Valor Website</a>
-        </div>
-        <button class="cursor-pointer w-full bg-[#C9AB81] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
-      </form>
+      <!-- Right: Form Section -->
+      <!-- now the middle form section -->
+      <div class="relative h-full flex items-center justify-center px-4">
 
-      <!-- Divider -->
-      <div class="flex items-center my-6 w-full">
-        <div class="flex-grow border-t border-gray-300"></div>
-        <span class="mx-4 text-gray-500">or</span>
-        <div class="flex-grow border-t border-gray-300"></div>
+        <div class="w-full max-w-xl bg-white/90 backdrop-blur-md p-10 rounded-3xl shadow-2xl">
+
+          <!-- Logo Placeholder (Now the same width as inputs and centered) -->
+          <div class="w-full flex justify-center mb-6">
+            <img src="images\ltn-logo1-circle.jpg"
+                alt="Logo"
+                class="w-full max-w-xs">
+          </div>
+
+          <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
+      <span class="wave">👋</span> Nice to see you again.
+          </h2>
+
+          <form class="w-full" method="post">
+                    <?php
+                        if ($badLogin) {
+                            echo '<span class="text-white bg-red-700 text-center block p-2 rounded-lg mb-2">No login with that username and password combination currently exists.</span>';
+                        }
+                        if ($archivedAccount) {
+                            echo '<span class="text-white bg-red-700 block p-2 rounded-lg mb-2">This account has either been archived or not yet approved by managment. For help, notify <a href="mailto:volunteer@fredspca.org">volunteer@fredspca.org</a>.</span>';
+                        }
+            if (isset($_GET['registerSuccess'])) {
+                            echo '<span class="text-white text-center bg-green-700 block p-2 rounded-lg mb-2">Registration Successful! Please login below.</span>';
+            } 
+                    ?>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2" for="username">Login</label>
+              <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2" for="password">Password</label>
+              <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+              <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
+              <a href="https://whiskeyvalor.org" class="text-[#22654D] text-sm hover:underline">Whiskey Valor Website</a>
+            </div>
+            <button class="cursor-pointer w-full bg-[#C9AB81] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
+          </form>
+
+          <!-- Divider -->
+          <div class="flex items-center my-6 w-full">
+            <div class="flex-grow border-t border-gray-300"></div>
+            <span class="mx-4 text-gray-500">or</span>
+            <div class="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          <!-- Sign Up Section -->
+          <p class="text-center text-gray-700">
+            Don’t have an account?
+            <a href="VolunteerRegister.php" class="text-[#22654D] font-semibold hover:underline">Sign Up Now</a>
+          </p>
+
+        </div>
       </div>
-
-      <!-- Sign Up Section -->
-      <p class="text-center text-gray-700">
-        Don’t have an account?
-        <a href="VolunteerRegister.php" class="text-[#22654D] font-semibold hover:underline">Sign Up Now</a>
-      </p>
 
     </div>
-  </div>
-
-</div>
 
     </body>
 </html>

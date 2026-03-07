@@ -51,7 +51,7 @@ require_once('header.php');
 	    }
         
         body{
-        background-color: #1F1F21;
+        /* background-color: #1F1F21; */
         }
         .button-section button{
         background-color: #C9AB81;

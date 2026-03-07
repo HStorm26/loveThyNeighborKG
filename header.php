@@ -71,7 +71,7 @@ if (date("H:i:s") > "18:19:59") {
 
         .full-width-bar {
             width: 100%;
-            background: rgb(31,31,33);
+            /* background: rgb(31,31,33); */
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -80,7 +80,7 @@ if (date("H:i:s") > "18:19:59") {
         }
         .full-width-bar-sub {
             width: 100%;
-            background: white;
+            /* background: white; */
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -365,7 +365,7 @@ if (date("H:i:s") > "18:19:59") {
         /* Footer */
         .footer {
             width: 100%;
-            background: #C9AB81;
+            background: rgb(0, 74, 173); /* Love Thy Neighbor KG Blue */
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -817,7 +817,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/ltn-logo1-circle.jpg" alt="Logo"></a>
+                <a href="index.php"><img src="images/LoveThyNeighbor_logo2.jpeg" alt="Logo"></a>
             </div>
                 <!--<a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>-->
             <div class="nav-links">
@@ -917,7 +917,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/ltn-logo1-circle.jpg" alt="Logo"></a>
+                <a href="index.php"><img src="images/LoveThyNeighbor_logo2.jpeg" alt="Logo"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Events

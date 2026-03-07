@@ -57,7 +57,7 @@ require_once('header.php');
   }
 
   body {
-    background-color: #1F1F21; 
+    /* background-color: #1F1F21;  */
   }
 
   .button-left-gray {

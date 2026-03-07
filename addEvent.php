@@ -153,13 +153,13 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Create Event</title>
+        <title>Love Thy Neighbor KG | Create Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1 style="color: white;">Create Event</h1>
+        <h1 style="color: var(--accent-color); font-weight: bold;">Create Event</h1>
         <main class="date">
-            <h2>New Event Form</h2>
+            <h2 style="color: var(--accent-color); font-weight: bold;">New Event Form</h2>
             <form id="new-event-form" method="POST">
                 <div class="event-sect">
                 <label for="name">* Event Name </label>
@@ -170,7 +170,7 @@
                 <div class="event-datetime">
                     <div class="event-time">
                         <div class="event-date">
-                        <label for="name">* Start Date </label>
+                        <label for="name">* Date </label>
                         <input type="date" id="date" name="date" <?php if ($date) echo 'value="' . $date . '"'; ?> min="<?php echo date('Y-m-d'); ?>" required>
                         </div>
                         <div class="event-date">
@@ -178,11 +178,11 @@
                         <input type="time" id="start-time" name="start-time" required>
                         </div>
                     </div>
-                    <div class="event-time">
-                        <div class="event-date">
+                    <div class="event-time"> 
+                        <!-- <div class="event-date">
                         <label for="name">* End Date</label>
                         <input type="date" id="end-date" name="end-date" <?php if ($date) echo 'value="' . $date . '"'; ?> min="<?php echo date('Y-m-d'); ?>" required>
-                        </div>
+                        </div> -->
                         <div class="event-date">
                         <label for="name">* End Time </label>
                         <input type="time" id="end-time" name="end-time" required>
@@ -194,14 +194,17 @@
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
 
-                <label for="name">* Event Type </label>
-                <select id="type" name="type">
-                    <option value="Normal">Normal</option>
-                    <option value="Retreat">Retreat</option>
+                <label for="name">* Roles (Select at least one) </label>
+                <select id="type" name="type"> 
+                    <option value="Truck Unloader">Truck Unloader</option>
+                    <option value="Sorting">Sorting</option>
+                    <option value="Distribution">Distribution</option>
+                    <option value="Setup">Setup</option>
+                    <option value="Cleanup">Cleanup</option>
                 </select>
-                </div>
+                </div>    
 
-                <div class="event-sect">
+                <!-- <div class="event-sect">
                 <label for="name">* Event Visibility</label>
                 <p class="sub-text" style="margin-bottom: 1rem;">Visibility controls who can see the event listing on the calendar.</p>
                 <div class="radio-group">
@@ -216,9 +219,9 @@
                     </label>
                     </div>
                 </div>
-                </div>
-
-                <div class="event-sect">
+                </div> -->
+<!-- I am Josh and I commented this out becasue Brooke didnt let me delete this -->
+                <!-- <div class="event-sect">
                 <label for="name">* Sign-up Restrictions</label>
                 <p class="sub-text">Restrictions control who can sign up for your event.</p>
                 <div class="dropdown-group">
@@ -247,7 +250,7 @@
                     </div>
                 </div>
                 </div>
-
+ -->
                 <div class="event-sect">
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">
@@ -257,7 +260,7 @@
                 </div>
 
                 <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <legend>Make this a recurring event</legend>
+                    <legend style="color: var(--accent-color); font-weight:bold;">Make this a recurring event</legend>
 
                     <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
                         <input type="checkbox" id="recurring" name="recurring" value="1">
@@ -282,7 +285,7 @@
                     </div>
                 </fieldset>
                 
-                <input type="submit" value="Create Event" style="width:100%;">
+                <input type="submit" value="Create Event" style="width:100%; font-weight:bold;">
                 
             </form>
                 <script>
@@ -311,9 +314,9 @@
                     })();
                 </script>
                 <?php if ($date): ?>
-                    <a class="button cancel" href="calendar.php?month=<?php echo substr($date, 0, 7) ?>" style="margin-top: -.5rem">Return to Calendar</a>
+                    <a class="button cancel" href="calendar.php?month=<?php echo substr($date, 0, 7) ?>" style="margin-top: -.5rem; font-weight:bold;">Return to Calendar</a>
                 <?php else: ?>
-                    <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
+                    <a class="button cancel" href="index.php" style="margin-top: -.5rem; font-weight:bold;">Return to Dashboard</a>
                 <?php endif ?>
 
                 <script type="text/javascript">
