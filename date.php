@@ -38,7 +38,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | View Date</title>
+        <title>View Date | Love Thy Neighbor Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

@@ -158,7 +158,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Edit Event</title>
+        <title>Edit Event | Love Thy Neighbor Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

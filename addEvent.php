@@ -153,7 +153,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Love Thy Neighbor KG | Create Event</title>
+        <title>Create Event | Love Thy Neighbor Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
