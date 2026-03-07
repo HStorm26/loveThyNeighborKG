@@ -21,7 +21,7 @@ include_once "database/dbShifts.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Checked In Volunteers | Love Thy Neighbor Food Pantry</title>
+    <title>Checked In Volunteers | Love Thy Neighbor Community Food Pantry</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->

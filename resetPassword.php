@@ -56,7 +56,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Reset Password</title>
+        <title>Reset Password | Love Thy Neighbor Community Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

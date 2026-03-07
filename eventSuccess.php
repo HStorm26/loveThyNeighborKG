@@ -8,7 +8,7 @@
     <html>
         <head>
             <?php require_once('universal.inc') ?>
-            <title>Whiskey Valor | Create Event</title>
+            <title>Create Event | Love Thy Neighbor Community Food Pantry</title>
         </head>
         <body>
             <?php require_once('header.php') ?>

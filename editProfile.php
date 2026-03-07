@@ -183,7 +183,7 @@
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Whiskey Valor | Edit Profile</title>
+    <title>Edit Profile | Love Thy Neighbor Community Food Pantry</title>
     <link src="css/base.css" rel="stylesheet">
 </head>
 <body>

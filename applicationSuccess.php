@@ -8,7 +8,7 @@
     <html>
         <head>
             <?php require_once('universal.inc') ?>
-            <title>View Application | Love Thy Neighbor Food Pantry</title>
+            <title>View Application | Love Thy Neighbor Community Food Pantry</title>
         </head>
         <body>
             <?php require_once('header.php') ?>

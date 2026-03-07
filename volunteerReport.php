@@ -51,7 +51,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Volunteer History | Love Thy Neighbor Food Pantry</title>
+        <title>Volunteer History | Love Thy Neighbor Community Food Pantry</title>
         <link rel="stylesheet" href="css/hours-report.css">
         <style>
             .volunteer-stat {

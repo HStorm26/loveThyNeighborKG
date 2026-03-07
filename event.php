@@ -196,7 +196,7 @@
     <?php 
         require_once('universal.inc');
     ?>
-    <title>Love Thy Neighbor Food Pantry | <?php echo $event_info['name'] ?></title>
+    <title>Love Thy Neighbor Community Food Pantry | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
     <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
         <script src="js/event.js"></script>
