@@ -23,7 +23,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Whiskey Valor | Attendance Reports</title>
+    <title>Attendance Reports | Love Thy Neighbor Community Food Pantry</title>
     <!--<script src="js/data-filters.js" defer></script>-->
     <link href="css/base.css" rel="stylesheet">
     <?php require_once('header.php'); ?>

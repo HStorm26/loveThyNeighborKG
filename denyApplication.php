@@ -31,7 +31,7 @@
 <html>
     <head>
         <?php require_once('universal.inc'); ?>
-        <title>Deny Application | Love Thy Neighbor Food Pantry</title>
+        <title>Deny Application | Love Thy Neighbor Community Food Pantry</title>
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/application.css">
     </head>

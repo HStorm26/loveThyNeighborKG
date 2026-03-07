@@ -263,7 +263,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Send Email | Love Thy Neighbor Food Pantry</title>
+    <title>Send Email | Love Thy Neighbor Community Food Pantry</title>
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>

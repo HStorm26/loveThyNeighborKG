@@ -48,7 +48,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Whiskey Valor | Volunteer Email List</title>
+        <title>Volunteer Email List | Love Thy Neighbor Community Food Pantry</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->

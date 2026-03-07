@@ -80,7 +80,7 @@ mysqli_close($conn);
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Edit Draft | Whiskey Valor</title>
+    <title>Edit Draft | Love Thy Neighbor Community Food Pantry</title>
     <link href="css/base.css" rel="stylesheet">
     <style>
         form {

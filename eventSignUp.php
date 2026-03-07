@@ -114,7 +114,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Sign-Up for Event</title>
+        <title>Sign-Up for Event | Love Thy Neighbor Community Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
