@@ -7,7 +7,7 @@
     <html>
         <head>
             <?php require_once('universal.inc') ?>
-            <title>Sign-Up for Event | Love Thy Neighbor Food Pantry</title>
+            <title>Sign-Up for Event | Love Thy Neighbor Community Food Pantry</title>
             <style>
                 .h1 {
                         font-family: Quicksand, sans-serif;
