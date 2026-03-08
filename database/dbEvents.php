@@ -540,40 +540,20 @@ function fetch_num_attendees($id) {
 function create_event($event) {
     $connection = connect();
     $name = $event["name"];
-    //$abbrevName = $event["abbrev-name"];
-    // $date = $event["date"];
-    $date    = $event["startDate"] ?? $event["date"];
-    $endDate = $event["endDate"]   ?? $date; // default single-day
+    $date = $event["date"];
     $startTime = $event["start-time"];    
     $endTime = $event["end-time"];
     $description = $event["description"];
-    $type = $event['type'];
-    if (isset($event["capacity"])) {
-        $capacity = $event["capacity"];
-    } else {
-        $capacity = 999;
-    }
+    $type = "Normal";
+    $capacity = isset($event["capacity"]) ? (int)$event["capacity"] : 0;
+
     if (isset($event["location"])) {
         $location = $event["location"];
     } else {
         $location = "";
     }
-    //$completed = $event["completed"];
-    /*
-    $restricted_signup = $event["role"];
-    if ($restricted_signup == "r") {
-        $restricted = 1;
-    } else {
-        $restricted = 0;
-    }
-        */
-    $access = 'Public';
-    $description = $event["description"];
-    //$branch = $event["branch"];
-    //$location = $event["location"];
-    //$services = $event["service"];
 
-    //$animal = $event["animal"];
+    $access = 'Public';
     $completed = 'N';
 
     $series_id = isset($event['series_id'])
@@ -582,14 +562,14 @@ function create_event($event) {
 
     $query = "
         insert into dbevents (name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
-        values ('$name', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
+        values ('$name', '$date', '$startTime', '$endTime', '$date', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
         return null;
     }
     $id = mysqli_insert_id($connection);
-    //add_services_to_event($id, $services);
+    
     mysqli_commit($connection);
     mysqli_close($connection);
     return $id;

@@ -26,114 +26,176 @@
         require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
-            "name", "date", "start-time", "end-time", "description", "type"
+            "name", "date", "start-time", "end-time", "description", "location"
         );
+        $roles = $_POST['roles'] ?? array();
+        $startTimes = $_POST['start_times'] ?? array();
+        $endTimes = $_POST['end_times'] ?? array();
+
+        /* For the total capacity */
+        $totalCapacity = 0;
+        foreach ($roles as $role => $count) {
+            $count = (int)$count;
+
+            if($count < 0) {
+                $count = 0;
+            }
+            $totalCapacity += $count;
+        }
+
+        /* At least one role was chosen */
+        if ($totalCapacity <= 0) {
+            echo "You must enter at least one volunteer role.";
+            die();
+        }
+
+        /* The role, if has a capacity, has to have a start time
+        and an end time */
+        foreach ($roles as $role => $count) {
+            $count = (int)$count;
+
+            if($count > 0) {
+                if(empty($startTimes[$role]) || empty($endTimes[$role])) {
+                    echo "Each selected role must have a start and end time.";
+                    die();
+                }
+            }
+        }
+
+        /*Check end time is after start time */
+        foreach ($roles as $role => $count) {
+            $count = (int)$count;
+
+            if($count > 0) {
+                if ($endTimes[$role] <= $startTimes[$role]) {
+                    echo "End time for $role must be later than start time.";
+                    die();
+                }
+            }
+        }
+        
+        /*Database will skip roles with 0 volunteers, so it doesn't store
+        the unnecessary roles!*/
+        foreach ($roles as $role => $count) {
+            $count = (int)$count;
+
+            if($count > 0) {
+                $start = $startTimes[$role];
+                $end = $endTimes[$role];
+                // save this role to the database
+            }
+        }
+        
+
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
             die();
-        } else {
+        }
+
+        
             // Accept either HTML5 24h time (HH:MM) or 12h times with am/pm
-            if (validate24hTimeRange($args['start-time'], $args['end-time'])) {
-                $startTime = $args['start-time'];
-                $endTime = $args['end-time'];
-            } else {
-                $validated = validate12hTimeRangeAndConvertTo24h($args["start-time"], $args["end-time"]);
-                if (!$validated) {
-                    echo 'bad time range';
-                    die();
-                }
-                $startTime = $args['start-time'] = $validated[0];
-                $endTime = $args['end-time'] = $validated[1];
+        if (validate24hTimeRange($args['start-time'], $args['end-time'])) {
+            $startTime = $args['start-time'];
+            $endTime = $args['end-time'];
+        } else {
+            $validated = validate12hTimeRangeAndConvertTo24h($args["start-time"], $args["end-time"]);
+            if (!$validated) {
+                echo 'bad time range';
+                die();
             }
-            $date = $args['date'] = validateDate($args["date"]);
-            $args["training_level_required"] = $_POST['training_level_required'] ?? 'None';
+            $startTime = $args['start-time'] = $validated[0];
+            $endTime = $args['end-time'] = $validated[1];
+        }
+        $date = $args['date'] = validateDate($args["date"]);
+        $args["training_level_required"] = $_POST['training_level_required'] ?? 'None';
     
-            $args['startDate'] = $date;
-            $args['endDate']   = $date;   
-            $args['startTime'] = $startTime;
-            $args['endTime']   = $endTime;
+        $args['date']   = $date;   
+        $args['startTime'] = $startTime;
+        $args['endTime']   = $endTime;
 
 
-            //1. Start of use case #8 recurring, etc
-            $isRecurring = isset($_POST['recurring']) ? 1 : 0;
-            $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
-            $customDays = ($isRecurring && $recurrenceType === 'custom') ? (int)($_POST['custom_days'] ?? 0) : null;
+        //1. Start of use case #8 recurring, etc
+        $isRecurring = isset($_POST['recurring']) ? 1 : 0;
+        $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
+        $customDays = ($isRecurring && $recurrenceType === 'custom') ? (int)($_POST['custom_days'] ?? 0) : null;
 
             
-            if ($isRecurring) {
-                if (!in_array($recurrenceType, ['daily','weekly','monthly','custom'], true)) {
-                    echo 'invalid recurrence type';
-                    die();
-                }
-                if ($recurrenceType === 'custom' && (!$customDays || $customDays < 1)) {
-                    echo 'invalid custom interval';
-                    die();
-                }
-                $args['is_recurring'] = 1;
-                $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
-                $args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
-            } else {
-                $args['is_recurring'] = 0;
-                $args['recurrence_type'] = null;
-                $args['recurrence_interval_days'] = null;
-            }
-            //1. Start of use case #8 recurring, etc
-
-            // FIXED: Replaced the broken check "if (!$date > 11)"
-            if (!$startTime || !$endTime || !$date){
-                echo 'bad args';
+        if ($isRecurring) {
+            if (!in_array($recurrenceType, ['daily','weekly','monthly','custom'], true)) {
+                echo 'invalid recurrence type';
                 die();
             }
-
-            $args['series_id'] = bin2hex(random_bytes(16)); // new new
-
-            $id = create_event($args);
-            if (!$id) {
+            if ($recurrenceType === 'custom' && (!$customDays || $customDays < 1)) {
+                echo 'invalid custom interval';
                 die();
-            } else {
+            }
+            $args['is_recurring'] = 1;
+            $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
+            $args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
+        } else {
+            $args['is_recurring'] = 0;
+            $args['recurrence_type'] = null;
+            $args['recurrence_interval_days'] = null;
+        }
+        //1. Start of use case #8 recurring, etc
+
+        // FIXED: Replaced the broken check "if (!$date > 11)"
+        if (!$startTime || !$endTime || !$date){
+            echo 'bad args';
+            die();
+        }
+        $args['capacity'] = $totalCapacity;
+        $args['roles'] = $roles;
+        $args['start_times'] = $startTimes;
+        $args['end_times'] = $endTimes;
+
+        //$args['series_id'] = bin2hex(random_bytes(16)); // new new /*It really disliked it, so I had to change it -Brooke */
+        $args['series_id'] = random_int(100, 999999); 
+
+        $id = create_event($args);
+        if (!$id) {
+            die();
+        } else {
     
-                $counts = [
-                    'daily'   => 30,  // next 30 days
-                    'weekly'  => 12,  // next 12 weeks
-                    'monthly' => 6,   // next 6 months
-                    'custom'  => 12,  // 12 custom intervals
-                ];
+            $counts = [
+                'daily'   => 30,  // next 30 days
+                'weekly'  => 12,  // next 12 weeks
+                'monthly' => 6,   // next 6 months
+                'custom'  => 12,  // 12 custom intervals
+            ];
                 
-                $intervalMap = [
-                    'daily'   => 'P1D',
-                    'weekly'  => 'P1W',
-                    'monthly' => 'P1M',
-                ];
-                if ($recurrenceType === 'custom') {
-                    $customDays = max(1, $customDays);
-                    $intervalSpec = 'P' . $customDays . 'D';
-                } else {
-                    $intervalSpec = $intervalMap[$recurrenceType] ?? null;
-                }
-
-                if ($isRecurring && $intervalSpec && isset($counts[$recurrenceType])) {
-                    $current = new DateTime($args['startDate']);  
-                    $step    = new DateInterval($intervalSpec);
-                    $times   = $counts[$recurrenceType];
-
-                    for ($i = 0; $i < $times; $i++) {
-                        $current->add($step);
-                        $ymd = $current->format('Y-m-d');
-
-                        $dup = $args;                 
-                        $dup['startDate'] = $ymd;
-                        $dup['endDate']   = $ymd;
-                        $dup['date']      = $ymd;    
-
-                        create_event($dup);
-                    }
-                }
-                
-                header('Location: eventSuccess.php');
-                exit();
+            $intervalMap = [
+                'daily'   => 'P1D',
+                'weekly'  => 'P1W',
+                'monthly' => 'P1M',
+            ];
+            if ($recurrenceType === 'custom') {
+                $customDays = max(1, $customDays);
+                $intervalSpec = 'P' . $customDays . 'D';
+            } else {
+                $intervalSpec = $intervalMap[$recurrenceType] ?? null;
             }
+
+            if ($isRecurring && $intervalSpec && isset($counts[$recurrenceType])) {
+                $current = new DateTime($args['date']);  
+                $step    = new DateInterval($intervalSpec);
+                $times   = $counts[$recurrenceType];
+
+                for ($i = 0; $i < $times; $i++) {
+                    $current->add($step);
+                    $ymd = $current->format('Y-m-d');
+
+                    $dup = $args;                 
+                    $dup['date']      = $ymd;    
+
+                    create_event($dup);
+                }
+            }
+            header('Location: eventSuccess.php');
+            exit();
         }
     }
+
     
     $date = null;
     if (isset($_GET['date'])) {
@@ -194,78 +256,103 @@
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
 
-                <label for="name">* Roles (Select at least one) </label>
-                <select id="type" name="type"> 
-                    <option value="Truck Unloader">Truck Unloader</option>
-                    <option value="Sorting">Sorting</option>
-                    <option value="Distribution">Distribution</option>
-                    <option value="Setup">Setup</option>
-                    <option value="Cleanup">Cleanup</option>
-                </select>
-                </div>    
-
-                <!-- <div class="event-sect">
-                <label for="name">* Event Visibility</label>
-                <p class="sub-text" style="margin-bottom: 1rem;">Visibility controls who can see the event listing on the calendar.</p>
-                <div class="radio-group">
-                    <div class="radio-element">
-                    <label>
-                        <input type="radio" name="visibility" value="public" checked>Public
-                    </label>
-                    </div>
-                    <div class="radio-element">
-                    <label>
-                        <input type="radio" name="visibility" value="private">Private
-                    </label>
-                    </div>
-                </div>
-                </div> -->
-<!-- I am Josh and I commented this out becasue Brooke didnt let me delete this -->
-                <!-- <div class="event-sect">
-                <label for="name">* Sign-up Restrictions</label>
-                <p class="sub-text">Restrictions control who can sign up for your event.</p>
-                <div class="dropdown-group">
-                    <div class="dd">
-                    <label for="branch">Branch</label>
-                    <select  name="branch" id="branch">
-                        <option value="all">(any)</option>
-                        <option value="air force">Air Force</option>
-                        <option value="army">Army</option>
-                        <option value="coast guard">Coast Guard</option>
-                        <option value="marine">Marine Corp</option>
-                        <option value="navy">Navy</option>
-                        <option value="space force">Space Force</option>
-                    </select>
-                    </div>
-                    <div class="dd">
-                    <label for="affiliation">Affiliation</label>
-                    <select  name="affiliation" id="affiliation">
-                        <option value="all">(any)</option>
-                        <option value="active duty">Active duty</option>
-                        <option value="family">Family member (spouse, child, or parent)</option>
-                        <option value="reserve">Reservist</option>
-                        <option value="veteran">Veteran</option>
-                        <option value="civilian">Civilian</option>
-                    </select>
-                    </div>
-                </div>
-                </div>
- -->
-                <div class="event-sect">
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">
+                </div>    
 
-                <label for="name">* Capacity </label>
-                <input type="number" id="capacity" name="capacity" required placeholder="Enter capacity (e.g. 1-99)">
+                <div class="event-sect">
+                    <label>* Roles</label>
+                    <table class="roles-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Number Needed</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            <tr>
+                                <td>Truck Unloader</td>
+                                <td>
+                                    <input type="number" class="role-count" name="roles[truck_unloader]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td> 
+                                <td>
+                                    <input type="time" name="start_times[truck_unloader]">
+                                </td>
+                                <td>
+                                    <input type="time" name="end_times[truck_unloader]">
+                                </td>   
+                            </tr>   
+                            <tr>
+                                <td>Sorting</td>
+                                <td>
+                                    <input type="number" class="role-count" name="roles[sorting]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td>    
+                                <td>
+                                    <input type="time" name="start_times[sorting]">
+                                </td>
+                                <td>
+                                    <input type="time" name="end_times[sorting]">
+                                </td>   
+                            </tr> 
+                            <tr>
+                                <td>Distribution</td>
+                                <td>
+                                    <input type="number" class="role-count" name="roles[distribution]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td>
+                                <td>
+                                    <input type="time" name="start_times[distribution]">
+                                </td>
+                                <td>
+                                    <input type="time" name="end_times[distribution]">
+                                </td>       
+                            </tr>  
+                            <tr>
+                                <td>Setup</td>
+                                <td>
+                                    <input type="number" class="role-count" name="roles[setup]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td>
+                                <td>
+                                    <input type="time" name="start_times[setup]">
+                                </td>
+                                <td>
+                                    <input type="time" name="end_times[setup]">
+                                </td>       
+                            </tr> 
+                            <tr>
+                                <td>Cleanup</td>
+                                <td>
+                                    <input type="number" class="role-count" name="roles[cleanup]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td>
+                                <td>
+                                    <input type="time" name="start_times[cleanup]">
+                                </td>
+                                <td>
+                                    <input type="time" name="end_times[cleanup]">
+                                </td>       
+                            </tr> 
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total Capacity</th>
+                                <th>
+                                    <input type="number" id="totalCapacity" name="capacity" value="0" readonly>
+                                </th>
+                        </tfoot>
+
+                    </table>   
+                    <!-- <input type="hidden" id="rolesRequired" required> -->
                 </div>
 
-                <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <legend style="color: var(--accent-color); font-weight:bold;">Make this a recurring event</legend>
-
-                    <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
-                        <input type="checkbox" id="recurring" name="recurring" value="1">
-                        Recurring
-                    </label>
+                <div class="event-sect">
+                    <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <legend style="color: var(--accent-color); font-weight:bold;">Make this a recurring event</legend>
+                        <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
+                            <input type="checkbox" id="recurring" name="recurring" value="1">
+                            Recurring
+                        </label>
+                </div>
 
                     <div id="recurring-options" style="display:none; margin-top:6px;">
                         <label for="recurrence_type">Recurrence:</label>
@@ -361,6 +448,25 @@
                             recurrenceType.addEventListener('change', toggleCustom);
                             toggleCustom();
                         }
+
+                        /* The capacity will add up as the roles are incremented by the admin on the form */
+                        function updateTotalCapacity() {
+                            const roles = document.querySelectorAll(".role-count");
+                            let total = 0;
+
+                            roles.forEach(function(role) {
+                                total += parseInt(role.value) || 0;
+        
+                            });
+                            document.getElementById("totalCapacity").value = total;
+                        }
+
+                        document.querySelectorAll(".role-count").forEach(function(input) {
+                            input.addEventListener("input", updateTotalCapacity);
+                        });
+                        updateTotalCapacity();
+
+
                     })();
                 </script>
         </main>
