@@ -401,7 +401,7 @@
     
         .content-box-test {
             position: relative;
-            background-color: #C9AB81;  /* tan background */
+            background-color: #004AAD;  /* Love Thy Neighbor Blue /*
 
             border-radius: 12px;
             padding: 20px;
@@ -715,7 +715,7 @@
 
     <div class="full-width-bar">
     <div class="content-box">
-    <img src="images/VolM.png" />   
+    <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/>   <!-- wooden container (Brooke) -->
         <div class="small-text">Make a difference.</div>
         <div class="large-text">My Profile</div>
         <div class="nav-buttons">
@@ -732,7 +732,7 @@
     </div>
 
     <div class="content-box">
-        <img src="images/EvM.png" />
+        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/> <!-- wooden container (Brooke) -->
         <div class="small-text">Let’s have some fun!</div>
         <div class="large-text">My Events</div>
         <div class="nav-buttons">
@@ -760,9 +760,9 @@
                 <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub">Calendar</div>
-            <div class="graph-text">See upcoming events/trainings.</div>
-            <button class="arrow-button">→</button>
+            <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
+            <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
                <?php
@@ -779,29 +779,29 @@
                 <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Calendar Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub">Documentation Upload</div>
-            <div class="graph-text">Upload an ID for verification.</div>
-            <button class="arrow-button">→</button>
+            <div class="large-text-sub" style="color:#FFFFFF;">Documentation Upload</div>
+            <div class="graph-text" style="color:#FFFFFF;">Upload an ID for verification.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
-        <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
+        <!-- <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Report Icon">
-            </div>
+            </div> -->
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub">Suggestions</div>
+            <!-- <div class="large-text-sub">Suggestions</div>
             <div class="graph-text">Suggest opportunities for charity events.</div>
             <button class="arrow-button">→</button>
-        </div>
+        </div> --> <!-- DELETE THIS LATER ON - BROOKE -->
 
         <div class="content-box-test" onclick="window.location.href='inbox.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub">Notifications</div>
-            <div class="graph-text">Stay up to date.</div>
-            <button class="arrow-button">→</button>
+            <div class="large-text-sub" style="color:#FFFFFF;">Notifications</div>
+            <div class="graph-text" style="color:#FFFFFF;">Stay up to date.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
     </div>
@@ -817,7 +817,7 @@
     <footer class="footer" style="margin-top: 100px;">
         <!-- Left Side: Logo & Socials -->
         <div class="footer-left">
-            <img src="images/whiskeyLogoBlack.png" alt="Logo" class="footer-logo">
+            <img src="images/LoveThyNeighbor_logo1.jpeg" alt="Logo" class="footer-logo">
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -830,13 +830,14 @@
         <div class="footer-right">
             <div class="footer-section">
                 <div class="footer-topic">Connect</div>
-                <a href="https://www.facebook.com/profile.php?id=61566628001672&mibextid=LQQJ4d">Facebook</a>
-                <a href="https://www.instagram.com/whiskeyvalor/#">Instagram</a>
-                <a href="https://whiskeyvalor.org">Main Website</a>
+                <a href="https://www.facebook.com/kglovethyneighbor/">Facebook</a>
+                <a href="https://www.instagram.com/love_thy_neighbor_kg/">Instagram</a>
+                <a href="https://www.kgfood.org/">Main Website</a>
             </div>
             <div class="footer-section">
                 <div class="footer-topic">Contact Us</div>
-                <a href="https://whiskeyvalor.org/pages/contact">Send Us An Email</a>
+                <a href="https://www.kgfood.org/contact">Email: kgc.ltn@gmail.com</a>
+                <a href="https://www.kgfood.org/contact">Phone: (540) 709–1130</a>
                 <!-- <a href="tel:5408981500">540-898-1500 (ext 117)</a> -->
             </div>
         </div>

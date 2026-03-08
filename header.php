@@ -134,7 +134,7 @@ if (date("H:i:s") > "18:19:59") {
             left: 30px;
             font-size: 14px;
             font-weight: 700;
-            color: #297760ff;
+            color: #004AAD;
         }
 
         .large-text {
@@ -295,7 +295,7 @@ if (date("H:i:s") > "18:19:59") {
 
 /* Button Styling */
 .nav-button {
-    background: rgb(201, 171, 129);
+    background: rgb(0, 74, 173); /* Love Thy Neighbor Blue */
     border: none;
     color: white;
     font-size: 20px;
@@ -497,11 +497,12 @@ if (date("H:i:s") > "18:19:59") {
     .icon-butt svg {
         transition: transform 0.2s ease, fill 0.2s ease;
         cursor: pointer;
+        fill: white;
     }
 
     .icon-butt:hover svg {
         transform: scale(1.1) rotate(5deg); /* Slight enlarge & tilt effect */
-        fill: #7aacf5; /* Changes to a blue shade */
+        fill: #004AAD; /* Love Thy Neighbor Blue */
     }
 
     .font-change {
