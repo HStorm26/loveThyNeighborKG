@@ -48,7 +48,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Whiskey Valor | Volunteer Email List</title>
+        <title>Volunteer Email List | Love Thy Neighbor Community Food Pantry</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
@@ -220,7 +220,8 @@ require_once('header.php');
                 <select id="event" name="event">
                     <option value="">Any</option>
                     <?php foreach ($filteredEvents as $event) {
-                        echo '<option value="' . $event->get_id() . '">' . htmlspecialchars($event->get_name()) . ' - ' . (new DateTime($event->getStartDate()))->format('M d, Y') . '</option>';
+                        //FixMe: I am seeing if the naming convention was changed
+                        echo '<option value="' . $event->getId() . '">' . htmlspecialchars($event->getName()) . ' - ' . (new DateTime($event->getStartDate()))->format('M d, Y') . '</option>';
                     } ?>
                 </select>
             </div>

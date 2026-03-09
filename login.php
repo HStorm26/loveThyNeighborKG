@@ -100,7 +100,7 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Love Thy Neighbor | Log In</title>
+        <title>Log-In | Love Thy Neighbor Community Food Pantry</title>
     </head>
   <body>
     <div class="min-h-screen relative">
