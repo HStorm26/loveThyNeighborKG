@@ -108,7 +108,7 @@
       <!-- Left: Image Section (Hidden on small screens) -->
       <!-- Background Image Now -->
       <div class="absolute inset-0">
-          <img src="images/whiskeyBarrels.png"
+          <img src="images/LoveThyNeighbor_wood.jpg"
                 alt="Barrels"
                 style="height: 100%;"
                 class="w-full h-full object-cover">
@@ -126,13 +126,13 @@
 
           <!-- Logo Placeholder (Now the same width as inputs and centered) -->
           <div class="w-full flex justify-center mb-6">
-            <img src="images\ltn-logo1-circle.jpg"
+            <img src="images\LoveThyNeighbor_logo1_NoBackground.png"
                 alt="Logo"
                 class="w-full max-w-xs">
           </div>
 
           <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
-      <span class="wave">👋</span> Nice to see you again.
+      <span class="wave">👋</span> Welcome Back!
           </h2>
 
           <form class="w-full" method="post">
