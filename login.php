@@ -122,7 +122,7 @@
       <!-- now the middle form section -->
       <div class="relative h-full flex items-center justify-center px-4">
 
-        <div class="w-full max-w-xl bg-white/90 backdrop-blur-md p-10 rounded-3xl shadow-2xl">
+        <div class="w-full max-w-xl bg-white backdrop-blur-md p-10 rounded-3xl shadow-2xl">
 
           <!-- Logo Placeholder (Now the same width as inputs and centered) -->
           <div class="w-full flex justify-center mb-6">
