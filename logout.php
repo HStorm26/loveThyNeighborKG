@@ -13,12 +13,11 @@ session_write_close();
         <?php require('universal.inc') ?>
         <title>Logging Out</title>
     </head>
-    <body>
         <nav>
             <span id="nav-top">
                 <span class="logo">
-                    <img src="images/whiskeyLogo.png">
-                        <span id="vms-logo"> Whiskey Valor Foundation </span>
+                    <img src="images\LoveThyNeighbor_logo1.jpeg">
+                        <span id="vms-logo"> Love Thy Neighbor </span>
                         </span>
                     <img id="menu-toggle" src="images/menu.png">
                 </span>
