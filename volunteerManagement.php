@@ -36,7 +36,7 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: #004AAD; /* Love Thy Neighbor Blue */
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
@@ -50,7 +50,7 @@ require_once('header.php');
 	}
 
   .top-bar {
-      background-color: #C9AB81;   /* gold color */
+      background-color: #004AAD;   /* Love Thy Neighbor Blue */
       height: 200px;             /* height of the bar */
       width: 100%;              /* full width */
       position: fixed;
@@ -61,17 +61,17 @@ require_once('header.php');
   }
 
   .button-left-gray {
-    background-color: #C9AB81 !important;
+    background-color: #004AAD !important;
   }
 
 
  .button-section button {
-    background-color: #C9AB81 !important;
-    color: black !important;
+    background-color: #004AAD !important;
+    color: white !important;
   }
 
 .div-blue {
-    background-color: #C9AB81;
+    background-color: #004AAD;
   }
 
 .button-icon {
@@ -79,11 +79,11 @@ require_once('header.php');
   } 
 
 .text-section h1 {
-    color: #C9AB81 !important;
+    color: #004AAD !important;
   }
 
 .text-section p {
-    color: #C9AB81 !important;
+    color: #004AAD !important;
   }
 
 .button-section button > div {

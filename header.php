@@ -134,7 +134,7 @@ if (date("H:i:s") > "18:19:59") {
             left: 30px;
             font-size: 14px;
             font-weight: 700;
-            color: #297760ff;
+            color: #004AAD;
         }
 
         .large-text {
@@ -259,8 +259,8 @@ if (date("H:i:s") > "18:19:59") {
         }
 
         .nav-item:hover, .nav-item.active {
-            color: #f5ce7aff;
-            outline: 1px solid #f5d07aff;
+            color: #004AAD; /* Love Thy Neighbor Blue */
+            outline: 1px solid #004AAD; /* Love Thy Neighbor Blue */
             outline-offset: 7px;
         }
 
@@ -295,7 +295,7 @@ if (date("H:i:s") > "18:19:59") {
 
 /* Button Styling */
 .nav-button {
-    background: rgb(201, 171, 129);
+    background: rgb(0, 74, 173); /* Love Thy Neighbor Blue */
     border: none;
     color: white;
     font-size: 20px;
@@ -365,7 +365,7 @@ if (date("H:i:s") > "18:19:59") {
         /* Footer */
         .footer {
             width: 100%;
-            background: #C9AB81;
+            background: rgb(0, 74, 173); /* Love Thy Neighbor KG Blue */
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -497,11 +497,12 @@ if (date("H:i:s") > "18:19:59") {
     .icon-butt svg {
         transition: transform 0.2s ease, fill 0.2s ease;
         cursor: pointer;
+        fill: white;
     }
 
     .icon-butt:hover svg {
         transform: scale(1.1) rotate(5deg); /* Slight enlarge & tilt effect */
-        fill: #7aacf5; /* Changes to a blue shade */
+        fill: #004AAD; /* Love Thy Neighbor Blue */
     }
 
     .font-change {
@@ -817,7 +818,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/ltn-logo1-circle.jpg" alt="Logo"></a>
+                <a href="index.php"><img src="images/LoveThyNeighbor_logo2.jpeg" alt="Logo"></a>
             </div>
                 <!--<a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>-->
             <div class="nav-links">
@@ -917,7 +918,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/ltn-logo1-circle.jpg" alt="Logo"></a>
+                <a href="index.php"><img src="images/LoveThyNeighbor_logo2.jpeg" alt="Logo"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Events

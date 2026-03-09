@@ -263,7 +263,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Whiskey Valor | Send Email</title>
+    <title>Send Email | Love Thy Neighbor Community Food Pantry</title>
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
@@ -295,7 +295,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     <label for="recipients">Recipients</label>
     <select name="recipients" id="recipients">
-        <option value="all">All Whiskey Valor Members</option>
+        <option value="all">All Love Thy Neighbor KG Members</option>
         <option value="specific">Specific Users</option>
     </select>
 
