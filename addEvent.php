@@ -190,8 +190,9 @@
 
                     create_event($dup);
                 }
-            }
-            header('Location: eventSuccess.php');
+            }        
+            
+            header('Location: eventsuccess.php');
             exit();
         }
     }
@@ -337,7 +338,7 @@
                             <tr>
                                 <th>Total Capacity</th>
                                 <th>
-                                    <input type="number" id="totalCapacity" name="capacity" value="0" readonly>
+                                    <input type="number" id="totalCapacity" name="capacity" placeholder="Enter total capacity" value="0" readonly>
                                 </th>
                         </tfoot>
 
@@ -469,6 +470,104 @@
 
                     })();
                 </script>
+                <script>
+                document.getElementById("new-event-form").addEventListener("submit", function (e) {
+                    const roleCounts = document.querySelectorAll(".role-count");
+                    const firstRoleInput = document.querySelector(".role-count");
+                    const totalCapacity = document.getElementById("totalCapacity");
+
+                    let total = 0;
+
+                    // Clear old errors
+                    roleCounts.forEach(function (countInput) {
+                        countInput.setCustomValidity("");
+
+                        const row = countInput.closest("tr");
+                        const startInput = row.querySelector('input[name^="start_times["]');
+                        const endInput = row.querySelector('input[name^="end_times["]');
+
+                        startInput.setCustomValidity("");
+                        endInput.setCustomValidity("");
+
+                        total += Number(countInput.value) || 0;
+                    });
+
+                    totalCapacity.value = total;
+
+                    // No roles selected
+                    if (total === 0) {
+                        e.preventDefault();
+                        firstRoleInput.setCustomValidity("At least one role must have a number greater than 0.");
+                        firstRoleInput.reportValidity();
+                        firstRoleInput.focus();
+                        return;
+                    }
+
+                    // If role count > 0, require both times
+                    for (let countInput of roleCounts) {
+                        const count = Number(countInput.value) || 0;
+                        const row = countInput.closest("tr");
+                        const roleName = row.cells[0].textContent.trim();
+                        const startInput = row.querySelector('input[name^="start_times["]');
+                        const endInput = row.querySelector('input[name^="end_times["]');
+
+                        if (count > 0) {
+                            if (startInput.value === "") {
+                                e.preventDefault();
+                                startInput.setCustomValidity(roleName + " needs a start time.");
+                                startInput.reportValidity();
+                                startInput.focus();
+                                return;
+                            }
+
+                            if (endInput.value === "") {
+                                e.preventDefault();
+                                endInput.setCustomValidity(roleName + " needs an end time.");
+                                endInput.reportValidity();
+                                endInput.focus();
+                                return;
+                            }
+
+                            if (endInput.value <= startInput.value) {
+                                e.preventDefault();
+                                endInput.setCustomValidity("End time for " + roleName + " must be later than start time.");
+                                endInput.reportValidity();
+                                endInput.focus();
+                                return;
+                            }
+                        } else {
+                            // count is 0, so clear any old errors on this row
+                            startInput.setCustomValidity("");
+                            endInput.setCustomValidity("");
+                        }
+                    }
+                });
+                </script>
+
+                <script>
+                document.querySelectorAll(".role-count").forEach(function (input) {
+                    input.addEventListener("input", function () {
+                        input.setCustomValidity("");
+
+                        const row = input.closest("tr");
+                        const startInput = row.querySelector('input[name^="start_times["]');
+                        const endInput = row.querySelector('input[name^="end_times["]');
+
+                        if (Number(input.value) === 0) {
+                            startInput.setCustomValidity("");
+                            endInput.setCustomValidity("");
+                        }
+                    });
+                });
+
+                document.querySelectorAll('input[name^="start_times["], input[name^="end_times["]').forEach(function (input) {
+                    input.addEventListener("input", function () {
+                        this.setCustomValidity("");
+                    });
+                });
+                </script>
+
+
         </main>
     </body>
 </html>
