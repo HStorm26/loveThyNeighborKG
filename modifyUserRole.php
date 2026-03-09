@@ -91,7 +91,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Archive User</title>
+        <title>Archive User | Love Thy Neighbor Community Food Pantry</title>
         <style>
             .modUser{
                 display: flex;

@@ -14,16 +14,20 @@
     }
 
     function _sanitize($connection, $input) {
+        //BROOKE if (is_array($input)) {
+            //BROOKE $length = count($input);
+            //BROOKE for ($i = 0; $i < $length; $i++) {
+                 //BROOKE $input[$i] = trim($input[$i]);
         if (is_array($input)) {
-            $length = count($input);
-            for ($i = 0; $i < $length; $i++) {
-                 $input[$i] = trim($input[$i]);
-
+            foreach ($input as $key => $value) {
+                $input[$key] = _sanitize($connection, $value);
+            }
+        
                 // This should be removed, with htmlspecialchars being
                 // called prior to OUTPUT. I will try to change this later.
                 //$input[$i] = mysqli_real_escape_string($connection, $input[$i]);
                 //$input[$i] = htmlspecialchars($input[$i]);
-            }
+            
         } else {
             $input = trim($input);
 

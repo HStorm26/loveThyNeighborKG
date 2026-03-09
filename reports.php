@@ -78,7 +78,7 @@ $(function() {
 });
 </script>
 	<?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Reports</title>
+        <title>Reports | Love Thy Neighbor Community Food Pantry</title>
         <style>
             .report_select{
                 display: flex;

@@ -55,7 +55,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Event Search</title>
+        <title>Event Search | Love Thy Neighbor Community Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
