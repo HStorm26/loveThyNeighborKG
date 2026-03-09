@@ -502,6 +502,10 @@ table td .label {
     color: #fff;
 }
 
+.buttom.signup {
+    font-size: 8px;
+}
+
 .button.signup:hover {
     background-color: #c9ab81!important;
 }
