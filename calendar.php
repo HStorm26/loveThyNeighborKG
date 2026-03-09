@@ -217,8 +217,8 @@
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        $backgroundCol = '#996d49ff'; // default color
-                                        $backgroundCol = '#996d49ff'; // default color
+                                        $backgroundCol = '#004AADFF'; // default color
+                                        $backgroundCol = '#004AADff'; // default color
 
                                         if(isset($_SESSION['access_level'])) {
                                             if (is_archived($info['id'])) { // archived event
