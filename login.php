@@ -108,7 +108,7 @@
       <!-- Left: Image Section (Hidden on small screens) -->
       <!-- Background Image Now -->
       <div class="absolute inset-0">
-          <img src="images/whiskeyBarrels.png"
+          <img src="images/LoveThyNeighbor_wood.jpg"
                 alt="Barrels"
                 style="height: 100%;"
                 class="w-full h-full object-cover">
@@ -118,21 +118,21 @@
       <!-- dark overlay -->
       <div class="absolute inset-0 bg-black/50"></div>
 
-      <!-- Right: Form Section -->
+        <!-- Right: Form Section -->
       <!-- now the middle form section -->
       <div class="relative h-full flex items-center justify-center px-4">
 
-        <div class="w-full max-w-xl bg-white/90 backdrop-blur-md p-10 rounded-3xl shadow-2xl">
+        <div class="w-full max-w-xl bg-white backdrop-blur-md p-10 rounded-3xl shadow-2xl">
 
           <!-- Logo Placeholder (Now the same width as inputs and centered) -->
           <div class="w-full flex justify-center mb-6">
-            <img src="images\ltn-logo1-circle.jpg"
+            <img src="images\LoveThyNeighbor_logo1_NoBackground.png"
                 alt="Logo"
                 class="w-full max-w-xs">
           </div>
 
           <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
-      <span class="wave">👋</span> Nice to see you again.
+      <span class="wave">👋</span> Welcome Back!
           </h2>
 
           <form class="w-full" method="post">
@@ -148,18 +148,18 @@
             } 
                     ?>
             <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-2" for="username">Login</label>
+              <label class="block text-[rgb(0,74,173)] font-medium mb-2" for="username">Login</label>
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" name="username" placeholder="Enter your username" required>
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-2" for="password">Password</label>
+              <label class="block text-[rgb(0,74,173)] font-medium mb-2" for="password">Password</label>
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
             </div>
             <div class="flex justify-between items-center mb-4">
-              <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
-              <a href="https://whiskeyvalor.org" class="text-[#22654D] text-sm hover:underline">Whiskey Valor Website</a>
+              <a href="#" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
+              <a href="https://www.kgfood.org/" class="text-[rgb(0,74,173)] text-sm hover:underline">Love Thy Neighbor Website</a>
             </div>
-            <button class="cursor-pointer w-full bg-[#C9AB81] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
+            <button class="cursor-pointer w-full bg-[rgb(0,74,173)] hover:bg-[rgb(203,37,26)] text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
           </form>
 
           <!-- Divider -->
@@ -172,7 +172,7 @@
           <!-- Sign Up Section -->
           <p class="text-center text-gray-700">
             Don’t have an account?
-            <a href="VolunteerRegister.php" class="text-[#22654D] font-semibold hover:underline">Sign Up Now</a>
+            <a href="VolunteerRegister.php" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
           </p>
 
         </div>
