@@ -118,7 +118,7 @@
       <!-- dark overlay -->
       <div class="absolute inset-0 bg-black/50"></div>
 
-      <!-- Right: Form Section -->
+        <!-- Right: Form Section -->
       <!-- now the middle form section -->
       <div class="relative h-full flex items-center justify-center px-4">
 
@@ -148,18 +148,18 @@
             } 
                     ?>
             <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-2" for="username">Login</label>
+              <label class="block text-[rgb(0,74,173)] font-medium mb-2" for="username">Login</label>
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" name="username" placeholder="Enter your username" required>
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-2" for="password">Password</label>
+              <label class="block text-[rgb(0,74,173)] font-medium mb-2" for="password">Password</label>
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
             </div>
             <div class="flex justify-between items-center mb-4">
-              <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
-              <a href="https://www.kgfood.org/" class="text-[#22654D] text-sm hover:underline">Love Thy Neighbor Website</a>
+              <a href="#" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
+              <a href="https://www.kgfood.org/" class="text-[rgb(0,74,173)] text-sm hover:underline">Love Thy Neighbor Website</a>
             </div>
-            <button class="cursor-pointer w-full bg-[#C9AB81] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
+            <button class="cursor-pointer w-full bg-[rgb(0,74,173)] hover:bg-[rgb(203,37,26)] text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
           </form>
 
           <!-- Divider -->
@@ -172,7 +172,7 @@
           <!-- Sign Up Section -->
           <p class="text-center text-gray-700">
             Don’t have an account?
-            <a href="VolunteerRegister.php" class="text-[#22654D] font-semibold hover:underline">Sign Up Now</a>
+            <a href="VolunteerRegister.php" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
           </p>
 
         </div>
