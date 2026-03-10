@@ -30,21 +30,24 @@ SET time_zone = "+00:00";
 CREATE TABLE `dbevents` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
-  --`type` enum('Retreat','Normal') NOT NULL DEFAULT 'Normal',
+  --`type` enum('Retreat','Normal') NOT NULL DEFAULT 'Normal',    -Brooke
   `date` char(10) NOT NULL,
   `startTime` char(5) NOT NULL,
   `endTime` char(5) NOT NULL,
-  --`endDate` char(10) NOT NULL,
+  --`endDate` char(10) NOT NULL,   -Brooke
   `description` text NOT NULL,
   `capacity` int(11) NOT NULL,
   `location` text DEFAULT NULL,
-  --`affiliation` int(11) DEFAULT NULL,
-  --`branch` int(11) DEFAULT NULL,
-  `access` enum('Public','Private') NOT NULL DEFAULT 'Public',
-  `completed` enum('Y','N') NOT NULL DEFAULT 'N',
-  --`series_id` varchar(32) DEFAULT NULL
+  --`affiliation` int(11) DEFAULT NULL,   -Brooke
+  --`branch` int(11) DEFAULT NULL,    -Brooke
+  --`access` enum('Public','Private') NOT NULL DEFAULT 'Public',
+  --`completed` enum('Y','N') NOT NULL DEFAULT 'N',
+  --`series_id` varchar(32) DEFAULT NULL     -Brooke
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `dbevents` (`id`, `name`, `date`, `startTime`, `endTime`, `description`, `capacity`, `location`, `access`, `completed`) VALUES
+(1, 'Make this work', '2026-3-30', '08:00', '20:30', 'I want cake', 12 ,'my house', 'Public', 'N'), 
+(2, 'Brooke wants this to work', '2026-3-29', '8:00', '20:30', 'I want water', 2, 'the basement', 'Public', 'N');
 --
 -- Dumping data for table `dbevents`
 --
@@ -60,7 +63,7 @@ INSERT INTO `dbevents`
 --
 ALTER TABLE `dbevents`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `series_id` (`series_id`);
+  --ADD KEY `series_id` (`series_id`); This must have been for the Animal Website BROOKE
 
 --
 -- AUTO_INCREMENT for dumped tables
