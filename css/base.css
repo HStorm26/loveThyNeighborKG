@@ -1566,8 +1566,8 @@ div .dd {
     text-align: center;
 }
 
-.roles-table input[type="time"] {
-    width: 140px;
+.roles-table input[type="text"] {
+    width: 300px;
     text-align: center;
 }
 
