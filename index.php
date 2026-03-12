@@ -473,27 +473,18 @@
             <?php endif ?>
 
     <div class="full-width-bar">
+
     <div class="content-box">
         <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
-        <div class="small-text" style="color: rgb(0,74,173);">Make a difference!</div>
+        <div class="small-text">Make a difference!</div>
         <div class="large-text">User Management</div>
-<button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
-    <span class="button-text">Go</span>
-    <div class="circle">&gt;</div>
-</button>
-<!--
-        <div class="nav-buttons">
-            <button class="nav-button" onclick="window.location.href='personSearch.php'">
-                <span>Find</span>
-                <span class="arrow"><img src="images/person-search.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 20px;"></span>
-            </button>
-            <button class="nav-button" onclick="window.location.href='VolunteerRegister.php'">
-                <span>Register</span>
-                <span class="arrow"><img src="images/add-person.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 20px;"></span>
-            </button>
-        </div>
--->
+
+        <button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
+            <span class="button-text">Go</span>
+            <div class="circle">&gt;</div>
+        </button>
     </div>
+
 
     <div class="content-box">
         <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->

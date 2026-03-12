@@ -67,7 +67,7 @@
         <button class="flex justify-center relative bg-white border-2 border-gray-300 rounded-2xl shadow-sm hover:shadow-md cursor-pointer hover:border-blue-900 p-6 transition-all duration-200 text-xl font-medium text-gray-700 hover:bg-gray-100" onclick="window.location.href='createDiscussion.php';">
 	  <div class="absolute top-0 left-0 w-[80px] h-full bg-gray-200 rounded-l-2xl pointer-events-none z-0"></div>
 	  <div>Create Discussion</div>
-	  <img class="w-14 h-14 absolute left-3 top-1/2 -translate-y-1/2 p-[2px]" src="images/creategroup.svg" alt="Calendar Icon">
+	  <img class="w-14 h-14 absolute left-3 top-1/2 -translate-y-1/2 p-[2px]" src="images/creategroup.svg" alt="Calendar Icon" style="filter:invert(1)">
         </button>
 <?php endif; ?>
            </div>
