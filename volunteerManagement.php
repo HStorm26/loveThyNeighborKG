@@ -34,7 +34,7 @@
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<<style>
+<style>
         .date-box {
             background: #004AAD; /* Love Thy Neighbor Blue */
             padding: 7px 30px;
