@@ -29,8 +29,8 @@
             "name", "date", "start-time", "end-time", "description", "location"
         );
         $roles = $_POST['roles'] ?? array();
-        $startTimes = $_POST['start_times'] ?? array();
-        $endTimes = $_POST['end_times'] ?? array();
+        //$startTimes = $_POST['start_times'] ?? array(); --BROOKE DELETE
+        //$endTimes = $_POST['end_times'] ?? array();  --BROOKE DELETE
 
         /* For the total capacity */
         $totalCapacity = 0;
@@ -49,30 +49,6 @@
             die();
         }
 
-        /* The role, if has a capacity, has to have a start time
-        and an end time */
-        foreach ($roles as $role => $count) {
-            $count = (int)$count;
-
-            if($count > 0) {
-                if(empty($startTimes[$role]) || empty($endTimes[$role])) {
-                    echo "Each selected role must have a start and end time.";
-                    die();
-                }
-            }
-        }
-
-        /*Check end time is after start time */
-        foreach ($roles as $role => $count) {
-            $count = (int)$count;
-
-            if($count > 0) {
-                if ($endTimes[$role] <= $startTimes[$role]) {
-                    echo "End time for $role must be later than start time.";
-                    die();
-                }
-            }
-        }
         
         /*Database will skip roles with 0 volunteers, so it doesn't store
         the unnecessary roles!*/
@@ -268,70 +244,59 @@
                             <tr>
                                 <th></th>
                                 <th>Number Needed</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
+                                <th>Description</th>
                             </tr>
                         </thead> 
                         <tbody>
                             <tr>
                                 <td>Truck Unloader</td>
                                 <td>
-                                    <input type="number" class="role-count" name="roles[truck_unloader]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                    <input type="number" class="role-count" name="roles[truck_unloader]" value="0" min="0" 
+                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
                                 </td> 
                                 <td>
-                                    <input type="time" name="start_times[truck_unloader]">
+                                    <p type="name" id="truck_unloader_desc" name="description">Show up during the time slot</p>
                                 </td>
-                                <td>
-                                    <input type="time" name="end_times[truck_unloader]">
-                                </td>   
                             </tr>   
                             <tr>
                                 <td>Sorting</td>
                                 <td>
-                                    <input type="number" class="role-count" name="roles[sorting]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                    <input type="number" class="role-count" name="roles[sorting]" value="0" min="0" 
+                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
                                 </td>    
                                 <td>
-                                    <input type="time" name="start_times[sorting]">
+                                    <p type="name" id="sorting_desc" name="description">Show up during the time slot</p>
                                 </td>
-                                <td>
-                                    <input type="time" name="end_times[sorting]">
-                                </td>   
                             </tr> 
                             <tr>
                                 <td>Distribution</td>
                                 <td>
-                                    <input type="number" class="role-count" name="roles[distribution]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
-                                </td>
+                                    <input type="number" class="role-count" name="roles[distribution]" value="0" min="0" 
+                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
+                                </td>   
                                 <td>
-                                    <input type="time" name="start_times[distribution]">
+                                    <p type="name" id="distribution_desc" name="description">Show up during time slot</p>
                                 </td>
-                                <td>
-                                    <input type="time" name="end_times[distribution]">
-                                </td>       
                             </tr>  
                             <tr>
                                 <td>Setup</td>
                                 <td>
-                                    <input type="number" class="role-count" name="roles[setup]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                    <input type="number" class="role-count" name="roles[setup]" value="0" min="0"
+                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
                                 </td>
                                 <td>
-                                    <input type="time" name="start_times[setup]">
+                                    <p type="name" id="setup_desc" name="description">Arrive 15 minutes early</p>
                                 </td>
-                                <td>
-                                    <input type="time" name="end_times[setup]">
-                                </td>       
                             </tr> 
                             <tr>
                                 <td>Cleanup</td>
                                 <td>
-                                    <input type="number" class="role-count" name="roles[cleanup]" value="0" min="0" onkeydown="if(event.key === '-') event.preventDefault();">
+                                    <input type="number" class="role-count" name="roles[cleanup]" value="0" min="0" 
+                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();" >
                                 </td>
                                 <td>
-                                    <input type="time" name="start_times[cleanup]">
-                                </td>
-                                <td>
-                                    <input type="time" name="end_times[cleanup]">
-                                </td>       
+                                    <p type="name" id="clean_up_desc" name="description">Stay 15 minutes afterwards</p>
+                                </td>  
                             </tr> 
                         </tbody>
                         <tfoot>
@@ -471,102 +436,38 @@
                     })();
                 </script>
                 <script>
+                const roleCounts = document.querySelectorAll(".role-count");
+                const firstRoleInput = document.querySelector(".role-count");
+                const totalCapacity = document.getElementById("totalCapacity");
+
+                // Clear error as soon as user types
+                roleCounts.forEach(function (input) {
+                    input.addEventListener("input", function () {
+                        input.setCustomValidity("");
+                    });
+                });
+
                 document.getElementById("new-event-form").addEventListener("submit", function (e) {
-                    const roleCounts = document.querySelectorAll(".role-count");
-                    const firstRoleInput = document.querySelector(".role-count");
-                    const totalCapacity = document.getElementById("totalCapacity");
 
                     let total = 0;
 
-                    // Clear old errors
+                    // Clear errors and calculate total
                     roleCounts.forEach(function (countInput) {
                         countInput.setCustomValidity("");
-
-                        const row = countInput.closest("tr");
-                        const startInput = row.querySelector('input[name^="start_times["]');
-                        const endInput = row.querySelector('input[name^="end_times["]');
-
-                        startInput.setCustomValidity("");
-                        endInput.setCustomValidity("");
-
                         total += Number(countInput.value) || 0;
                     });
 
                     totalCapacity.value = total;
 
-                    // No roles selected
+                    // Require at least one role
                     if (total === 0) {
                         e.preventDefault();
                         firstRoleInput.setCustomValidity("At least one role must have a number greater than 0.");
                         firstRoleInput.reportValidity();
                         firstRoleInput.focus();
-                        return;
-                    }
-
-                    // If role count > 0, require both times
-                    for (let countInput of roleCounts) {
-                        const count = Number(countInput.value) || 0;
-                        const row = countInput.closest("tr");
-                        const roleName = row.cells[0].textContent.trim();
-                        const startInput = row.querySelector('input[name^="start_times["]');
-                        const endInput = row.querySelector('input[name^="end_times["]');
-
-                        if (count > 0) {
-                            if (startInput.value === "") {
-                                e.preventDefault();
-                                startInput.setCustomValidity(roleName + " needs a start time.");
-                                startInput.reportValidity();
-                                startInput.focus();
-                                return;
-                            }
-
-                            if (endInput.value === "") {
-                                e.preventDefault();
-                                endInput.setCustomValidity(roleName + " needs an end time.");
-                                endInput.reportValidity();
-                                endInput.focus();
-                                return;
-                            }
-
-                            if (endInput.value <= startInput.value) {
-                                e.preventDefault();
-                                endInput.setCustomValidity("End time for " + roleName + " must be later than start time.");
-                                endInput.reportValidity();
-                                endInput.focus();
-                                return;
-                            }
-                        } else {
-                            // count is 0, so clear any old errors on this row
-                            startInput.setCustomValidity("");
-                            endInput.setCustomValidity("");
-                        }
                     }
                 });
                 </script>
-
-                <script>
-                document.querySelectorAll(".role-count").forEach(function (input) {
-                    input.addEventListener("input", function () {
-                        input.setCustomValidity("");
-
-                        const row = input.closest("tr");
-                        const startInput = row.querySelector('input[name^="start_times["]');
-                        const endInput = row.querySelector('input[name^="end_times["]');
-
-                        if (Number(input.value) === 0) {
-                            startInput.setCustomValidity("");
-                            endInput.setCustomValidity("");
-                        }
-                    });
-                });
-
-                document.querySelectorAll('input[name^="start_times["], input[name^="end_times["]').forEach(function (input) {
-                    input.addEventListener("input", function () {
-                        this.setCustomValidity("");
-                    });
-                });
-                </script>
-
 
         </main>
     </body>

@@ -562,8 +562,8 @@ main.calendar-view th {
 }
 
 h1.calendar-header {
-    background-color: var(--accent-color);
-    color: #2962af;
+    background-color: #004AADFF;
+    color: #ffffff;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -1566,8 +1566,8 @@ div .dd {
     text-align: center;
 }
 
-.roles-table input[type="time"] {
-    width: 140px;
+.roles-table input[type="text"] {
+    width: 300px;
     text-align: center;
 }
 
