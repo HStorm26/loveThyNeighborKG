@@ -226,15 +226,6 @@ require_once('header.php');
                 </select>
             </div>
 
-            <div>
-                <label for="group">Group</label>
-                <select id="group" name="group">
-                    <option value="">Any</option>
-                    <?php foreach ($groups as $group) {
-                        echo '<option value="' . $group->get_group_name() . '">' . htmlspecialchars($group->get_group_name()) . '</option>';
-                    } ?>
-                </select>
-            </div>
 
             <div class="text-center pt-4">
                 <input type="submit" value="Search" class="blue-button">
