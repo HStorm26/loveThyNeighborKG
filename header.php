@@ -479,6 +479,7 @@ if (date("H:i:s") > "18:19:59") {
             display: flex;
             justify-content: center;
             align-items: center;
+            filter: invert(1);
         }
 
         .icon-overlay img {
@@ -490,11 +491,11 @@ if (date("H:i:s") > "18:19:59") {
 
         .nav-item img {
             border-radius: 15px;
-            transition: filter 0.3s, background-color 0.3s;
+            transition: filter 0.9s, background-color 0.3s;
         }
 
         .nav-item:hover img, .nav-item.active img {
-            filter: none;
+            filter: invert(1);
         }
        
         .icon .dropdown{
