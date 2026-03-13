@@ -36,7 +36,7 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: #004AAD; /*Love Thy Neighbor Blue */ 
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
@@ -54,19 +54,20 @@ require_once('header.php');
         /* background-color: #1F1F21; */
         }
         .button-section button{
-        background-color: #C9AB81;
-        color: black !important;
+        background-color: #FFFF; 
+        color: #004AAD; /*Love Thy Neighbor Blue */ 
         }
 
         .button-left-gray{
-        background-color: #C9AB81;
+        background-color: #004AAD; /*Love Thy Neighbor Blue */
         }
 
         .button-section .button-icon{
-        filter: none
+        filter: invert(1);
         }
+
     .top-bar {
-      background-color: #C9AB81;   /* gold color */
+      background-color: #004AAD; /*Love Thy Neighbor Blue */
       height: calc(var(--spacing) * 40);
       width: 100%;              /* full width */
       position: relative;
@@ -76,7 +77,7 @@ require_once('header.php');
       background-size: auto;
       background-position: center;
   }
-</style>
+</style> 
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
