@@ -494,11 +494,8 @@
     <span class="button-text"><?php 
                         require_once('database/dbEvents.php');
                         require_once('database/dbPersons.php');
-                        require_once('database/dbApplications.php');
-                        $pendingsignups = all_pending_names();
-                        if (sizeof($pendingsignups) > 0) {
-                            echo '<span class="colored-box">' . sizeof($pendingsignups) . '</span>';
-                        }   
+                        
+                          
                     ?> Sign-Ups </span>
     <div class="circle">&gt;</div>
 </button>
@@ -522,19 +519,7 @@
 
 <div class="full-width-bar-sub">
 
-    <?php
-        require_once('database/dbMessages.php');
-
-        // Ensure variable is always defined
-        $unreadMessageCount = 0;
-        $inboxIcon = 'inbox.svg';
-        if (isset($person)) {
-            $unreadMessageCount = get_user_unread_count($person->get_id());
-            if ($unreadMessageCount > 0) {
-                $inboxIcon = 'inbox-unread.svg';
-            }
-        }
-    ?>
+    
 
     <!-- Calendar -->
     <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
