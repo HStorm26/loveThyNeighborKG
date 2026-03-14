@@ -65,7 +65,7 @@ if (date("H:i:s") > "18:19:59") {
             border-bottom-right-radius: 50px;
         }
          .content-box-test:hover {
-            border: 4px solid #fdd05eff;
+            border: 4px solid rgb(62, 129, 50); /*Actual Love Thy Neighbor Green */
         }
 /*END STYLE TEST*/
 

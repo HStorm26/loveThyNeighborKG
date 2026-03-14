@@ -69,9 +69,9 @@ table, td, tr, th, form, fieldset, em, button, a {
     --shadow-and-border-color: #d6d6d6;
 
     /* Core theme colors */
-    --main-color: rgb(59,125,35); /* Love Thy Neighbor KG green */
+    --main-color: rgb(62, 129, 50); /* Love Thy Neighbor KG green */
     --accent-color: rgb(0, 74, 173); /* Love Thy Neighbor KG blue */
-    --secondary-accent-color: rgb(175, 141, 92);
+    --secondary-accent-color: rgb(62, 129, 50); /* Love Thy Neighbor KG green */
 
     /* Accessibility / WV theme */
     --wv-accent-color: #C9AB81;
