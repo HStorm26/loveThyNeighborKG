@@ -30,15 +30,15 @@
 
         $name = htmlspecialchars_decode($args['event-name']);
         $account_name = htmlspecialchars_decode($args['account-name']);
-        $role = isset($args['role']) ? $args['role'] : '';
-        $skills = isset($args['skills']) ? $args['skills'] : '';
+        //$role = isset($args['role']) ? $args['role'] : '';
+        //$skills = isset($args['skills']) ? $args['skills'] : '';
         //$restrictions = isset($args['restrictions']) ? $args['restrictions'] : '';
         //$disabilities = isset($args['disabilities']) ? $args['disabilities'] : '';
         //$materials = isset($args['materials']) ? $args['materials'] : '';
 
-        $notes = "Skills: $skills | Dietary restrictions: $restrictions | Disabilities: $disabilities | Materials: $materials";
+        //$notes = "Skills: $skills | Dietary restrictions: $restrictions | Disabilities: $disabilities | Materials: $materials";
 
-        // Route based on event type: Retreat uses applications, Normal uses direct signup
+        // Route based on event type: Retreat uses applications, Normal uses direct signup            //(START) Don't need this, since we don't do retreats -Brooke
         $type = isset($args['type']) ? $args['type'] : '';
         if ($type === "Retreat") {
             // For Retreat events: create an application (insert into dbapplications with status='Pending')
@@ -66,9 +66,9 @@
 
             header('Location: signupPending.php');
             die();
-        } 
+        } // (END) Don't need this, since we don't do retreats -Brooke
         else {
-            $id = sign_up_for_event($name, $account_name, $role, $notes);
+            $id = sign_up_for_event($name, $account_name, $role, $notes); 
             if (!$id) {
                 header('Location: eventFailure.php');
                 exit();
@@ -90,7 +90,7 @@
     include_once('database/dbinfo.php'); 
     $con = connect();  
 
-    // Get event info from GET parameters (accept either `id` or `event_id`)
+    // Get event info from GET parameters (accept either `id` or `event_id`)       //Will have to get the roles from that event -Brooke
     if (isset($_GET['id'])) {
         $event_id = intval($_GET['id']);
     } elseif (isset($_GET['event_id'])) {
@@ -137,6 +137,7 @@
                     value="<?php echo htmlspecialchars($account_name); ?>" 
                     placeholder="Enter account name">
 
+                
                 <!--<label for="skills"> Do You Have Any Skills To Share? </label>
                 <input type="text" id="skills" name="skills" placeholder="Enter skills. Ex. crochet, tap dancer">
 
@@ -145,7 +146,7 @@
 
                 <label for="materials"> Are You Bringing Any Materials (e.g. snacks, craft supplies)? </label>
                 <input type="text" id="materials" name="materials" placeholder="Enter materials. Ex. felt, pipe cleaners"> -->
-                <label for="roles_for_events">* Choose a Role</label>
+                <label for="roles_for_events">* Choose a Role</label> <!-- php it later -Brooke -->
                 <select name="roles_for_events" id="roles_for_events">
                     <option value="Truck Unloader">Truck Unloader</option>
                     <option value="Sorting">Sorting</option>
