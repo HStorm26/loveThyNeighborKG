@@ -4,6 +4,11 @@
     session_cache_expire(30);
     session_start();
 
+    require_once('include/input-validation.php');
+    require_once('database/dbEvents.php');
+    require_once('database/dbPersons.php');
+    require_once('database/dbRoleEvents.php');
+
     $loggedIn = false;
     $accessLevel = 0;
     $userID = null;
@@ -16,9 +21,6 @@
     } 
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        require_once('include/input-validation.php');
-        require_once('database/dbEvents.php');
-        require_once('database/dbPersons.php');
         $args = sanitize($_POST, null);
 
         $required = array("event-name", "account-name");
@@ -30,7 +32,8 @@
 
         $name = htmlspecialchars_decode($args['event-name']);
         $account_name = htmlspecialchars_decode($args['account-name']);
-        //$role = isset($args['role']) ? $args['role'] : '';
+        $role = isset($args['role']) ? $args['role'] : '';
+        $notes = '';
         //$skills = isset($args['skills']) ? $args['skills'] : '';
         //$restrictions = isset($args['restrictions']) ? $args['restrictions'] : '';
         //$disabilities = isset($args['disabilities']) ? $args['disabilities'] : '';
@@ -39,51 +42,50 @@
         //$notes = "Skills: $skills | Dietary restrictions: $restrictions | Disabilities: $disabilities | Materials: $materials";
 
         // Route based on event type: Retreat uses applications, Normal uses direct signup            //(START) Don't need this, since we don't do retreats -Brooke
-        $type = isset($args['type']) ? $args['type'] : '';
-        if ($type === "Retreat") {
+        //$type = isset($args['type']) ? $args['type'] : '';
+        //if ($type === "Retreat") {
             // For Retreat events: create an application (insert into dbapplications with status='Pending')
-            require_once('database/dbApplications.php');
-            $event_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_GET['event_id']) ? intval($_GET['event_id']) : 0);
-            $app_data = [
-                'user_id' => $account_name,
-                'event_id' => $event_id,
-                'status' => 'Pending',
-                'flagged' => 0,
-                'notes' => $notes
-            ];
-            $app_id = create_app($app_data);
-            if (!$app_id) {
-                header('Location: requestFailed.php');
-                die();
-            }
+            //require_once('database/dbApplications.php');
+            //$event_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_GET['event_id']) ? intval($_GET['event_id']) : 0);
+            //$app_data = [
+                //'user_id' => $account_name,
+                //'event_id' => $event_id,
+                //'status' => 'Pending',
+                //'flagged' => 0,
+                //'notes' => $notes
+            //];
+            //$app_id = create_app($app_data);
+            //if (!$app_id) {
+                //header('Location: requestFailed.php');
+                //die();
+            //}
 
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "Your request to sign up for $name has been sent to an admin.",
-                "Your request to sign up for $name will be reviewed by an admin shortly. You will get another notification when you are approved or denied."
-            );
+            //require_once('database/dbMessages.php');
+            //send_system_message(
+                //$userID,
+                //"Your request to sign up for $name has been sent to an admin.",
+                //"Your request to sign up for $name will be reviewed by an admin shortly. You will get another notification when you are approved or denied."
+            //);
 
-            header('Location: signupPending.php');
-            die();
-        } // (END) Don't need this, since we don't do retreats -Brooke
-        else {
-            $id = sign_up_for_event($name, $account_name, $role, $notes); 
-            if (!$id) {
-                header('Location: eventFailure.php');
-                exit();
-            }
-
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "You are now signed up for $name!",
-                "Thank you for signing up for $name!"
-            );
-
-            header('Location: signupSuccess.php');
-            die();
+            //header('Location: signupPending.php');
+            //die();
+        //} // (END) Don't need this, since we don't do retreats -Brooke
+        //else {
+        $id = sign_up_for_event($name, $account_name, $role, $notes); 
+        if (!$id) {
+            header('Location: eventFailure.php');
+            exit();
         }
+
+        require_once('database/dbMessages.php');
+        send_system_message(
+            $userID,
+            "You are now signed up for $name!",
+            "Thank you for signing up for $name!"
+        );
+
+        header('Location: signupSuccess.php');
+        die();
     }
 
     // Connect to database
@@ -109,6 +111,9 @@
     // Retrieve user info from session
     $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
     $account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
+
+    // Get the roles for this particular event -Brooke
+    $roles = getRolesForEvent($event_id);
 ?>
 <!DOCTYPE html>
 <html>
@@ -137,7 +142,16 @@
                     value="<?php echo htmlspecialchars($account_name); ?>" 
                     placeholder="Enter account name">
 
-                
+
+                <label for="roles_for_event">* Choose a Role</label>
+                    <?php foreach ($roles as $role): ?>
+                        <div class="role-box">
+                            <strong><?php echo htmlspecialchars($role['role_name']); ?></strong><br>
+                            <?php echo htmlspecialchars($role['role_description']); ?><br>
+                            Capacity: <?php echo htmlspecialchars($role['capacity']); ?>
+                        </div>
+                        <br>
+                    <?php endforeach; ?>                
                 <!--<label for="skills"> Do You Have Any Skills To Share? </label>
                 <input type="text" id="skills" name="skills" placeholder="Enter skills. Ex. crochet, tap dancer">
 
@@ -146,14 +160,16 @@
 
                 <label for="materials"> Are You Bringing Any Materials (e.g. snacks, craft supplies)? </label>
                 <input type="text" id="materials" name="materials" placeholder="Enter materials. Ex. felt, pipe cleaners"> -->
-                <label for="roles_for_events">* Choose a Role</label> <!-- php it later -Brooke -->
-                <select name="roles_for_events" id="roles_for_events">
+                <!-- <label for="roles_for_events">* Choose a Role</label> --> <!-- php it later -Brooke -->
+
+                <!--<select name="roles_for_events" id="roles_for_events">
                     <option value="Truck Unloader">Truck Unloader</option>
                     <option value="Sorting">Sorting</option>
                     <option value="Distribution">Distribution</option>
                     <option value="Setup">Setup</option>
                     <option value="Cleanup">Cleanup</option>
-                </select>
+                </select> -->
+
                 <!--<fieldset>
                     <label for="role">* Are you a volunteer or a participant? </label>
                     <div class="radio-group">
