@@ -245,7 +245,6 @@
     .circle-arrow-button {
         position: absolute;
         bottom: 30px;
-        right: 18px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -257,6 +256,7 @@
         color: black;
         cursor: pointer;
         transition: transform 0.3s ease;
+
     }
 
     .circle {
