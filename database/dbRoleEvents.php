@@ -1,17 +1,16 @@
 <?php
 
 include_once('dbinfo.php');
-include_once(dirname(__FILE__).'/../dbEvents.php');
-include_once(dirname(__FILE__).'/../dbRoles.php');
 
+/**
+*   Role-Events functions
+*/
 
-// ===== not sure if this needs to affect dbEvents or dbRoles yet =====
-//
 // for now, adds given eventID & roleID with capacity to this db for future use
 function addRoleToEvent($eventID, $roleID, $capacity) {
     $con = connect();
 
-    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity) VALUES ('$eventID', '$roleID', '$capacity'";
+    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity) VALUES ('$eventID', '$roleID', '$capacity')";
 
     $result = mysqli_query($con, $query);
 
@@ -32,9 +31,9 @@ function addRoleToEvent($eventID, $roleID, $capacity) {
 function getRolesForEvent($eventID) {
     $con = connect();
 
-    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role_description
+    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role_name, r.role_description
                 FROM dbroleevents re 
-                JOIN roles r 
+                JOIN dbroles r 
                 ON re.roleID = r.roleID 
                 WHERE re.eventID = '$eventID'";
 
@@ -47,8 +46,11 @@ function getRolesForEvent($eventID) {
             "eventID" => $resultRow['eventID'],
             "roleID" => $resultRow['roleID'],
             "capacity" => $resultRow['capacity'],
+            "role_name" => $resultRow['role_name'],
             "role_description" => $resultRow['role_description']
         );
+
+        $theRoleEvents[] = $roleEvent;
     }
 
     mysqli_close($con);
