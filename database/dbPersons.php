@@ -135,7 +135,7 @@ function retrieve_person($id) { // (username! not id)
         return false;
     }
     $result_row = mysqli_fetch_assoc($result);
-    // var_dump($result_row);
+    //git  var_dump($result_row);
     $thePerson = make_a_person($result_row);
 //    mysqli_close($con);
     return $thePerson;

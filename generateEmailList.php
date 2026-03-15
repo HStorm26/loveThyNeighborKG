@@ -22,7 +22,7 @@
     /* Fetch events for dropdown options */
     require_once 'database/dbEvents.php';
     require_once 'domain/Event.php';
-    // $events = get_all_events_sorted_by_date_not_archived();
+     $events = get_all_events_sorted_by_date_not_archived();
     $events = get_all_events_sorted_by_date_and_archived();
 
     $today = new DateTime(); // Current date
@@ -32,7 +32,11 @@
 
     $filteredEvents = [];
 
+    //FixMe
+    $filteredEvents = $events;
+
     /* add events within next month and previous week to list */
+    /* //FixMe: figure out filtered events
     foreach ($events as $event) {
         $eventDate = (new DateTime($event->getStartDate()))->format('Y-m-d');
         if ($eventDate === $oneMonthFromNow) {
@@ -41,7 +45,7 @@
             $filteredEvents[] = $event;
         }
     }
-
+*/
 
 ?>
 
@@ -102,7 +106,7 @@ require_once('header.php');
                 $role = $args['role'];
                 $status = $args['status'];
                 $event = $args['event'];
-                $group_name = $args['group'];
+                
 
 
                 if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', '']) ||
@@ -126,19 +130,7 @@ require_once('header.php');
                     }
 
                     /* if group was set, get members of group */
-                    if ($group_name != "") {
-                        $members = get_users_in_group($group_name);
-
-                        /* move only people of group */
-                        foreach ($persons as $person) { // person objects
-                            foreach ($members as $member) { // associate arrays with some person data
-                                if ($person->get_id() == $member["id"]) {
-                                    $filteredPersons[] = $person;
-                                    break; // escape to next $person
-                                }
-                            }
-                        }
-                    }
+                    
 
 
                     require_once('include/output.php');
@@ -226,15 +218,6 @@ require_once('header.php');
                 </select>
             </div>
 
-            <div>
-                <label for="group">Group</label>
-                <select id="group" name="group">
-                    <option value="">Any</option>
-                    <?php foreach ($groups as $group) {
-                        echo '<option value="' . $group->get_group_name() . '">' . htmlspecialchars($group->get_group_name()) . '</option>';
-                    } ?>
-                </select>
-            </div>
 
             <div class="text-center pt-4">
                 <input type="submit" value="Search" class="blue-button">
