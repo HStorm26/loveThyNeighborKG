@@ -1,10 +1,13 @@
 <?php
 
-// dbroles DOESN'T EXIST YET, update as needed after - DT
 include_once('dbinfo.php');
 include_once(dirname(__FILE__).'/../dbEvents.php');
+include_once(dirname(__FILE__).'/../dbRoles.php');
 
 
+// ===== not sure if this needs to affect dbEvents or dbRoles yet =====
+//
+// for now, adds given eventID & roleID with capacity to this db for future use
 function addRoleToEvent($eventID, $roleID, $capacity) {
     $con = connect();
 
@@ -23,7 +26,9 @@ function addRoleToEvent($eventID, $roleID, $capacity) {
 }
 
 
-
+// ===== might need to change to accommodate dbRoles better? =====
+//
+// for now, grabs the eventID, roleID, cap, & role description
 function getRolesForEvent($eventID) {
     $con = connect();
 
@@ -51,6 +56,8 @@ function getRolesForEvent($eventID) {
     return $theRoleEvents;
 }
 
+
+// grabs capacity from given role-event
 function getRoleEventCapacity($eventID, $roleID) {
     $con = connect();
 
@@ -69,6 +76,7 @@ function getRoleEventCapacity($eventID, $roleID) {
     return $row['capacity'];
 }
 
+// updates the capacity from a given role-event
 function updateRoleEventCapacity($eventID, $roleID, $capacity) {
     $con = connect();
 
@@ -87,6 +95,23 @@ function updateRoleEventCapacity($eventID, $roleID, $capacity) {
     return true;
 }
 
+// adds the total role capacity[s] for an event
+function getEventCapacity($eventID) {
+    $con = connect();
 
+    $query = "SELECT SUM(capacity) AS totalCap FROM dbroleevents WHERE eventID = '$eventID'";
+    
+    $result = mysqli_query($con, $query);
+
+    $row = mysqli_fetch_assoc($result);
+
+    mysqli_close($con);
+
+    if (!$row || $row['totalCap'] === null) {
+        return 0;
+    }
+
+    return $row['totalCap'];
+}
 
 ?>
