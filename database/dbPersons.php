@@ -1139,12 +1139,12 @@ function find_user_names($name) {
         $connection = connect();
         $query = 
             "SELECT dbeventpersons.userID, COUNT(*) AS NoShowCount
-            FROM dbeventpersons, dbevents
-            WHERE 
-                dbeventpersons.eventID = dbevents.id
-                and dbevents.completed='Y' 
-                and dbeventpersons.attended=0
-            GROUP BY dbeventpersons.userID ORDER BY NoShowCount DESC;
+            FROM dbeventpersons
+            JOIN dbevents ON dbeventpersons.eventID = dbevents.id
+            WHERE dbeventpersons.attended = 0
+                AND CONCAT(dbevents.date, ' ', dbevents.endTime) < NOW()
+            GROUP BY dbeventpersons.userID
+            ORDER BY NoShowCount DESC
             ";
         
         $result = mysqli_query($connection, $query);
