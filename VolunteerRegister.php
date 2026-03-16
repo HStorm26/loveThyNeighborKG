@@ -6,12 +6,12 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Whiskey Valor Foundation | Register</title>
+    <title>Register | Love Thy Neighbor Community Food Pantry</title>
     <link href="css/base.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
-<?php
-$tailwind_mode = true;
-require_once('header.php');
+<!--<?php
+//$tailwind_mode = true;
+//require_once('header.php');
 ?>
 <style>
     .date-box {
@@ -27,7 +27,7 @@ require_once('header.php');
     .dropdown {
         padding-right: 50px;
     }
-</style>
+</style>-->
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 </head>
 <body class="relative">
