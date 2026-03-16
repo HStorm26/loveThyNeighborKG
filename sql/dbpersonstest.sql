@@ -648,6 +648,8 @@ VALUES
 ("af49","Zephania","Wallace","(240) 233-4088","azura.core16@gmail.com",NULL,"07/11/2008","Small","VA","King George","11783 Fullers Lane",22485,"Kenneth Allison","+1 540-429-9879","unknown",1,1,"I\'m not sure if this counts, but I work really well with families. I come from a big family who didn\'t have enough money, so I can relate to that pretty well.");
 
 
+Insert into `dbpersons` (`id`,`password`) VALUES
+('vmsroot2','$2y$10$.3p8xvmUqmxNztEzMJQRBesLDwdiRU3xnt/HOcJtsglwsbUk88VTO');
 
 UPDATE `dbpersons`
 set `type` = 'Volunteer',
