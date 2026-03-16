@@ -202,7 +202,7 @@ $pending_events = fetch_my_pending($user_id);
                             <tr>
                                 <td>
                                     <!-- Link the event name to the event.php page with event ID as query parameter -->
-                                    <a href="event.php?id=<?php echo htmlspecialchars($event['id']); ?>">
+                                    <a href="event.php?id=<?php echo htmlspecialchars($event['id']); ?>" style="color: black;">
                                         <?php echo htmlspecialchars($event['name']); ?>
                                     </a>
                                 </td>
