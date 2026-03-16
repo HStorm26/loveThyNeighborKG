@@ -222,12 +222,27 @@ function check_out($personID, $eventID, $end_time) {
 }
 
 /* Return true if a given user is currently able to check-in to a given event */
-function can_check_in($personID, $event_info) {
+
+/*function can_check_in($personID, $event_info) {
 
     if (!(time() > strtotime($event_info['startDate']) && time() < strtotime($event_info['endDate']) + 86400)) {
         // event is not ongoing
         return False;
     }
+}/*
+/* Return true if a given user is currently able to check-in to a given event */
+// -Brooke
+function can_check_in($personID, $event_info) {
+
+    $eventStart = strtotime($event_info['date'] . ' ' . $event_info['startTime']);
+    $eventEnd = strtotime($event_info['date'] . ' ' . $event_info['endTime']);
+
+    if (!(time() > $eventStart && time() < $eventEnd)) {
+        // event is not ongoing
+        return false;
+    }
+
+    return true;
 
 
 function archive_volunteer($volunteer_id) {

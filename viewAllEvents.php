@@ -65,9 +65,9 @@
                         <thead>
                             <tr>
                                 <th style="width:1px"> Title</th>
-                                <th style="width:1px">Event Type</th>
+                                <!--<th style="width:1px">Event Type</th>-->
                                 <th style="width:1px">Date</th>
-                                <th style="width:1px"></th>
+                                <!--<th style="width:1px"></th>-->
                                 <th style="width:1px">Capacity</th>
                                 <th style="width:1px"></th>
                             </tr>
@@ -80,16 +80,16 @@
                                 foreach ($upcomingEvents as $event) {
                                     $eventID = $event->getID();
                                     $title = $event->getName();
-                                    $startDate = $event->getStartDate();
-                                    $startTime = $event->getStartTime();
+                                    $startDate = $event->getStartDate(); //Accesses the one date -Brooke
+                                    $startTime = $event->getStartTime(); //Accesses the one date -Brooke
                                     $endDate = $event->getEndDate();
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
-                                    $restricted_signup = $event->getAccess();
+                                    //$completed = $event->getCompleted();
+                                    //$restricted_signup = $event->getAccess();
                                     //$training_level_required = $event->getTrainingLevelRequired();
-                                    $type = $event->getEventType();
+                                    //$type = $event->getEventType();
                                      /*if ($training_level_required == null) {
                                          $training_level_required = "N/A";
                                      }*/
@@ -104,9 +104,7 @@
                                     echo "
                                     <tr data-event-id='$eventID'>
                                         <td><a href='event.php?id=$eventID' class='event-link'>$title</a></td>
-                                        <td>$type</td>
-                                        <td>$startDate</td>
-                                        <td>$endDate</td>";
+                                        <td>$startDate</td>";
                                  
                                     if($numSignups >= $capacity) {
                                         echo "<td class='full-capacity'>Full</td>";
@@ -130,7 +128,7 @@
                                             echo "
                                                 <td><a class='button-signup' style='background-color:#c73d06'>Sign Ups Closed!</a></td>";
                                         } else {
-                                        echo "<td><a class='button-signup' href='eventSignUp.php?event_name=" . urlencode($title) . "&restricted=" . urlencode($restricted_signup) . "&id=" . urlencode($eventID) . "'>Sign Up</a></td>";
+                                        //echo "<td><a class='button-signup' href='eventSignUp.php?event_name=" . urlencode($title) . "&restricted=" . urlencode($restricted_signup) . "&id=" . urlencode($eventID) . "'>Sign Up</a></td>";
                                         }
                                     echo "</tr>"; } else {
                                         echo "
@@ -214,13 +212,13 @@
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
-                                    $restricted_signup = $event->getRestrictedSignup();
-                                    if ($restricted_signup == 0) {
-                                        $restricted_signup = "No";
-                                    } else {
-                                        $restricted_signup = "Yes";
-                                    }
+                                    //$completed = $event->getCompleted();
+                                    //$restricted_signup = $event->getRestrictedSignup(); -Brooke
+                                    //if ($restricted_signup == 0) {
+                                        //$restricted_signup = "No";
+                                    //} else {
+                                        //$restricted_signup = "Yes";
+                                    //}
 
                                     // Fetch signups for the event
                                     $signups = fetch_event_signups($eventID);
