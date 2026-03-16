@@ -50,9 +50,6 @@
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
-                                    $restricted_signup = $event->getAccess();
-                                    $type = $event->getEventType();
 
                                     // Fetch signups for the event
                                     $signups = fetch_event_signups($eventID);
@@ -64,7 +61,6 @@
                                     echo "
                                     <tr data-event-id='$eventID'>
                                         <td><a href='event.php?id=$eventID' class='event-link'>$title</a></td>
-                                        <td>$type</td>
                                         <td>$date</td>";
 
                                     if($numSignups >= $capacity) {
