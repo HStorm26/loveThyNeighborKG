@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 15, 2026 at 09:24 PM
+-- Generation Time: Mar 16, 2026 at 06:00 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -41,7 +41,19 @@ CREATE TABLE `dbroleevents` (
 -- Indexes for table `dbroleevents`
 --
 ALTER TABLE `dbroleevents`
-  ADD PRIMARY KEY (`eventID`,`roleID`);
+  ADD PRIMARY KEY (`eventID`,`roleID`),
+  ADD KEY `roleID` (`roleID`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `dbroleevents`
+--
+ALTER TABLE `dbroleevents`
+  ADD CONSTRAINT `dbroleevents_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `dbevents` (`id`),
+  ADD CONSTRAINT `dbroleevents_ibfk_2` FOREIGN KEY (`roleID`) REFERENCES `dbroles` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
