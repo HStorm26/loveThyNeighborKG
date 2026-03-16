@@ -995,8 +995,8 @@ INSERT INTO `user_groups` (`user_id`, `group_name`) VALUES
 
 CREATE TABLE `user_verified_ids` (
   `record_id` int NOT NULL,
-  `user_id` varchar(100) NOT NULL,
-  `id_type` varchar(50) NOT NULL,
+  `user_id` varchar(256) NOT NULL,
+  `id_type` varchar(256) NOT NULL,
   `approved_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
