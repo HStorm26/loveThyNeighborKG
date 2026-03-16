@@ -20,8 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `dbkxnmd1xwle9j`
 --
-CREATE DATABASE IF NOT EXISTS `dbroles` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
-USE `dbroles`;
+-- CREATE DATABASE IF NOT EXISTS `dbroles` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+-- USE `dbroles`;
 
 
 -- --------------------------------------------------------
