@@ -96,7 +96,7 @@ function add_hours_to_person($person_id, $hours) {
     $con = connect();
 
     $escaped_id = mysqli_real_escape_string($con, $person_id);
-    $hours_value = floatval($hours);
+    $hours_value = intval($hours);
 
     $query = "UPDATE dbpersons SET total_hours_volunteered = total_hours_volunteered + $hours_value WHERE id = '$escaped_id'";
     $result = mysqli_query($con, $query);
