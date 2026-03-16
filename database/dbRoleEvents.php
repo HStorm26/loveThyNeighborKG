@@ -30,11 +30,11 @@ function addRoleToEvent($eventID, $roleID, $capacity) {
 // for now, grabs the eventID, roleID, cap, & role description
 function getRolesForEvent($eventID) {
     $con = connect();
-
-    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role_name, r.role_description
+    // role_id is coming from dbroles.sql
+    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role, r.role_description
                 FROM dbroleevents re 
                 JOIN dbroles r 
-                ON re.roleID = r.roleID 
+                ON re.roleID = r.role_id     
                 WHERE re.eventID = '$eventID'";
 
     $result = mysqli_query($con, $query);
@@ -46,8 +46,9 @@ function getRolesForEvent($eventID) {
             "eventID" => $resultRow['eventID'],
             "roleID" => $resultRow['roleID'],
             "capacity" => $resultRow['capacity'],
-            "role_name" => $resultRow['role_name'],
+            "role_name" => $resultRow['role'],
             "role_description" => $resultRow['role_description']
+            //"currentSignups" => $resultRow['currentSignups']
         );
 
         $theRoleEvents[] = $roleEvent;
@@ -116,4 +117,23 @@ function getEventCapacity($eventID) {
     return $row['totalCap'];
 }
 
+// Save the selected roles
+function save_event_roles($eventID, $roles) {
+    $connection = connect();
+
+    foreach ($roles as $roleID => $count) {
+        $roleID = (int)$roleID;
+        $count = (int)$count;
+
+        if ($count > 0) {
+            $query = "
+                INSERT INTO dbroleevents (eventID, roleID, capacity)
+                VALUES ($eventID, $roleID, $count)
+            ";
+            mysqli_query($connection, $query);
+        }
+    }
+
+    mysqli_close($connection);
+}
 ?>

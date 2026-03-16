@@ -94,11 +94,11 @@ function fetch_user_signups($user_id, $sortDirection) {
     $connection = connect();
 
     // Query user's events and sort them by date depending on sort choice
-    $query = "SELECT e.id, e.name, e.startDate 
+    $query = "SELECT e.id, e.name, e.date 
               FROM dbevents e
               INNER JOIN dbeventpersons ep ON e.id = ep.eventID
               WHERE ep.userID = '$user_id' AND ep.attended=0
-              ORDER BY e.startDate $sortDirection";
+              ORDER BY e.date $sortDirection";
 
     $result = mysqli_query($connection, $query);
 
@@ -135,7 +135,7 @@ function fetch_event_name($event_id) {
 
 function fetch_my_pending($userid) {
     $connection = connect();
-    $query = "SELECT e.id, e.name, e.startDate 
+    $query = "SELECT e.id, e.name, e.date 
               FROM dbevents e
               INNER JOIN dbapplications ap ON e.id = ap.event_id
               WHERE ap.user_id = '$userid' and ap.status='Pending'";
@@ -202,11 +202,11 @@ $pending_events = fetch_my_pending($user_id);
                             <tr>
                                 <td>
                                     <!-- Link the event name to the event.php page with event ID as query parameter -->
-                                    <a href="event.php?id=<?php echo htmlspecialchars($event['id']); ?>">
+                                    <a href="event.php?id=<?php echo htmlspecialchars($event['id']); ?>" style="color: black;">
                                         <?php echo htmlspecialchars($event['name']); ?>
                                     </a>
                                 </td>
-                                <td><?php echo htmlspecialchars($event['startDate']); ?></td>
+                                <td><?php echo htmlspecialchars($event['date']); ?></td>
                                 <td>
                                     <form method="POST" style="display:inline;">
                                         <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">

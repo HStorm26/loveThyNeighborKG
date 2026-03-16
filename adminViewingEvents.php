@@ -60,7 +60,6 @@
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
 
                                     if($accessLevel < 3) {
                                         echo "

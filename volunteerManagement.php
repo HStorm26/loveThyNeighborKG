@@ -29,14 +29,14 @@
   <title>User Account Management Page</title>
   <link href="css/management_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #004AAD; /* Love Thy Neighbor Blue */
+            background: #004AAD; /*Love Thy Neighbor Blue */ 
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
@@ -45,53 +45,34 @@ require_once('header.php');
             font-weight: 700;
             text-align: center;
         }
-	.dropdown {
+	    
+        .dropdown {
 	    padding-right: 50px;
-	}
+	    }
+        
+        body{
+        /* background-color: #1F1F21; */
+        }
+        .button-section button{
+        background-color: #FFFF; 
+        color: #004AAD; /*Love Thy Neighbor Blue */ 
+        }
 
-  .top-bar {
+        .button-left-gray{
+        background-color: #004AAD; /*Love Thy Neighbor Blue */
+        }
+
+        .button-section .button-icon{
+        filter: invert(1);
+        }
+
+    .top-bar {
       background-color: #004AAD;   /* Love Thy Neighbor Blue */
-      height: 200px;             /* height of the bar */
+      height: 150px;             /* height of the bar */
       width: 100%;              /* full width */
       position: fixed;
-  }
-
-  body {
-    /* background-color: #1F1F21;  */
-  }
-
-  .button-left-gray {
-    background-color: #004AAD !important;
-  }
-
-
- .button-section button {
-    background-color: #004AAD !important;
-    color: white !important;
-  }
-
-.div-blue {
-    background-color: #004AAD;
-  }
-
-.button-icon {
-    filter: none !important;
-  } 
-
-.text-section h1 {
-    color: #004AAD !important;
-  }
-
-.text-section p {
-    color: #004AAD !important;
-  }
-
-.button-section button > div {
-    background-color: transparent !important;
-  }
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+    }
+</style> 
 
 </head>
 
