@@ -1,4 +1,13 @@
 <?php
 include_once("../database/dbpersonhours.php");
-registerPersonForEvent(120,"vmsroot2",1);
-echo('done');
+
+$t = calcPersonHours('vmsroot');
+echo($t);
+echo('\n');
+$t = getEvetnPartipants(122);
+foreach ($t as $p)
+    {
+        print($p);
+        print('|');
+    }
+
