@@ -501,15 +501,7 @@
 </button>
     </div>
 
-    <div class="content-box">
-        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
-        <div class="small-text" style="color: rgb(0,74,173);">Get away from it all!</div>
-        <div class="large-text">Retreat Applications</div>
-<button class="circle-arrow-button" onclick="window.location.href='viewAllApplications.php'">
-    <span class="button-text">Go</span>
-    <div class="circle">&gt;</div>
-</button>
-    </div>
+
 
 </div>
 
