@@ -4,14 +4,14 @@
 <!-- Hero Section with Title -->
 <header class="hero-header"> 
     <div class="center-header">
-        <h1>Account Registration</h1>
+        <h1 style="color: #004AAD; font-weight: bold;">Account Registration</h1>
     </div>
 </header>
 
 <main>
-  <div class="main-content-box">
-    <form class="signup-form" method="post">
-	<div class="text-center spacing-bottom">
+  <div class="main-content-box" style="color: #004AAD; font-weight: bold;">
+    <form class="signup-form" method="post" style="color: #004AAD; font-weight: bold;">
+	<div class="text-center spacing-bottom" style="color: #004AAD; font-weight: bold;">
           <h2 class="mb-8">Registration Form</h2>
             <div class="info-box">
               <p class="sub-text">Please fill out each section of the following form to create your account.</p>
@@ -112,7 +112,7 @@
             <!--<label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
 -->
-            <div class="median-div"></div>
+            <!--<div class="median-div"></div> (START) -Brooke
             <label for="affiliation"><em>* </em>Military Affiliation</label>
             <select id="affiliation" name="affiliation" required>
                 <option value="" disabled selected></option>
@@ -132,7 +132,7 @@
                 <option value="Marine Corp">Marine Corp</option>
                 <option value="Navy">Navy</option>
                 <option value="Space Force">Space Force</option>
-            </select>
+            </select> (END) -Brooke --> 
 
         </fieldset>
 
@@ -287,7 +287,7 @@
             <p class="mb-2">Please review the following before creating your account.</p>
         <div class="blue-div"></div>
             <label><em>* </em> Privacy Policy</label>
-            <p>I confirm that I have read the <a href="https://whiskeyvalor.org/policies/privacy-policy">Privacy Policy</a> and consent to the Whiskey Valor Foundation collecting and storing my information for the purposes outlined therein.</p>
+            <p>I confirm that I have read the <a href="https://www.kgfood.org/privacy">Privacy Policy</a> and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="privacy_consent" value="yes" required>

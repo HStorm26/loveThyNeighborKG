@@ -1,8 +1,14 @@
 <?php
+    //- Brooke did this page for Love Thy Neighbor KG (Sign up)
     // Make session information accessible, allowing us to associate
     // data with the logged-in user.
     session_cache_expire(30);
     session_start();
+
+    require_once('include/input-validation.php');
+    require_once('database/dbEvents.php');
+    require_once('database/dbPersons.php');
+    require_once('database/dbRoleEvents.php');
 
     $loggedIn = false;
     $accessLevel = 0;
@@ -16,13 +22,10 @@
     } 
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        require_once('include/input-validation.php');
-        require_once('database/dbEvents.php');
-        require_once('database/dbPersons.php');
         $args = sanitize($_POST, null);
 
-        $required = array("event-name", "account-name");
-
+        $required = array("event-name", "account-name", "roleID");
+  
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
             die();
@@ -31,72 +34,40 @@
         $name = htmlspecialchars_decode($args['event-name']);
         $account_name = htmlspecialchars_decode($args['account-name']);
         $role = isset($args['role']) ? $args['role'] : '';
-        $skills = isset($args['skills']) ? $args['skills'] : '';
-        //$restrictions = isset($args['restrictions']) ? $args['restrictions'] : '';
-        //$disabilities = isset($args['disabilities']) ? $args['disabilities'] : '';
-        //$materials = isset($args['materials']) ? $args['materials'] : '';
-
-        $notes = "Skills: $skills | Dietary restrictions: $restrictions | Disabilities: $disabilities | Materials: $materials";
-
-        // Route based on event type: Retreat uses applications, Normal uses direct signup
-        $type = isset($args['type']) ? $args['type'] : '';
-        if ($type === "Retreat") {
-            // For Retreat events: create an application (insert into dbapplications with status='Pending')
-            require_once('database/dbApplications.php');
-            $event_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_GET['event_id']) ? intval($_GET['event_id']) : 0);
-            $app_data = [
-                'user_id' => $account_name,
-                'event_id' => $event_id,
-                'status' => 'Pending',
-                'flagged' => 0,
-                'notes' => $notes
-            ];
-            $app_id = create_app($app_data);
-            if (!$app_id) {
-                header('Location: requestFailed.php');
-                die();
-            }
-
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "Your request to sign up for $name has been sent to an admin.",
-                "Your request to sign up for $name will be reviewed by an admin shortly. You will get another notification when you are approved or denied."
-            );
-
-            header('Location: signupPending.php');
-            die();
-        } 
-        else {
-            $id = sign_up_for_event($name, $account_name, $role, $notes);
-            if (!$id) {
-                header('Location: eventFailure.php');
-                exit();
-            }
-
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "You are now signed up for $name!",
-                "Thank you for signing up for $name!"
-            );
-
-            header('Location: signupSuccess.php');
-            die();
+        $notes = '';
+        $id = sign_up_for_event($name, $account_name, $role, $notes); 
+        if (!$id) {
+            header('Location: eventFailure.php');
+            exit();
         }
+
+        require_once('database/dbMessages.php');
+        send_system_message(
+            $userID,
+            "You are now signed up for $name!",
+            "Thank you for signing up for $name!"
+        );
+
+        header('Location: signupSuccess.php');
+        die();
     }
 
     // Connect to database
     include_once('database/dbinfo.php'); 
     $con = connect();  
 
-    // Get event info from GET parameters (accept either `id` or `event_id`)
+    // Get event info from GET parameters (accept either `id` or `event_id`)       \
     if (isset($_GET['id'])) {
         $event_id = intval($_GET['id']);
     } elseif (isset($_GET['event_id'])) {
         $event_id = intval($_GET['event_id']);
     } else {
         $event_id = 0;
+    }
+    // Stop signup if event has already ended
+    if (is_archived($event_id)) {
+        echo "This event has already ended and signups are closed.";
+        exit();
     }
     $event_name = isset($_GET['event_name']) ? htmlspecialchars($_GET['event_name']) : '';
     $type = isset($_GET['type']) ? htmlspecialchars($_GET['type']) : '';
@@ -109,6 +80,9 @@
     // Retrieve user info from session
     $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
     $account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
+
+    // Get the roles for this particular event -Brooke
+    $roles = getRolesForEvent($event_id);
 ?>
 <!DOCTYPE html>
 <html>
@@ -123,50 +97,68 @@
 
             <form id="new-event-form" method="post">
                 <!-- ✅ Hidden event ID -->
-                <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
+                <div class="event-sect">     
+                    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
 
-                <label for="event-name">* Event Name </label>
-                    <input type="text" id="event-name" name="event-name" required 
-                    value="<?php echo htmlspecialchars_decode($event_name, ENT_QUOTES); ?>"
-                    placeholder="Event name" readonly>
+                    <label for="event-name">* Event Name </label>
+                        <input type="text" id="event-name" name="event-name" required 
+                        value="<?php echo htmlspecialchars_decode($event_name, ENT_QUOTES); ?>"
+                        placeholder="Event name" readonly>
+                </div>        
+                
+                <!-- Autofill and make the account name readonly -->    
+                <div class="event-sect">           
+                    <label for="account-name">* Your Account Name </label>
+                    <input type="text" id="account-name" name="account-name" 
+                        <?php echo ($accessLevel >= 2) ? '' : 'readonly'; ?> 
+                        value="<?php echo htmlspecialchars($account_name); ?>" 
+                        placeholder="Enter account name">
+                </div>
 
-                <!-- Autofill and make the account name readonly -->               
-                <label for="account-name">* Your Account Name </label>
-                <input type="text" id="account-name" name="account-name" 
-                    <?php echo ($accessLevel >= 2) ? '' : 'readonly'; ?> 
-                    value="<?php echo htmlspecialchars($account_name); ?>" 
-                    placeholder="Enter account name">
+                <div class="event-sect">
+                    <label for="notes">Notes</label>
+                    <input type="text" id="notes" name="notes">
+                </div>
+                <div class="event-sect">
+                    <label>* Choose a Role</label>
+                    <table class="roles-table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Role</th>
+                                <th>Availability</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
 
-                <!--<label for="skills"> Do You Have Any Skills To Share? </label>
-                <input type="text" id="skills" name="skills" placeholder="Enter skills. Ex. crochet, tap dancer">
+                        <tbody>
+                            <?php foreach ($roles as $role): ?>
+                            <tr>
+                                <td class="role-select">
+                                    <input
+                                        type="radio"
+                                        name="roleID"
+                                        value="<?php echo (int)$role['roleID']; ?>"
+                                        required
+                                    >
+                                </td>
 
-                <label for="disabilities"> Do You Have Any Disabilities We Should Be Aware Of? </label>
-                <input type="text" id="disabilities" name="disabilities" placeholder="Enter disabilities">
+                                <td class="role-name">
+                                    <?php echo htmlspecialchars($role['role_name'] ?? ''); ?>
+                                </td>
 
-                <label for="materials"> Are You Bringing Any Materials (e.g. snacks, craft supplies)? </label>
-                <input type="text" id="materials" name="materials" placeholder="Enter materials. Ex. felt, pipe cleaners"> -->
-                <label for="roles_for_events">* Choose a Role</label>
-                <select name="roles_for_events" id="roles_for_events">
-                    <option value="Truck Unloader">Truck Unloader</option>
-                    <option value="Sorting">Sorting</option>
-                    <option value="Distribution">Distribution</option>
-                    <option value="Setup">Setup</option>
-                    <option value="Cleanup">Cleanup</option>
-                </select>
-                <!--<fieldset>
-                    <label for="role">* Are you a volunteer or a participant? </label>
-                    <div class="radio-group">
-                        <input type="radio" id="v" name="role" value="v" required>
-                        <label for="v">Volunteer</label>
-                        <input type="radio" id="p" name="role" value="p" required>
-                        <label for="p">Participant</label>
-                    </div>
-                </fieldset>-->
+                                <td class="role-capacity">
+                                    <?php echo (int)($role['capacity'] ?? 0); ?> spots available
+                                </td>
 
-                <!-- 🔹 Preserve type flag across POST -->
-                <!--<input type="hidden" name="type" value=" <?php echo $type; ?>">
-                <input type="hidden" name="role" value="p"> -->
-
+                                <td class="role-description">
+                                    <?php echo htmlspecialchars($role['role_description'] ?? ''); ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>    
                 <br/>
                 <input type="submit" value="Sign up for Event">
             </form>

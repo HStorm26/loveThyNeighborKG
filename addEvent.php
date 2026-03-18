@@ -1,7 +1,13 @@
 <?php session_cache_expire(30);
     session_start();
+    // -Brooke did this for Love Thy Neighbor KG (Create Event)
     // Make session information accessible, allowing us to associate
     // data with the logged-in user.
+
+    require_once('include/input-validation.php');
+    require_once('database/dbEvents.php');
+    require_once('database/dbRoleEvents.php');
+    require_once('database/dbRoles.php');
 
     ini_set("display_errors",1);
     error_reporting(E_ALL);
@@ -22,19 +28,19 @@
         die();
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        require_once('include/input-validation.php');
-        require_once('database/dbEvents.php');
+        //require_once('include/input-validation.php');
+        //require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
             "name", "date", "start-time", "end-time", "description", "location"
         );
-        $roles = $_POST['roles'] ?? array();
+        $roles = $_POST['roles'] ?? array(); //For the total capacity
         //$startTimes = $_POST['start_times'] ?? array(); --BROOKE DELETE
         //$endTimes = $_POST['end_times'] ?? array();  --BROOKE DELETE
 
         /* For the total capacity */
         $totalCapacity = 0;
-        foreach ($roles as $role => $count) {
+        foreach ($roles as $roleID => $count) {
             $count = (int)$count;
 
             if($count < 0) {
@@ -52,15 +58,15 @@
         
         /*Database will skip roles with 0 volunteers, so it doesn't store
         the unnecessary roles!*/
-        foreach ($roles as $role => $count) {
-            $count = (int)$count;
+        //foreach ($roles as $role => $count) {
+            //$count = (int)$count;
 
-            if($count > 0) {
-                $start = $startTimes[$role];
-                $end = $endTimes[$role];
+            //if($count > 0) {
+                //$start = $startTimes[$role];
+                //$end = $endTimes[$role];
                 // save this role to the database
-            }
-        }
+            //}
+        //}
         
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -121,9 +127,9 @@
             die();
         }
         $args['capacity'] = $totalCapacity;
-        $args['roles'] = $roles;
-        $args['start_times'] = $startTimes;
-        $args['end_times'] = $endTimes;
+        //$args['roles'] = $roles;
+        //$args['start_times'] = $startTimes;
+        //$args['end_times'] = $endTimes;
 
         //$args['series_id'] = bin2hex(random_bytes(16)); // new new /*It really disliked it, so I had to change it -Brooke */
         $args['series_id'] = random_int(100, 999999); 
@@ -132,6 +138,9 @@
         if (!$id) {
             die();
         } else {
+
+            // Save the roles for this event
+            save_event_roles($id, $roles);
     
             $counts = [
                 'daily'   => 30,  // next 30 days
@@ -188,6 +197,7 @@
     include_once('database/dbinfo.php'); 
     $con=connect();  
 
+    $allRoles = get_roles(); // For displaying the form
 ?><!DOCTYPE html>
 <html>
     <head>
@@ -248,7 +258,29 @@
                             </tr>
                         </thead> 
                         <tbody>
-                            <tr>
+                        <tbody>
+                            <?php foreach ($allRoles as $role): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($role['role']); ?></td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            class="role-count"
+                                            name="roles[<?php echo (int)$role['role_id']; ?>]"
+                                            value="0"
+                                            min="0"
+                                            max="100"
+                                            oninput="if(this.value > 100) this.value = 100"
+                                            onkeydown="if(event.key === '-') event.preventDefault();"
+                                        >
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($role['role_description']); ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                            <!--<tr>
                                 <td>Truck Unloader</td>
                                 <td>
                                     <input type="number" class="role-count" name="roles[truck_unloader]" value="0" min="0" 
@@ -298,7 +330,7 @@
                                     <p type="name" id="clean_up_desc" name="description">Stay 15 minutes afterwards</p>
                                 </td>  
                             </tr> 
-                        </tbody>
+                        </tbody> -->
                         <tfoot>
                             <tr>
                                 <th>Total Capacity</th>
