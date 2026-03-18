@@ -1,3 +1,4 @@
+<!-- DELETE THIS WHOLE PAGE LATER - BROOKE -->
 <?php
 ob_start();
 session_cache_expire(30);

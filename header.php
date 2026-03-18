@@ -65,7 +65,7 @@ if (date("H:i:s") > "18:19:59") {
             border-bottom-right-radius: 50px;
         }
          .content-box-test:hover {
-            border: 4px solid #fdd05eff;
+            border: 4px solid rgb(62, 129, 50); /*Actual Love Thy Neighbor Green */
         }
 /*END STYLE TEST*/
 
@@ -89,16 +89,42 @@ if (date("H:i:s") > "18:19:59") {
         }
 
         .content-box {
-            flex: 1 1 280px; /* Adjusts width dynamically */
-            max-width: 375px;
-            padding: 10px 2px; /* Altered padding to make closer */
+            flex: 1 1 260px;
+            max-width: 340px;
+
+            padding: 14px 16px;
+
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            position: relative;
-        }
 
+            position: relative;
+
+            background: linear-gradient(180deg, #ffffff, #f5f9ff);
+            border: 1px solid #d6e4ff;
+            border-radius: 12px;
+
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .inner-box {
+            width: 100%;
+            height: 100%;
+
+            padding: 16px 14px;
+
+            background: linear-gradient(180deg, #eaf3ff, #dceaff);
+
+            border-radius: 10px;
+            border: 1px solid #c7dbff;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         .content-box-sub {
             flex: 1 1 300px; /* Adjusts width dynamically */
             max-width: 470px;
@@ -453,6 +479,7 @@ if (date("H:i:s") > "18:19:59") {
             display: flex;
             justify-content: center;
             align-items: center;
+            filter: invert(1);
         }
 
         .icon-overlay img {
@@ -464,11 +491,11 @@ if (date("H:i:s") > "18:19:59") {
 
         .nav-item img {
             border-radius: 15px;
-            transition: filter 0.3s, background-color 0.3s;
+            transition: filter 0.9s, background-color 0.3s;
         }
 
         .nav-item:hover img, .nav-item.active img {
-            filter: none;
+            filter: invert(1);
         }
        
         .icon .dropdown{
