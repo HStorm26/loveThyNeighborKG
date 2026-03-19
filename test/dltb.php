@@ -11,3 +11,4 @@ foreach ($t as $p)
         print('|');
     }
 
+unregisterPersonForEvent( 120,'vmsroot');
