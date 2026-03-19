@@ -712,12 +712,9 @@ if (date("H:i:s") > "18:19:59") {
         * -Evan
         */
         $permission_array['index.php'] = 0; // WVF Home page
-        $permission_array['about.php'] = 0; //WVF - Not able to directly access - Likely just need to re-route to 
-        $permission_array['apply.php'] = 0; //WVF - Not able to directly access
         $permission_array['logout.php'] = 0; //WVF - Logout page ain
         $permission_array['volunteerregister.php'] = 0; //WVF - Alter to registering for account
 	    $permission_array['leaderboard.php'] = 0; //WVF - Probably get rid of this guy
-        // $permission_array['findanimal.php'] = 0; //TODO DELETE
         //pages volunteers can view
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1; //WVF - Might be good to alter this for registered users to be able to see registered events and where they can edit user info 
@@ -749,23 +746,12 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['addweek.php'] = 2;
         $permission_array['log.php'] = 2;
         $permission_array['reports.php'] = 2;
-        $permission_array['eventedit.php'] = 2; //WVF - TODO: Evaluated differenced between eventedit and editevent.
         $permission_array['modifyuserrole.php'] = 2;
         $permission_array['addevent.php'] = 2; //WVF - Admin Event work!
         $permission_array['editevent.php'] = 2; //WVF - Admin Event work!
-        // $permission_array['roster.php'] = 2; //TODO DELETE
         $permission_array['report.php'] = 2; // WVF TODO: Look to see how these reports can be reworked to do attendance report
         $permission_array['reportspage.php'] = 2;
         $permission_array['resetpassword.php'] = 2;
-        // $permission_array['addappointment.php'] = 2; //TODO DELETE
-        // $permission_array['addanimal.php'] = 2; //TODO DELETE
-        // $permission_array['addservice.php'] = 2; //TODO DELETE
-        // $permission_array['addlocation.php'] = 2; //TODO DELETE
-        // $permission_array['viewvece.php'] = 2; //TODO DELETE
-        // $permission_array['viewlocation.php'] = 2; //TODO DELETE
-        // $permission_array['viewarchived.php'] = 2; //TODO DELETE
-        // $permission_array['animal.php'] = 2; //TODO DELETE
-        // $permission_array['editanimal.php'] = 2; //TODO DELETE
         $permission_array['eventsuccess.php'] = 2;
         $permission_array['viewsignuplist.php'] = 2;
         $permission_array['vieweventsignups.php'] = 2;
