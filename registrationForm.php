@@ -31,7 +31,26 @@
             <label for="last_name"><em>* </em>Last Name</label>
             <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name">
 
-            <label><em>* </em>Are you 21 or older?</label>
+
+            <div class="median-div"></div>
+
+            <label for="birthdate"><em>* </em>Date of Birth</label>
+            <input type="date" id="birthdate" name="birthdate" required placeholder="Enter your birthday" max="<?php echo date('Y-m-d'); ?>">
+            
+
+            <label for="t-shirt_size"><em>* </em>T-Shirt Size</label> <!-- Cahnge to be a drop down -->
+            <!--<input type="text" id="t-shirt_size" name="t-shirt_size" required placeholder="Enter your t-shirt size"> -->
+            <select id="state" name="state" required>
+                <option value="x_small">X-Small</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+                <option value="x_large">X-Large</option>
+                <option value="xx_large">XX-Large</option>
+                <option value="xxx_large">XXX-Large</option>
+            </select>
+
+            <!--<label><em>* </em>Are you 21 or older?</label>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="yes" name="age" value="true" required>
@@ -41,14 +60,13 @@
                     <input type="radio" id="no" name="age" value="false">
                     <label for="no">No</label>
                 </div>
-            </div>
+            </div>-->
             <div class="median-div"></div>
-
-            <!--<label for="birthdate"><em>* </em>Date of Birth</label>
-            <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">-->
             
             <!-- <label for="street_address"><em>* </em>Street Address</label>
             <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"> -->
+            <label for="address"><em>* </em>Address</label>
+            <input type="text" id="address" name="address" required placeholder="Enter your address">
 
             <label for="city"><em>* </em>City</label>
             <input type="text" id="city" name="city" required placeholder="Enter your city">
@@ -109,9 +127,9 @@
                 <option value="WY">Wyoming</option>
             </select>
 
-            <!--<label for="zip"><em>* </em>Zip Code</label>
+            <label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
--->
+
             <!--<div class="median-div"></div> (START) -Brooke
             <label for="affiliation"><em>* </em>Military Affiliation</label>
             <select id="affiliation" name="affiliation" required>
@@ -168,36 +186,23 @@
 
         </fieldset>
 
-        <!--<fieldset class="section-box mb-4">
+        <fieldset class="section-box mb-4">
             <h3>Emergency Contact</h3>
             <p class="mb-2">Please provide us with someone to contact on your behalf in case of an emergency.</p>
 	    <div class="blue-div"></div>
 
-            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name</label>
-            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name">
+            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name and Last Name</label>
+            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name and last name">
 
-            <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
-            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name">
+            <!--<label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
+            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name"> -->
 
             <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
             <label for="emergency_contact_phone"><em>* </em>Contact Phone Number</label>
             <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
-
-            <label><em>* </em>Contact Phone Type</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
-            </div>
-        </fieldset>-->
+        </fieldset>
 
         <!-- <fieldset class="section-box mb-4">
             <h3 class="mb-2">Other Required Information</h3>
@@ -281,6 +286,23 @@
         <!--<input type="hidden" name="is_new_volunteer" value="1">
         <input type="hidden" name="total_hours_volunteered" value="0"> -->
         </fieldset>
+
+        <fieldset class="section-box mb-4">
+            <h3>Volunteer Information</h3>
+            <p class="mb-2">Are you volunteering to complete required community service (school, court, etc.)?</p>
+        <div class="blue-div"></div>
+            <label><em>* </em> Privacy Policy</label>
+            <p>I confirm that I have read the <a href="https://www.kgfood.org/privacy">Privacy Policy</a> and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree" name="privacy_consent" value="yes" required>
+                    <label for="agree">I agree.</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="disagree" name="privacy_consent" value="no">
+                    <label for="disagree">I do not agree.</label>
+                </div> 
+        </fieldset>
         
         <fieldset class="section-box mb-4">
             <h3>Consent Notice</h3>
@@ -298,6 +320,19 @@
                     <label for="disagree">I do not agree.</label>
                 </div>
             </div>
+            <br>
+            <label><em>* </em> Picture Policy</label>
+            <p>I consent to being photographed and authorize the Love Thy Neighbor Community Food Pantry in King George, Virginia, taking and using my image.</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree" name="privacy_consent" value="yes" required>
+                    <label for="agree">I agree.</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="disagree" name="privacy_consent" value="no">
+                    <label for="disagree">I do not agree.</label>
+                </div>
+            </div>   
         </fieldset>
         <p class="text-center notice"></p>
         <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
