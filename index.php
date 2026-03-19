@@ -536,17 +536,6 @@
         <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
-    <!-- Manage Documents -->
-    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black; position: relative;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
-        </div>
-       
-        <div class="large-text-sub" style="color:#FFFFFF;">View Pending IDs </div>
-        <div class="graph-text" style="color:#FFFFFF;">View pending and arbitrate user submitted IDs.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
     <!-- System Notifications -->
     <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
         <div class="icon-overlay">
