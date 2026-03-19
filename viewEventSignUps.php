@@ -10,7 +10,6 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
 require_once('include/input-validation.php');
 require_once('database/dbEvents.php');
 require_once('database/dbPersons.php');
-require_once('database/dbApplications.php');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -46,7 +45,6 @@ if (!$event_info) {
 }
 
 $signups = fetch_event_signups($id);
-$pending_signups = fetch_pending_apps($id);
 $access_level = $_SESSION['access_level'];
 ?>
 <!DOCTYPE html>
@@ -144,40 +142,26 @@ $access_level = $_SESSION['access_level'];
             <?php else: ?>
                 <p><?php echo htmlspecialchars(count($signups)); ?> people have signed up for this event.</p>
             <?php endif; ?>
-            <?php if (count($pending_signups) === 1): ?>
-                <p>1 sign-up is pending for this event.</p>
-            <?php else: ?>
-                <p><?php echo htmlspecialchars(count($pending_signups)); ?> sign-ups are pending for this event.</p>
-            <?php endif; ?>
         </p>
 
         <input type="hidden" id="event-id" value="<?php echo htmlspecialchars($id); ?>">
 
-        <?php if ($access_level >= 2 && count($pending_signups) > 0): ?>
-            <div class="bulk-actions">
-                <div class="spacer"></div>
-                <button class="button success" id="bulk-approve" disabled>Approve Selected</button>
-                <button class="button danger" id="bulk-reject" disabled>Reject Selected</button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (count($signups) > 0 || count($pending_signups) > 0): ?>
+        <?php if (count($signups) > 0): ?> 
             <div class="table-wrapper">
                 <table class="general">
                     <thead>
                         <tr>
                             <?php if ($access_level >= 2): ?>
                                 <th class="select-col">
-                                    <?php if (count($pending_signups) > 0): ?>
+                                    <?php /*if (count($pending_signups) > 0): ?>
                                         <input type="checkbox" id="select-all-pending" title="Select all pending">
-                                    <?php endif; ?>
+                                    <?php endif; */?>
                                 </th>
                             <?php endif; ?>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>User ID</th>
                             <th>Notes</th>
-                            <th>Pending</th>
                             <?php if ($access_level >= 2): ?>
                                 <th>Actions</th>
                             <?php endif; ?>
@@ -199,7 +183,7 @@ $access_level = $_SESSION['access_level'];
                                 
                                 <td>
                                 <?php
-                                    $formatted_notes = isset($signup['notes']) && ($signup['notes'] !== '' && $signup['notes'] !== NULL) ? $signup['notes'] : 'No notes.';
+                                    $formatted_notes = isset($signup['notes']) && ($signup['notes'] !== '' && $signup['notes'] !== NULL) ? $signup['notes'] : 'N/A';
                                     $formatted_notes = preg_replace('/Skills:\s*\|/', 'Skills: N/A', $formatted_notes);
                                     $formatted_notes = preg_replace('/Dietary restrictions:\s*\|/', 'Dietary restrictions: N/A', $formatted_notes);
                                     $formatted_notes = preg_replace('/Disabilities:\s*\|/', 'Disabilities: N/A', $formatted_notes);
@@ -209,14 +193,14 @@ $access_level = $_SESSION['access_level'];
                                     $formatted_notes = preg_replace('/(Skills: N\/A|Dietary restrictions: N\/A|Disabilities: N\/A|Materials: N\/A)/', '$1<br>', $formatted_notes);
                                     $formatted_notes = preg_replace('/(Skills: .+|Dietary restrictions: .+|Disabilities: .+|Materials: .+)/', '$0<br>', $formatted_notes);
                                     if (trim($formatted_notes) === "Skills: N/A<br>Dietary restrictions: N/A<br>Disabilities: N/A<br>Materials: N/A<br>") {
-                                        $formatted_notes = "No notes";
+                                        $formatted_notes = "N/A";
                                     }
-                                    $formatted_notes = str_replace("No notes.", "No notes.<br>", $formatted_notes);
+                                    $formatted_notes = str_replace("N/A.", "N/A.<br>", $formatted_notes);
                                     echo nl2br($formatted_notes);
                                 ?>
                                 </td>
-                                <td><?php if($pending == '0') echo "Yes"; elseif($pending == '1') echo "No"?></td>
-                                <?php if ($access_level >= 2 && $pending == "1"): ?>
+                                
+                                <?php if ($access_level >= 2): ?>
                                     <td>
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
@@ -227,47 +211,6 @@ $access_level = $_SESSION['access_level'];
                                 <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
-
-                        <?php foreach ($pending_signups as $signup): 
-                            $user_info = retrieve_person($signup->getUserID());
-                            if ($user_info) {
-                                //$position_label = $signup['role'] === 'p' ? 'Participant' : ($signup['role'] === 'v' ? 'Volunteer' : 'Unknown');
-                                $pending = check_if_signed_up($args['id'], $signup->getUserID());
-                                if ($signup->getNote() != '' && $signup->getNote() != NULL) {
-                                    $notes = $signup->getNote();
-                                }
-                                else {
-                                    $notes = 'No Notes';
-                                }
-                        ?>
-                                <tr>
-                                    <?php if ($access_level >= 2): ?>
-                                        <td class="select-col">
-                                            <?php if ($pending == "0"): ?>
-                                                <input type="checkbox" class="bulk-select" value="<?php echo htmlspecialchars($signup->getUserID()); ?>"  data-notes="<?php echo htmlspecialchars($signup->getNote()); ?>">
-                                            <?php endif; ?>
-                                        </td>
-                                    <?php endif; ?>
-                                    <td><?php echo htmlspecialchars($user_info->get_first_name()); ?></td>
-                                    <td><?php echo htmlspecialchars($user_info->get_last_name()); ?></td>
-                                    <td><a href="viewProfile.php?id=<?php echo urlencode($signup->getUserID()); ?>"><?php echo htmlspecialchars($signup->getUserID()); ?></a></td>
-                                    
-                                    <td><?php echo htmlspecialchars($notes); ?></td>
-                                    <td><?php if($pending == '0') echo "Yes"; elseif($pending == '1') echo "No"; ?></td>
-                                    <?php if ($access_level >= 2 && $pending == "0"): ?>
-                                        <td>
-                                            <form method="POST" style="display:inline;">
-                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
-                                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup->getUserID()); ?>">
-                                            </form>
-                                            <button onclick="showResolutionConfirmation()" class="button">Resolve</button>
-                                        </td>
-                                    <?php endif; ?>
-                                </tr>
-                        <?php 
-                            }
-                        endforeach;
-                        ?>
                     </tbody>
                 </table>
             </div>
