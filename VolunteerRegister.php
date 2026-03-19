@@ -54,17 +54,25 @@
             'is_new_volunteer', 
             'total_hours_volunteered'
         );*/
-
-        $required = array(
+        // Whiskey Valor array.
+        /*$required = array(
             'first_name', 'last_name', 'age',
             'city', 'state', 
             'affiliation', 'branch',
             'email', 'username', 'password',
             'privacy_consent'
+        ); */
+
+        // Love Thy Neighbor KG required
+        $required = array (
+            'first_name', 'last_name', 'birthdate', 't_shirt_size',
+            'street_address', 'city', 'state', 'zip',
+            'email', 'phone', 'username', 'password',
+            'privacy_consent', 'picture_consent'
         );
 
         $optional = array(
-            'phone', 'email_prefs'
+            'phone', 'email_prefs', 'notes'
         );
 
         $errors = false;
@@ -75,14 +83,15 @@
 
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
-        $age = $args['age']; // Passes either "true" or "false" 
-        /*$birthday = validateDate($args['birthdate']);
+        $t_shirt_size = $args['t_shirt_size'];
+        //$age = $args['age']; // Passes either "true" or "false" 
+        $birthday = validateDate($args['birthdate']);
         if (!$birthday) {
             echo "<p>Invalid birthdate.</p>";
             $errors = true;
-        } */
+        } 
 
-        //$street_address = $args['street_address'];
+        $street_address = $args['street_address'];
         $city = $args['city'];
         $state = $args['state'];
         if (!valueConstrainedTo($state, array(
@@ -93,11 +102,11 @@
             $errors = true;
         }
 
-        /*$zip_code = $args['zip'];
+        $zip_code = $args['zip'];
         if (!validateZipcode($zip_code)) {
             echo "<p>Invalid ZIP code.</p>";
             $errors = true;
-        }*/
+        }
 
         $email = strtolower($args['email']);
         if (!validateEmail($email)) {
@@ -126,42 +135,37 @@
             $errors = true;
         }
 
-        $affiliation = $args['affiliation'];
-        $branch = $args['branch'];
-
-        /*$phone1type = $args['phone_type'];
-        if (!valueConstrainedTo($phone1type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid phone type.</p>";
+        if(!isset($args['picture_consent']) || $args['privacy_consent'] == 'no') {
+            echo "<p>You must agree to being photographed to create an account.</p>";
             $errors = true;
-        }*/
+        }
 
-        /*$emergency_contact_first_name = $args['emergency_contact_first_name'];
-        $emergency_contact_last_name = $args['emergency_contact_last_name'];
+        //$affiliation = $args['affiliation']; - Brooke wants to Delete (whiskey)
+        //$branch = $args['branch'];   -Brooke wants to Delete (whiskey)
+
+        $emergency_contact_first_name = $args['emergency_contact_first_name'];   //It is actually the first and last name -Brooke
+        //$emergency_contact_last_name = $args['emergency_contact_last_name'];
         $emergency_contact_relation = $args['emergency_contact_relation'];
 
         $emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
         if (!$emergency_contact_phone) {
             echo "<p>Invalid emergency contact phone.</p>";
             $errors = true;
-        } */
-
-        /*$emergency_contact_phone_type = $args['emergency_contact_phone_type'];
-        if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid emergency phone type.</p>";
-            $errors = true;
-        }*/
+        }
 
         /*$skills = isset($args['skills']) ? $args['skills'] : '';
         $interests = isset($args['interests']) ? $args['interests'] : '';
 
         $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
         $is_new_volunteer = isset($args['is_new_volunteer']) ? (int)$args['is_new_volunteer'] : 1;
-        $total_hours_volunteered = isset($args['total_hours_volunteered']) ? (float)$args['total_hours_volunteered'] : 0.00;
+        $total_hours_volunteered = isset($args['total_hours_volunteered']) ? (float)$args['total_hours_volunteered'] : 0.00;*/
 
-        $type = ($is_community_service_volunteer === 1) ? 'volunteer' : 'participant';
+        //$type = ($is_community_service_volunteer === 1) ? 'volunteer' : 'participant';
+        $type = "Volunteer";
         $archived = 0;
-        $status = "Inactive";
-        $training_level = "None";*/
+        $status = "Active";
+        //community_service
+        //notes
 
         $id = $args['username'];
 
@@ -191,7 +195,7 @@
             $total_hours_volunteered
         ); */
 
-        $newperson = new Person(
+        /*$newperson = new Person(    Whiskey Valor
             $id, date("Y-m-d"),
             $first_name, $last_name, null,
             $city, $state, null, $phone1, $age, 
@@ -199,6 +203,18 @@
             $email, $email_consent, 
             null, null, null, null, null, null, null, 
             $password, $affiliation, $branch, null, null
+        );*/
+
+        // Love Thy Neighbor KG newperson
+        $newperson = new Person(
+            $id, $first_name, $last_name,
+            $phone1, $email, $email_consent,
+            $birthday, $t_shirt_size, $state,
+            $city, $street_address, $zip_code,
+            $emergency_contact_first_name,
+            $emergency_contact_phone, $emergency_contact_relation, $archived, 
+            $password, $contact_num, $contact_method,
+            $type, $status, $photo_release, $community_service, $notes
         );
 
         $result = add_person($newperson);
