@@ -743,15 +743,6 @@
                     }   
                 ?>  
 
-        <div class="content-box-test" onclick="window.location.href='upload_encrypted_image.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Calendar Icon">
-            </div>
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Documentation Upload</div>
-            <div class="graph-text" style="color:#FFFFFF;">Upload an ID for verification.</div>
-            <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
 
         <!-- <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
             <div class="icon-overlay">
