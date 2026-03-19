@@ -28,6 +28,23 @@ function registerPersonForEvent($eventid,$personid,$roleid)
     mysqli_close($con);
 }
 
+//unregister for event I want it to un reg to no need role
+function unregisterPersonForEvent($eventid,$personid)
+{
+    $con = connect();
+    $querey = "DELETE FROM `dbpersonhours` WHERE `dbpersonhours`.`personID` = ? AND `dbpersonhours`.`eventID` = ?";
+    $stmt = $con->prepare($querey);
+    if ($stmt)
+        {
+            $stmt->bind_param("si", $personid,$eventid,);
+            $stmt->execute();
+
+
+            }
+
+    mysqli_close($con);
+}
+
 //update start time
 //this one sets it to now
 function updateStartTime($eventid,$personid,$roleid)
