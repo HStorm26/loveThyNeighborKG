@@ -446,7 +446,7 @@
 <!--END TEST-->
 </head>
 
-<!-- ONLY SUPER ADMIN WILL SEE THIS -->
+<!-- ONLY SUPER ADMIN WILL SEE THIS -->    <!-- This is not true, admin and super admin can see it (2 = admin, 3 = super admin) ;( -Brooke -->
 <?php if ($_SESSION['access_level'] >= 2): ?>
 <body>
 <?php require 'header.php';?>
@@ -533,17 +533,6 @@
         
         <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
         <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- Manage Documents -->
-    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black; position: relative;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
-        </div>
-       
-        <div class="large-text-sub" style="color:#FFFFFF;">View Pending IDs </div>
-        <div class="graph-text" style="color:#FFFFFF;">View pending and arbitrate user submitted IDs.</div>
         <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
@@ -754,15 +743,6 @@
                     }   
                 ?>  
 
-        <div class="content-box-test" onclick="window.location.href='upload_encrypted_image.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Calendar Icon">
-            </div>
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Documentation Upload</div>
-            <div class="graph-text" style="color:#FFFFFF;">Upload an ID for verification.</div>
-            <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
 
         <!-- <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
             <div class="icon-overlay">
@@ -822,7 +802,6 @@
             </div>
         </div>
     </footer>
-    <p>_</p>
 
     <!-- Font Awesome for Icons -->
     <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
