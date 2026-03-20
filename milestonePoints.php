@@ -1,3 +1,4 @@
+<!-- Brooke wants to delete this -->
 <?php
 
 session_start();

@@ -129,29 +129,6 @@
 
             <label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
-
-            <!--<div class="median-div"></div> (START) -Brooke
-            <label for="affiliation"><em>* </em>Military Affiliation</label>
-            <select id="affiliation" name="affiliation" required>
-                <option value="" disabled selected></option>
-                <option value="Active duty">Active duty</option>
-                <option value="Family">Family member (spouse, child, or parent)</option>
-                <option value="Reserve">Reservist</option>
-                <option value="Veteran">Veteran</option>
-                <option value="Civilian">Civilian</option>
-            </select>
-
-            <label for="branch"><em>* </em>Branch of Service</label>
-            <select id="branch" name="branch" required>
-                <option value="" disabled selected></option>
-                <option value="Air Force">Air Force</option>
-                <option value="Army">Army</option>
-                <option value="Coast Guard">Coast Guard</option>
-                <option value="Marine Corp">Marine Corp</option>
-                <option value="Navy">Navy</option>
-                <option value="Space Force">Space Force</option>
-            </select> (END) -Brooke --> 
-
         </fieldset>
 
         <fieldset class="section-box mb-4">
@@ -163,26 +140,13 @@
             <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
 
             <label for="email_consent">E-mail Notifications</label>
-            <p>By checking the box below, you consent to recieve emails from the Whiskey Valor Foundation. You may change this at any time.</p>
+            <p>By checking the box below, you consent to recieve emails from the Love Thy Neighbor Community Food Pantry in King George, Virginia. You may change this at any time.</p>
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
 
             <div class="median-div"></div>
 
             <label for="phone1">Phone Number</label>
             <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
-
-            <!--<label><em>* </em>Phone Type</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
-            </div>-->
 
         </fieldset>
 
@@ -291,8 +255,8 @@
             <h3>Volunteer Information</h3>
             <p class="mb-2">Are you volunteering to complete required community service (school, court, etc.)?</p>
         <div class="blue-div"></div>
-            <label><em>* </em> Privacy Policy</label>
-            <p>I confirm that I have read the <a href="https://www.kgfood.org/privacy">Privacy Policy</a> and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
+            <label><em>* </em> Confirmation of Volunteer Status</label>
+            <p>I acknowledge that the details I've provided about why I am volunteering accurately reflect my intentions and current situation.</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="privacy_consent" value="yes" required>
