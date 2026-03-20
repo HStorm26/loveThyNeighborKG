@@ -164,7 +164,7 @@
         $type = "Volunteer";
         $archived = 0;
         $status = "Active";
-        //community_service
+        $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
         //notes
 
         $id = $args['username'];
@@ -211,10 +211,10 @@
             $phone1, $email, $email_consent,
             $birthday, $t_shirt_size, $state,
             $city, $street_address, $zip_code,
-            $emergency_contact_first_name,
+            $emergency_contact_first_name, 
             $emergency_contact_phone, $emergency_contact_relation, $archived, 
-            $password, $contact_num, $contact_method,
-            $type, $status, $photo_release, $community_service, $notes
+            $archived, $password, $contact_num, $contact_method,
+            $type, $status, $photo_release, $is_community_service_volunteer, $notes
         );
 
         $result = add_person($newperson);

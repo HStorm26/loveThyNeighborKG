@@ -1,56 +1,56 @@
 <?php
-// session_start();
+session_start();
 
-// ini_set("display_errors", 1);
-// error_reporting(E_ALL);
+ini_set("display_errors", 1);
+error_reporting(E_ALL);
 
-// // Check access levels and initialize user data
-// $loggedIn = false;
-// $accessLevel = 0;
-// $userID = null;
-// if (isset($_SESSION['_id'])) {
-//     $loggedIn = true;
-//     $accessLevel = $_SESSION['access_level'];
-//     $userID = $_SESSION['_id'];
-// }
+// Check access levels and initialize user data
+$loggedIn = false;
+$accessLevel = 0;
+$userID = null;
+if (isset($_SESSION['_id'])) {
+    $loggedIn = true;
+    $accessLevel = $_SESSION['access_level'];
+    $userID = $_SESSION['_id'];
+}
 
-// // Require admin privileges
-// if ($accessLevel < 1) {
-//     header('Location: login.php');
-//     die();
-// }
+// Require admin privileges
+if ($accessLevel < 1) {
+    header('Location: login.php');
+    die();
+}
 
-// // Handle admin username selection
-// if ($accessLevel >= 2) {
-//     if (isset($_GET['username'])) {
-//         $username = $_GET['username'];
-//     } else {
-//         header('Location: editHours.php');
-//         die();
-//     }
-// } elseif ($accessLevel == 1) {
-//     if (isset($_GET['username'])) {
-//         header('Location: eventList.php');
-//         die();
-//     }
-//     $username = $_SESSION['_id'];
-// }
+// Handle admin username selection
+if ($accessLevel >= 2) {
+    if (isset($_GET['username'])) {
+        $username = $_GET['username'];
+    } else {
+        header('Location: editHours.php');
+        die();
+    }
+} elseif ($accessLevel == 1) {
+    if (isset($_GET['username'])) {
+        header('Location: eventList.php');
+        die();
+    }
+    $username = $_SESSION['_id'];
+}
 
-// require_once('include/input-validation.php');
-// require_once('database/dbEvents.php');
-// require_once('database/dbPersons.php');
-// require_once('include/output.php');
-// require_once('domain/Person.php');
+require_once('include/input-validation.php');
+require_once('database/dbEvents.php');
+require_once('database/dbPersons.php');
+require_once('include/output.php');
+require_once('domain/Person.php');
 
-// // Fetch events attended by the user
-// //$events = get_events_attended_by_2($username);
+// Fetch events attended by the user
+//$events = get_events_attended_by_2($username);
 
-// // Fetch eventIDs attended by the user
-// $event_ids = get_attended_event_ids($username);
+// Fetch eventIDs attended by the user
+$event_ids = get_attended_event_ids($username);
 
 ?>
 
-<!-- <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <?php require_once('universal.inc'); ?>
@@ -153,5 +153,5 @@
             <?php endif; ?>
             <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
         </main>
-</body> -->
+</body> 
 </html>
