@@ -386,7 +386,8 @@ function make_an_event($result_row) {
                     endDate: $result_row['date'],
                     description: $result_row['description'],
                     capacity: $result_row['capacity'],
-                    location: $result_row['location'],
+                    location: $result_row['location']
+                
                     //affiliation: $result_row['affiliation'],
                     //branch: $result_row['branch'],
                     //access: $result_row['access'],   -Brooke believes this can be deleted later

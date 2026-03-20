@@ -22,9 +22,10 @@
     /* Fetch events for dropdown options */
     require_once 'database/dbEvents.php';
     require_once 'domain/Event.php';
-     $events = get_all_events_sorted_by_date_not_archived();
-    $events = get_all_events_sorted_by_date_and_archived();
 
+    $events = array();
+    $events = array_merge(get_all_events_sorted_by_date_not_archived(), $events);
+    $events = array_merge(get_all_events_sorted_by_date_and_archived(), $events);
     $today = new DateTime(); // Current date
 
     $oneWeekAgo = (clone $today)->modify('-7 days')->format('Y-m-d');
@@ -34,7 +35,6 @@
 
     //FixMe
     $filteredEvents = $events;
-
     /* add events within next month and previous week to list */
     /* //FixMe: figure out filtered events
     foreach ($events as $event) {
@@ -107,6 +107,10 @@ require_once('header.php');
                 $status = $args['status'];
                 $event = $args['event'];
                 
+               
+                
+
+                
 
 
                 if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', '']) ||
@@ -120,14 +124,43 @@ require_once('header.php');
                     /* fetch persons who match the give role and status criteria */
                     if ($role  == '' && $status == '') { // if looking for all people, or by event / group, start with everyone, then filter
                         // name, id, phone, zip, type, status
+                        $persons_active = [];
+                        $persons_inactive = [];
                         $persons_active = find_users('', '', '', '', $role, 'Active');
                         $persons_inactive = find_users('', '', '', '', $role, 'Inactive');
-                        $persons = array_merge($persons_active, $persons_inactive);
+                        $filteredPersons = array_merge($persons_active, $persons_inactive);
+                        
+                    
 
                     } else {
                         $persons = find_users('', '', '', '', $role, $status);
                         $filteredPersons = array_merge($persons, $filteredPersons);
                     }
+
+                    // persons by event --------------------------------------------------------------------------------------------
+                    // Currently in testing
+                    require_once("database/dbpersonhours.php");
+                    $ids = array();
+                    if ($event != '')
+                        {
+                            $tmpPersons = [];
+                            $ids = getEvetnPartipants($event);
+                            
+                            foreach ($ids as $id)
+                                {
+                                    $tmpPersons[] = retrieve_person($id);
+                                }
+                            
+                            $filteredPersons = $tmpPersons;
+                            
+                        }
+                    
+                   
+                    
+
+
+                    
+                    // ------------------------------
 
                     /* if group was set, get members of group */
                     
@@ -135,7 +168,7 @@ require_once('header.php');
 
                     require_once('include/output.php');
 
-                    if (count($persons) > 0) {
+                    if (count($filteredPersons) > 0) {
                         echo '
                         <div class="overflow-x-auto">
                             <table>
@@ -154,6 +187,7 @@ require_once('header.php');
                         $mailingList = '';
                         $notFirst = false;
                         foreach ($filteredPersons as $person) {
+                            
 
                             if ($notFirst) {
                                 $mailingList .= ', ';
