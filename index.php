@@ -596,18 +596,6 @@
         <div class="graph-text" style="color:#FFFFFF;">Volunteer Emails</div>
         <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
-
-    <!-- Discussions -->
-    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">User Suggestions</div>
-        <div class="graph-text" style="color:#FFFFFF;">View user submitted suggestions.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
 </div>
 
 
@@ -742,17 +730,6 @@
                         $inboxIcon = 'inbox-unread.svg';
                     }   
                 ?>  
-
-
-        <!-- <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Report Icon">
-            </div> -->
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <!-- <div class="large-text-sub">Suggestions</div>
-            <div class="graph-text">Suggest opportunities for charity events.</div>
-            <button class="arrow-button">→</button>
-        </div> --> <!-- DELETE THIS LATER ON - BROOKE -->
 
         <div class="content-box-test" onclick="window.location.href='inbox.php'">
             <div class="icon-overlay">
