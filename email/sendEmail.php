@@ -7,7 +7,15 @@ ini_set('display_errors', 1);
 // -------------------------------------------------------
 // Load .env file (must be in parent directory)
 // -------------------------------------------------------
-$envPath = "/home/customer/www/jenniferp217.sg-host.com/public_html/email/.env";
+//--------------------------------------------------------
+// MUST CHANGE AFTER DEPLOYMENT!!!!!!!!!!!!!!!!
+// CURRENTLLY USES A STUDENTS EMAIL!!
+// ADD A >ENV FOR THE CLIENTS EMAIL!!!!!
+// FixMe
+// -------------------------------------------------------
+
+
+$envPath = "./.env";
 if (!file_exists($envPath)) {
     echo json_encode(["success" => false, "error" => ".env file not found"]);
     exit;
