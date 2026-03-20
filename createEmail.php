@@ -14,9 +14,9 @@ require_once(__DIR__ . '/database/dbinfo.php');
 require_once(__DIR__ . '/database/dbPersons.php');
 
 // Manual PHPMailer include
-require_once __DIR__ . '/email/PHPMailer/PHPMailer/src/PHPMailer.php';
-require_once __DIR__ . '/email/PHPMailer/PHPMailer/src/SMTP.php';
-require_once __DIR__ . '/email/PHPMailer/PHPMailer/src/Exception.php';
+require_once __DIR__ . '/email/vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require_once __DIR__ . '/email/vendor/phpmailer/phpmailer/src/SMTP.php';
+require_once __DIR__ . '/email/vendor/phpmailer/phpmailer/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -51,6 +51,7 @@ function loadEnv(string $file): array {
 
 // Load .env file
 $env = loadEnv(__DIR__ . '/email/.env');
+
 
 // ------------------------
 // Send emails via PHPMailer
@@ -145,7 +146,7 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
 
     // Send Now
     if ($sendNow) {
-        $results = sendEmails(array_values($emails), "WhiskeyValorAdmin", $subject, $body);
+        $results = sendEmails(array_values($emails), $subject, $body); // deleted the thing about WhiskeyValorAdmin before emails, purpose unclear
         if (!$results['success']) {
             foreach ($results['results'] as $f) $errors[] = "Failed to send to {$f['email']}: {$f['error']}";
             return ['success' => false, 'errors' => $errors ?: ["Unknown error sending emails"]];
