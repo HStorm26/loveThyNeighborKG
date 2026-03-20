@@ -732,14 +732,11 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['volunteerviewgroup.php'] = 1; 
 	    $permission_array['viewcheckinout.php'] = 1;
         $permission_array['viewresources.php'] = 1;
-        $permission_array['milestonepoints.php'] = 1;   //-Brooke wants to delete this (animal stuff)
-        //$permission_array['selectvotm.php'] = 1;   -Brooke wants to delete this
         $permission_array['volunteerviewgroupmembers.php'] = 1;
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0; //WVF - For admins to do view 
         $permission_array['personsearch.php'] = 2;
         $permission_array['personedit.php'] = 0; // changed to 0 so that applicants can apply
-        //$permission_array['viewschedule.php'] = 2;   -Brooke wants to delete
         $permission_array['log.php'] = 2;    //Brooke needs to find this later
         $permission_array['reports.php'] = 2;
         $permission_array['modifyuserrole.php'] = 2;
@@ -756,7 +753,6 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['deleteresources.php'] = 2;
         $permission_array['creategroup.php'] = 2;
         $permission_array['showgroups.php'] = 2;
-        //$permission_array['groupview.php'] = 2;   -Brooke wants to delete this
         $permission_array['managemembers.php'] = 2;
         $permission_array['deleteGroup.php'] = 2;
         $permission_array['volunteermanagement.php'] = 2;
