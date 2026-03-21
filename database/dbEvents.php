@@ -23,7 +23,8 @@
 include_once('dbinfo.php');
 include_once(dirname(__FILE__).'/../domain/Event.php');
 //Added to send emails to users when they are removed or signed up to an event.
-include_once(dirname(__FILE__).'/../email.php');
+//include_once(dirname(__FILE__).'/../email.php');
+//removed because it breaks things
 
 /*
  * add an event to dbEvents table: if already there, return false
