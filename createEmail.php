@@ -13,6 +13,7 @@ if(!isset($_SESSION['_id'])) {
 require_once(__DIR__ . '/database/dbinfo.php');
 require_once(__DIR__ . '/database/dbPersons.php');
 require_once(__DIR__ . '/database/dbEvents.php');
+require_once(__DIR__ . '/database/dbpersonhours.php');
 
 // Manual PHPMailer include
 require_once __DIR__ . '/email/vendor/phpmailer/phpmailer/src/PHPMailer.php';
@@ -144,7 +145,11 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
     // Determine recipients
     if ($recipientsType === 'specific' && !empty($recipientIDs)) {
         $emails = retrieveAllEmails($recipientIDs);
-    } else {
+    } else if ($recipientsType === 'events' )
+    {
+        $emails = retrieveAllEmails($recipientIDs);
+    }
+    else{
         $emails = retrieveAllEmails();
         $recipientIDs = array_keys($emails);
     }
@@ -202,7 +207,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     $sendDate = $_POST['sendTime'] ?? '';
     $recipientsType = $_POST['recipients'] ?? 'all';
     $recipientID = $_POST['recipientID'] ?? '';
-
+    $eventID = $_POST['eventID'] ?? '';
     $sendNow = ($sendNowStr === 'true');
 
     // Collect recipient IDs
@@ -210,6 +215,12 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     if ($recipientsType === 'specific' && !empty($recipientID)) {
         $recipientIDs = [$recipientID];
     }
+
+    if ($recipientsType === 'events' && !empty($eventID))
+        {
+            $recipientIDs = getEvetnPartipants((int)$eventID);
+            
+        }
 
     // ------------------------------------------------------
     // ACTION: SAVE DRAFT
@@ -324,7 +335,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
             <!--I will put the event functionallity here  -->
      <div id="selectorEvents" style="display:none;">
         <label for="eventID">Select Event</label>
-        <select id="recipientID" name="recipientID">
+        <select id="eventID" name="eventID">
             <option value="">-- Select an Event --</option>
             <?php foreach ($allEvents as $m): ?>
                 <option value="<?= htmlspecialchars($m->getID()) ?>"><?= htmlspecialchars($m->getName())?></option>
