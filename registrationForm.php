@@ -31,7 +31,7 @@
             <label for="last_name"><em>* </em>Last Name</label>
             <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name">
 
-            <label><em>* </em>Are you 21 or older?</label>
+            <!-- <label><em>* </em>Are you 21 or older?</label>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="yes" name="age" value="true" required>
@@ -42,13 +42,46 @@
                     <label for="no">No</label>
                 </div>
             </div>
-            <div class="median-div"></div>
+            <div class="median-div"></div> -->
 
-            <!--<label for="birthdate"><em>* </em>Date of Birth</label>
-            <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">-->
+            <label for="birthdate"><em>* </em>Date of Birth</label>
+            <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">
+
+            <label>T-Shirt Size</label>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="XS" name="t-shirt_size" value="Extra Small">
+                    <label for="Extra Small">XS</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="S" name="t-shirt_size" value="Small">
+                    <label for="Small">S</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="M" name="t-shirt_size" value="Medium">
+                    <label for="Medium">M</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="L" name="t-shirt_size" value="Large">
+                    <label for="Large">L</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="XL" name="t-shirt_size" value="Extra Large">
+                    <label for="Extra Large">XL</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="XXL" name="t-shirt_size" value="2X Large">
+                    <label for="2X Large">XXL</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="XXXL" name="t-shirt_size" value="3X Large">
+                    <label for="3X Large">XXXL</label>
+                </div>
+            </div>
+            <div class="median-div"></div>
             
-            <!-- <label for="street_address"><em>* </em>Street Address</label>
-            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"> -->
+            <label for="street_address"><em>* </em>Street Address</label>
+            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address">
 
             <label for="city"><em>* </em>City</label>
             <input type="text" id="city" name="city" required placeholder="Enter your city">
@@ -109,10 +142,10 @@
                 <option value="WY">Wyoming</option>
             </select>
 
-            <!--<label for="zip"><em>* </em>Zip Code</label>
+            <label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
--->
-            <div class="median-div"></div>
+
+            <!--<div class="median-div"></div>
             <label for="affiliation"><em>* </em>Military Affiliation</label>
             <select id="affiliation" name="affiliation" required>
                 <option value="" disabled selected></option>
@@ -132,7 +165,7 @@
                 <option value="Marine Corp">Marine Corp</option>
                 <option value="Navy">Navy</option>
                 <option value="Space Force">Space Force</option>
-            </select>
+            </select> -->
 
         </fieldset>
 
@@ -145,7 +178,7 @@
             <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
 
             <label for="email_consent">E-mail Notifications</label>
-            <p>By checking the box below, you consent to recieve emails from the Whiskey Valor Foundation. You may change this at any time.</p>
+            <p>By checking the box below, you consent to recieve emails from Love Thy Neighbor. You may change this at any time.</p>
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
 
             <div class="median-div"></div>
@@ -168,16 +201,16 @@
 
         </fieldset>
 
-        <!--<fieldset class="section-box mb-4">
+        <fieldset class="section-box mb-4">
             <h3>Emergency Contact</h3>
             <p class="mb-2">Please provide us with someone to contact on your behalf in case of an emergency.</p>
 	    <div class="blue-div"></div>
 
-            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name</label>
-            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name">
+            <label for="emergency_contact_first_name" required><em>* </em>Contact Name</label>
+            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact name">
 
-            <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
-            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name">
+            <!-- <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
+            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name"> -->
 
             <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
@@ -185,7 +218,7 @@
             <label for="emergency_contact_phone"><em>* </em>Contact Phone Number</label>
             <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
 
-            <label><em>* </em>Contact Phone Type</label>
+            <!--<label><em>* </em>Contact Phone Type</label>
             <div class="radio-group">
 	      <div class="radio-element">
                 <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
@@ -196,8 +229,8 @@
 	      <div class="radio-element">
                 <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work">Work</label>
 	      </div>
-            </div>
-        </fieldset>-->
+            </div> -->
+        </fieldset>
 
         <!-- <fieldset class="section-box mb-4">
             <h3 class="mb-2">Other Required Information</h3>
@@ -281,7 +314,26 @@
         <!--<input type="hidden" name="is_new_volunteer" value="1">
         <input type="hidden" name="total_hours_volunteered" value="0"> -->
         </fieldset>
-        
+
+        <fieldset class="section-box mb-4">
+            <h3>Consent Notice</h3>
+            <p class="mb-2">Please review the following before creating your account.</p>
+        <div class="blue-div"></div>
+            <label><em>* </em> Photo Release</label>
+            <p>I consent to have photographs and videos taken for Love Thy Neighbor to use for outreach and promotion.<!-- will work on refining this at a later date--></p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree" name="photo_release" value="yes" required>
+                    <label for="agree">I agree.</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="disagree" name="photo_release" value="no">
+                    <label for="disagree">I do not agree.</label>
+                </div>
+            </div>
+        </fieldset>
+
+<!-- If LTN has their own privacy policy then we will replace this with theirs. until then it's commented out.  
         <fieldset class="section-box mb-4">
             <h3>Consent Notice</h3>
             <p class="mb-2">Please review the following before creating your account.</p>
@@ -299,6 +351,7 @@
                 </div>
             </div>
         </fieldset>
+-->
         <p class="text-center notice"></p>
         <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
     </form>
