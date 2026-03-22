@@ -141,7 +141,7 @@
       </div>
       <div class="field-row">
         <span class="field-label">Date of Birth</span>
-        <span class="field-value"><?php echo date('m/d/Y', $user->get_birthday()); ?></span>
+        <span class="field-value"><?php echo $user->get_birthday() ? date('m/d/Y', strtotime($user->get_birthday())) : 'N/A'; ?></span>
       </div>
       <div class="field-row">
         <span class="field-label">Address</span>
