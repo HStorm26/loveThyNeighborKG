@@ -37,13 +37,10 @@ function add_person($person) {
     if (mysqli_num_rows($result) == 0) {
         // Prepare the insert query
         $insert_query = 'INSERT INTO dbpersons (
-            id, start_date, first_name, last_name, city, state,  
-            phone1, 
-            over21, phone1type, 
-            emergency_contact_phone, emergency_contact_phone_type, birthday, 
-            email, email_prefs, emergency_contact_first_name, contact_num,
-            emergency_contact_relation, contact_method, type, status, notes, 
-            password, affiliation, branch, emergency_contact_last_name
+            id, start_date, first_name, last_name, city, state, zip_code,
+            phone_number, street_address, emergency_contact_phone, emergency_contact_phone_type, 
+            birthday, `t-shirt_size`, email, email_prefs, emergency_contact_first_name, 
+            contact_num, emergency_contact_relation, contact_method, type, status, notes, password
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
@@ -72,7 +69,7 @@ function add_person($person) {
             $person->get_affiliation() . '","' .
             $person->get_branch() . '","' .
             //$person->get_archived() . '","' .                
-            $person->get_emergency_contact_last_name() . '");';  
+            $person->get_emergency_contact_last_name() . '");';
     
         // Check if the query is properly built
         if (empty($insert_query)) {

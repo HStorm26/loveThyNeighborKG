@@ -88,7 +88,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whiskey Valor | Profile Page</title>
+  <title>Love Thy Neighbor | Profile Page</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     function showSection(sectionId) {
@@ -150,10 +150,10 @@
   </div>
 
   <!-- Profile Content -->
-  <div class="max-w-6xl mx-auto px-4 -mt-20 relative z-10 flex flex-col md:flex-row gap-6">
-    <!-- Left Box -->
-    <div class="w-full md:w-1/3 bg-white border border-gray-300 rounded-2xl shadow-lg p-6 flex flex-col justify-between">
-      <div>
+<div class="max-w-6xl mx-auto px-4 mt-4 relative z-10 flex flex-col gap-6">
+      <!-- Left Box -->
+<div class="w-full bg-white border border-gray-300 rounded-2xl shadow-lg p-6 flex flex-col justify-between">
+        <div>
 	<div class="flex justify-between items-center">
 	<?php if ($viewingOwnProfile): ?>
           <h2 class="text-xl font-semibold mb-4">My Profile</h2>
@@ -184,8 +184,8 @@
     </div>
 
     <!-- Right Box -->
-    <div class="w-full md:w-2/3 bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
-      <!-- Tabs -->
+<div class="w-full bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
+        <!-- Tabs -->
       <div class="flex border-b border-gray-300 mb-4">
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E] border-b-4 border-[#1F1F21]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
