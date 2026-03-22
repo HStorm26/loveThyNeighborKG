@@ -37,46 +37,43 @@ function add_person($person) {
     if (mysqli_num_rows($result) == 0) {
         // Prepare the insert query
         $insert_query = 'INSERT INTO dbpersons (
-            id, start_date, first_name, last_name, city, state, zip_code,
-            phone_number, street_address, emergency_contact_phone, emergency_contact_phone_type, 
-            birthday, `t-shirt_size`, email, email_prefs, emergency_contact_first_name, 
-            contact_num, emergency_contact_relation, contact_method, type, status, notes, password
+            id, first_name, last_name, phone_number, email, email_prefs,
+            birthday, `t-shirt_size`, state, city, street_address, zip_code, 
+            emergency_contact_first_name, emergency_contact_phone, emergency_contact_relation,
+            archived, password, contact_num, contact_method, type, status, 
+            photo_release, community_service, notes
         ) VALUES ("' .
             $person->get_id() . '","' .
-            $person->get_start_date() . '","' .
             $person->get_first_name() . '","' .
             $person->get_last_name() . '","' .
-            $person->get_street_address() . '","' .
-            $person->get_city() . '","' .
-            $person->get_state() . '","' .
-            $person->get_zip_code() . '","' .
             $person->get_phone1() . '","' .
-            $person->get_over_21() . '","' .
-            $person->get_phone1type() . '","' .
-            $person->get_emergency_contact_phone() . '","' .
-            $person->get_emergency_contact_phone_type() . '","' .
-            $person->get_birthday() . '","' .
             $person->get_email() . '","' .
             $person->get_email_prefs() . '","' .
+            $person->get_birthday() . '","' .
+            $person->get_t_shirt_size() . '","' .
+            $person->get_state() . '","' .
+            $person->get_city() . '","' .
+            $person->get_street_address() . '","' .
+            $person->get_zip_code() . '","' .
             $person->get_emergency_contact_first_name() . '","' .
-            $person->get_contact_num() . '","' .
+            $person->get_emergency_contact_phone() . '","' .
             $person->get_emergency_contact_relation() . '","' .
+            $person->get_archived() . '","' .
+            $person->get_password() . '","' .
+            $person->get_contact_num() . '","' .
             $person->get_contact_method() . '","' .
             $person->get_type() . '","' .
             $person->get_status() . '","' .
-            $person->get_notes() . '","' .
-            $person->get_password() . '","' .
-            $person->get_affiliation() . '","' .
-            $person->get_branch() . '","' .
-            //$person->get_archived() . '","' .                
-            $person->get_emergency_contact_last_name() . '");';
-    
+            $person->get_photo_release() . '","' .
+            $person->get_community_service() . '","' .
+            $person->get_notes() . '");';   
+
+
         // Check if the query is properly built
         if (empty($insert_query)) {
             die("Error: insert query is empty");
         }
 
-        // Perform the insert
         if (mysqli_query($con, $insert_query)) {
             mysqli_close($con);
             return true;
@@ -619,47 +616,35 @@ function getall_volunteer_names() {
 }
 
 function make_a_person($result_row) {
-	/*
-	 ($f, $l, $v, $a, $c, $s, $z, $p1, $p1t, $p2, $p2t, $e, $ts, $comp, $cam, $tran, $cn, $cpn, $rel,
-			$ct, $t, $st, $cntm, $pos, $credithours, $comm, $mot, $spe,
-			$convictions, $av, $sch, $hrs, $bd, $sd, $hdyh, $notes, $pass)
-	 */
-        $thePerson = new Person(
-    @$result_row['id'],
-    @$result_row['start_date'],
-    @$result_row['first_name'],
-    @$result_row['last_name'],
-    @$result_row['street_address'],
-    @$result_row['city'],
-    @$result_row['state'],
-    @$result_row['zip_code'],
-    @$result_row['phone_number'],
-    @$result_row['over21'],
-    @$result_row['phone1type'],
-    @$result_row['emergency_contact_phone'],
-    @$result_row['emergency_contact_phone_type'],
-    @$result_row['birthday'],
-    @$result_row['email'],
-    @$result_row['email_prefs'],
-    @$result_row['emergency_contact_first_name'],
-    @$result_row['contact_num'],
-    @$result_row['emergency_contact_relation'],
-    @$result_row['contact_method'],
-    @$result_row['type'],
-    @$result_row['status'],
-    @$result_row['notes'],
-    @$result_row['password'],
-    @$result_row['affiliation'],
-    @$result_row['branch'],
-    @$result_row['archived'], 
-    @$result_row['emergency_contact_last_name'],
-    @$result_row['t-shirt_size']
-    #@$result_row['access_level']
-);
-
-
+    $thePerson = new Person(
+        $result_row['id'],
+        $result_row['first_name'],
+        $result_row['last_name'],
+        $result_row['phone_number'],
+        $result_row['email'],
+        $result_row['email_prefs'],
+        $result_row['birthday'],
+        $result_row['t-shirt_size'],
+        $result_row['state'],
+        $result_row['city'],
+        $result_row['street_address'],
+        $result_row['zip_code'],
+        $result_row['emergency_contact_first_name'],
+        $result_row['emergency_contact_phone'],
+        $result_row['emergency_contact_relation'],
+        $result_row['archived'],
+        $result_row['password'],
+        $result_row['contact_num'],
+        $result_row['contact_method'],
+        $result_row['type'],
+        $result_row['status'],
+        $result_row['photo_release'],
+        $result_row['community_service'],
+        $result_row['notes']
+        );
     return $thePerson;
 }
+
 
 function getall_names($status, $type, $venue) {
     $con=connect();
@@ -869,7 +854,8 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         $id, $first_name, $last_name, $t_shirt_size, $street_address, $city,
         $state, $zip_code, $email, $phone1, $email_consent, 
         $emergency_contact_first_name, $emergency_contact_relation,
-        $emergency_contact_phone
+        $emergency_contact_phone, $photo_release, $community_service,
+        $notes
     ) {     // UPDATED TO INCLUDE REMOVED FIELDS
         $query = "update dbpersons set 
             first_name='$first_name', last_name='$last_name',
@@ -879,7 +865,10 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             emergency_contact_first_name='$emergency_contact_first_name',
             emergency_contact_relation='$emergency_contact_relation',
             emergency_contact_phone='$emergency_contact_phone',
-            email_prefs='$email_consent'
+            email_prefs='$email_consent',
+            photo_release='$photo_release',
+            community_service='$community_service',
+            notes='$notes;
 
             where id='$id'";
         $connection = connect();

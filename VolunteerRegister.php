@@ -75,7 +75,7 @@
             'first_name', 'last_name', 'phone1', 'email',
             'birthday', 't_shirt_size', 'state', 'city', 'street_address', 'zip',
             'emergency_contact_first_name', 'emergency_contact_phone', 'emergency_contact_relation',
-            'password', 'privacy_consent', 'picture_release'
+            'password', 'privacy_consent', 'photo_release'
         );
 
         $optional = array(
@@ -221,11 +221,11 @@
         // Love Thy Neighbor KG newperson
         $newperson = new Person(
             $id, $first_name, $last_name,
-            $phone_number, $email, $email_consent,
+            $phone1, $email, $email_consent,
             $birthday, $t_shirt_size, $state,
             $city, $street_address, $zip_code,
             $emergency_contact_first_name, 
-            $emergency_contact_phone, $emergency_contact_relation, $archived, 
+            $emergency_contact_phone, $emergency_contact_relation,
             $archived, $password, $contact_num, $contact_method,
             $type, $status, $photo_release, $is_community_service_volunteer, $notes
         );
