@@ -37,22 +37,19 @@ function add_person($person) {
     if (mysqli_num_rows($result) == 0) {
         // Prepare the insert query
         $insert_query = 'INSERT INTO dbpersons (
-            id, start_date, first_name, last_name, city, state,  
-            phone1, 
-            over21, phone1type, 
-            emergency_contact_phone, emergency_contact_phone_type, birthday, 
-            email, email_prefs, emergency_contact_first_name, contact_num,
-            emergency_contact_relation, contact_method, type, status, notes, 
-            password, affiliation, branch, emergency_contact_last_name
+            id, start_date, first_name, last_name, city, state, zip_code,
+            phone_number, street_address, emergency_contact_phone, emergency_contact_phone_type, 
+            birthday, `t-shirt_size`, email, email_prefs, emergency_contact_first_name, 
+            contact_num, emergency_contact_relation, contact_method, type, status, notes, password
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
             $person->get_first_name() . '","' .
             $person->get_last_name() . '","' .
-            //$person->get_street_address() . '","' .
+            $person->get_street_address() . '","' .
             $person->get_city() . '","' .
             $person->get_state() . '","' .
-            //$person->get_zip_code() . '","' .
+            $person->get_zip_code() . '","' .
             $person->get_phone1() . '","' .
             $person->get_over_21() . '","' .
             $person->get_phone1type() . '","' .
@@ -72,7 +69,7 @@ function add_person($person) {
             $person->get_affiliation() . '","' .
             $person->get_branch() . '","' .
             //$person->get_archived() . '","' .                
-            $person->get_emergency_contact_last_name() . '");';  
+            $person->get_emergency_contact_last_name() . '");';
     
         // Check if the query is properly built
         if (empty($insert_query)) {
@@ -255,14 +252,14 @@ function archive_volunteer($volunteer_id) {
         // Move data from dbpersons to dbarchived_volunteers
         $query = "INSERT INTO dbarchived_volunteers (
                     id, start_date, first_name, last_name, street_address, city, state, zip_code,
-                    phone1, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
+                    phone_number, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
                     emergency_contact_first_name, contact_num, emergency_contact_relation, contact_method, type,
                     status, notes, password, skills, interests, archived_date, emergency_contact_last_name, 
                     is_new_volunteer, is_community_service_volunteer, total_hours_volunteered
                  ) 
                  SELECT 
                     id, start_date, first_name, last_name, street_address, city, state, zip_code,
-                    phone1, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
+                    phone_number, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
                     emergency_contact_first_name, contact_num, emergency_contact_relation, contact_method, type,
                     status, notes, password, skills, interests, NOW(),
                     emergency_contact_last_name, is_new_volunteer, is_community_service_volunteer, total_hours_volunteered
@@ -636,7 +633,7 @@ function make_a_person($result_row) {
     @$result_row['city'],
     @$result_row['state'],
     @$result_row['zip_code'],
-    @$result_row['phone1'],
+    @$result_row['phone_number'],
     @$result_row['over21'],
     @$result_row['phone1type'],
     @$result_row['emergency_contact_phone'],
@@ -655,7 +652,8 @@ function make_a_person($result_row) {
     @$result_row['affiliation'],
     @$result_row['branch'],
     @$result_row['archived'], 
-    @$result_row['emergency_contact_last_name']
+    @$result_row['emergency_contact_last_name'],
+    @$result_row['t-shirt_size']
     #@$result_row['access_level']
 );
 
@@ -868,17 +866,21 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
 */
     // updates the required fields of a person's account
     function update_person_required(
-        $id, $first_name, $last_name, $city, $state,
-        $email, $phone1, $email_prefs, $affiliation,
-        $branch
-    ) {
+        $id, $first_name, $last_name, $t_shirt_size, $street_address, $city,
+        $state, $zip_code, $email, $phone1, $email_consent, 
+        $emergency_contact_first_name, $emergency_contact_relation,
+        $emergency_contact_phone
+    ) {     // UPDATED TO INCLUDE REMOVED FIELDS
         $query = "update dbpersons set 
-            first_name='$first_name', last_name='$last_name', 
-            city='$city', state='$state',
-            email='$email', phone1='$phone1',
-            affiliation='$affiliation', branch='$branch',
-            email_prefs='$email_prefs'
-        
+            first_name='$first_name', last_name='$last_name',
+            `t-shirt_size`='$t_shirt_size', street_address='$street_address',
+            city='$city', state='$state', zip_code='$zip_code',
+            email='$email', phone_number='$phone1',
+            emergency_contact_first_name='$emergency_contact_first_name',
+            emergency_contact_relation='$emergency_contact_relation',
+            emergency_contact_phone='$emergency_contact_phone',
+            email_prefs='$email_consent'
+
             where id='$id'";
         $connection = connect();
         $result = mysqli_query($connection, $query);
@@ -961,7 +963,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             if (!$first) {
                 $where .= ' and ';
             }
-            $where .= "phone1 like '%$phone%'";
+            $where .= "phone_number like '%$phone%'";
             $first = false;
         }
 		if ($zip) {
