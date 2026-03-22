@@ -46,6 +46,7 @@ class Person {
 	private $archived;
 	private $emergency_contact_last_name;
 	private $access_level;
+	private $t_shirt_size;
 
 	function __construct(
         $id, $start_date, $first_name, $last_name, $street_address, $city, $state,
@@ -53,7 +54,7 @@ class Person {
 		$emergency_contact_phone_type, $birthday, $email, $email_prefs,
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
-		$emergency_contact_last_name) {
+		$emergency_contact_last_name, $t_shirt_size) {
         $this->id = $id;
 		$this->start_date = $start_date;
 		$this->first_name = $first_name;
@@ -82,6 +83,7 @@ class Person {
 		$this->branch = $branch;
 		$this->archived = $archived;
 		$this->emergency_contact_last_name = $emergency_contact_last_name;
+		$this->t_shirt_size = $t_shirt_size;
 
         #$this->access_level = ($id == 'vmsroot') ? 3 : 1;
 
@@ -181,6 +183,10 @@ class Person {
 		return $this->birthday;
 	}
 
+
+	function get_t_shirt_size() {
+		return $this->t_shirt_size;
+	}
 
 	function get_contact_num() {
 		return $this->contact_num;

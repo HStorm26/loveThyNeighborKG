@@ -655,7 +655,8 @@ function make_a_person($result_row) {
     @$result_row['affiliation'],
     @$result_row['branch'],
     @$result_row['archived'], 
-    @$result_row['emergency_contact_last_name']
+    @$result_row['emergency_contact_last_name'],
+    @$result_row['t-shirt_size']
     #@$result_row['access_level']
 );
 
@@ -875,7 +876,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
     ) {     // UPDATED TO INCLUDE REMOVED FIELDS
         $query = "update dbpersons set 
             first_name='$first_name', last_name='$last_name',
-            t_shirt_size='$t_shirt_size', street_address='$street_address',
+            `t-shirt_size`='$t_shirt_size', street_address='$street_address',
             city='$city', state='$state', zip_code='$zip_code',
             email='$email', phone1='$phone1',
             emergency_contact_first_name='$emergency_contact_first_name',
