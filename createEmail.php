@@ -12,6 +12,8 @@ if(!isset($_SESSION['_id'])) {
 
 require_once(__DIR__ . '/database/dbinfo.php');
 require_once(__DIR__ . '/database/dbPersons.php');
+require_once(__DIR__ . '/database/dbEvents.php');
+require_once(__DIR__ . '/database/dbpersonhours.php');
 
 // Manual PHPMailer include
 require_once __DIR__ . '/email/vendor/phpmailer/phpmailer/src/PHPMailer.php';
@@ -35,6 +37,14 @@ function getUsersAndEmails() {
 }
 
 $allMembers = getUsersAndEmails();
+
+// ------------------
+// get events for drop down
+// ------------------------
+
+$allEvents = get_all_events_sorted_by_date_not_archived();
+
+
 
 function loadEnv(string $file): array {
     $env = [];
@@ -135,7 +145,11 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
     // Determine recipients
     if ($recipientsType === 'specific' && !empty($recipientIDs)) {
         $emails = retrieveAllEmails($recipientIDs);
-    } else {
+    } else if ($recipientsType === 'events' )
+    {
+        $emails = retrieveAllEmails($recipientIDs);
+    }
+    else{
         $emails = retrieveAllEmails();
         $recipientIDs = array_keys($emails);
     }
@@ -193,7 +207,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     $sendDate = $_POST['sendTime'] ?? '';
     $recipientsType = $_POST['recipients'] ?? 'all';
     $recipientID = $_POST['recipientID'] ?? '';
-
+    $eventID = $_POST['eventID'] ?? '';
     $sendNow = ($sendNowStr === 'true');
 
     // Collect recipient IDs
@@ -201,6 +215,12 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     if ($recipientsType === 'specific' && !empty($recipientID)) {
         $recipientIDs = [$recipientID];
     }
+
+    if ($recipientsType === 'events' && !empty($eventID))
+        {
+            $recipientIDs = getEvetnPartipants((int)$eventID);
+            
+        }
 
     // ------------------------------------------------------
     // ACTION: SAVE DRAFT
@@ -260,6 +280,8 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 ?>
 
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -298,14 +320,25 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     <select name="recipients" id="recipients">
         <option value="all">All Love Thy Neighbor KG Members</option>
         <option value="specific">Specific Users</option>
+        <option value="events">Event Participants</option>
     </select>
-
+<!--This only appears when specific users is selected  -->
     <div id="selectorRecipients" style="display:none;">
         <label for="recipientID">Select Member</label>
         <select id="recipientID" name="recipientID">
             <option value="">-- Select a Member --</option>
             <?php foreach ($allMembers as $m): ?>
                 <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+            <!--I will put the event functionallity here  -->
+     <div id="selectorEvents" style="display:none;">
+        <label for="eventID">Select Event</label>
+        <select id="eventID" name="eventID">
+            <option value="">-- Select an Event --</option>
+            <?php foreach ($allEvents as $m): ?>
+                <option value="<?= htmlspecialchars($m->getID()) ?>"><?= htmlspecialchars($m->getName())?></option>
             <?php endforeach; ?>
         </select>
     </div>
@@ -322,6 +355,8 @@ const sendTimeInput = document.getElementById('sendTime');
 const recipientsSelect = document.getElementById('recipients');
 const recipientsDiv = document.getElementById('selectorRecipients');
 
+const eventsDiv = document.getElementById('selectorEvents');
+
 function toggleTime() {
     const sendNow = scheduledSelect.value === 'true';
     timeDiv.style.display = sendNow ? 'none' : 'block';
@@ -329,18 +364,38 @@ function toggleTime() {
 }
 
 function toggleRecipients() {
-    recipientsDiv.style.display = recipientsSelect.value === 'specific' ? 'block' : 'none';
+    //recipientsDiv.style.display = recipientsSelect.value === 'specific' ? 'block' : 'none';
+    if (recipientsSelect.value === 'specific')
+    {
+        recipientsDiv.style.display ='block';
+    }
+    else
+    {
+        recipientsDiv.style.display ='none';
+    }
+    if (recipientsSelect.value === 'events')
+    {
+        eventsDiv.style.display = 'block';
+    }
+    else
+    {
+        eventsDiv.style.display = 'none';
+    }
+    
 }
+
+//function toggleEvents() {
+    //eventsDiv.style.display = recipientsSelect.value === 'events' ? 'block' : 'none';
+//}
 
 scheduledSelect.addEventListener('change', toggleTime);
 recipientsSelect.addEventListener('change', toggleRecipients);
+eventsSelect.addEventListener('change', toggleEvents);
 document.addEventListener('DOMContentLoaded', () => { toggleTime(); toggleRecipients(); });
 </script>
 
 <?php endif; ?>
 </body>
 </html>
-
-
 
 
