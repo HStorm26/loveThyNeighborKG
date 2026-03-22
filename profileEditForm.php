@@ -139,8 +139,8 @@
             <!--<label for="birthday"><em>* </em>Date of Birth</label>
             <input type="date" id="birthday" name="birthday" value="<?php //echo hsc($person->get_birthday()); ?>" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>"> -->
 
-            <label for="t_shirt_size"><em>* </em>T-Shirt Size</label>
-            <select id="t_shirt_size" name="t_shirt_size" required>
+            <label for="t-shirt_size"><em>* </em>T-Shirt Size</label>
+            <select id="t-shirt_size" name="t-shirt_size" required>
                 <option value="x_small" <?php if($person->get_t_shirt_size() == 'x_small') echo 'selected'; ?>>X-Small</option>
                 <option value="small" <?php if($person->get_t_shirt_size() == 'small') echo 'selected'; ?>>Small</option>
                 <option value="medium" <?php if($person->get_t_shirt_size() == 'medium') echo 'selected'; ?>>Medium</option>

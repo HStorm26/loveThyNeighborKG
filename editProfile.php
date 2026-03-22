@@ -38,7 +38,7 @@
         // }
 
         $required = array(
-            'first_name', 'last_name', 't_shirt_size',
+            'first_name', 'last_name', 't-shirt_size',
             'street_address', 'city', 'state', 'zip_code',
             'email', 'phone', 'emergency_contact_first_name',
             'emergency_contact_relation', 'emergency_contact_phone' 
@@ -58,7 +58,7 @@
             // echo 'bad dob';
         }*/
 
-        $t_shirt_size = $args['t_shirt_size'];
+        $t_shirt_size = $args['t-shirt_size'];
         
         $street_address = $args['street_address'];
 
