@@ -28,7 +28,7 @@
             require_once('database/dbPersons.php');
             /*@require_once('database/dbMessages.php');*/
             /*@dateChecker();*/
-            $username = strtolower($args['username']);
+            $username = trim($args['username']);
             $password = $args['password'];
             $user = retrieve_person($username);
             if (!$user) {
