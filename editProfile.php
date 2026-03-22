@@ -142,9 +142,9 @@
         $person = retrieve_person($id);
 
         if(isset($args['email_prefs'])) {
-            $email_consent = $args['email_prefs']; 
+            $email_consent = 'true';    // takes true or false
         } else {
-            $email_consent = $person->get_email_prefs();
+            $email_consent = 'false';
         }
 
         // if(isset($args['branch'])) {

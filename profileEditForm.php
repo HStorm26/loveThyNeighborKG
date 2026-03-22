@@ -141,14 +141,14 @@
 
             <label for="t_shirt_size"><em>* </em>T-Shirt Size</label>
             <select id="t_shirt_size" name="t_shirt_size" required>
-                <option value="x_small">X-Small</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-                <option value="x_large">X-Large</option>
-                <option value="xx_large">XX-Large</option>
-                <option value="xxx_large">XXX-Large</option>
-            </select>
+                <option value="x_small" <?php if($person->get_t_shirt_size() == 'x_small') echo 'selected'; ?>>X-Small</option>
+                <option value="small" <?php if($person->get_t_shirt_size() == 'small') echo 'selected'; ?>>Small</option>
+                <option value="medium" <?php if($person->get_t_shirt_size() == 'medium') echo 'selected'; ?>>Medium</option>
+                <option value="large" <?php if($person->get_t_shirt_size() == 'large') echo 'selected'; ?>>Large</option>
+                <option value="x_large" <?php if($person->get_t_shirt_size() == 'x_large') echo 'selected'; ?>>X-Large</option>
+                <option value="xx_large" <?php if($person->get_t_shirt_size() == 'xx_large') echo 'selected'; ?>>XX-Large</option>
+                <option value="xxx_large" <?php if($person->get_t_shirt_size() == 'xxx_large') echo 'selected'; ?>>XXX-Large</option>
+            </select>  
 
             <label for="street_address"><em>* </em>Street Address</label>
             <input type="text" id="street_address" name="street_address" value="<?php echo hsc($person->get_street_address()); ?>" required placeholder="Enter your street address">
