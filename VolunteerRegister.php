@@ -63,17 +63,26 @@
             'privacy_consent'
         ); */
 
+        //  id, first_name, last_name, phone_number, email, email_prefs,
+        //  birthday, t-shirt_size, state, city, street_address, zip_code,
+        //  emergency_contact_first_name, emergency_contact_phone,
+        //  emergency_contact_relation, archived, password, contact_num,
+        //  contact_method, type, status, photo_release, community_service,
+        //  notes
+
         // Love Thy Neighbor KG required
         $required = array (
-            'first_name', 'last_name', 'birthdate', 't_shirt_size',
-            'street_address', 'city', 'state', 'zip',
-            'email', 'phone', 'username', 'password',
-            'privacy_consent', 'picture_consent'
+            'first_name', 'last_name', 'phone1', 'email',
+            'birthday', 't_shirt_size', 'state', 'city', 'street_address', 'zip',
+            'emergency_contact_first_name', 'emergency_contact_phone', 'emergency_contact_relation',
+            'password', 'privacy_consent', 'picture_release'
         );
 
         $optional = array(
-            'phone', 'email_prefs', 'notes'
+            'email_prefs', 'notes'
         );
+
+        // contact_num, contact_method are not needed at all
 
         $errors = false;
 
@@ -85,7 +94,7 @@
         $last_name = $args['last_name'];
         $t_shirt_size = $args['t_shirt_size'];
         //$age = $args['age']; // Passes either "true" or "false" 
-        $birthday = validateDate($args['birthdate']);
+        $birthday = validateDate($args['birthday']);
         if (!$birthday) {
             echo "<p>Invalid birthdate.</p>";
             $errors = true;
@@ -114,7 +123,7 @@
             $errors = true;
         }
 
-        if(isset($args['phone1'])) { // Make phone number optional 
+        if(isset($args['phone1'])) { 
             $phone1 = validateAndFilterPhoneNumber($args['phone1']);
             if (!$phone1) {
                 echo "<p>Invalid phone number.</p>";
@@ -135,7 +144,7 @@
             $errors = true;
         }
 
-        if(!isset($args['picture_consent']) || $args['privacy_consent'] == 'no') {
+        if(!isset($args['photo_release']) || $args['photo_release'] == 'no') {
             echo "<p>You must agree to being photographed to create an account.</p>";
             $errors = true;
         }
@@ -165,7 +174,11 @@
         $archived = 0;
         $status = "Active";
         $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
-        //notes
+        $photo_release = $args['photo_release'] === 'yes' ? 1 : 0;
+        $contact_num = null;
+        $contact_method = null;
+        //$notes = $args['notes'];
+        $notes = null;
 
         $id = $args['username'];
 
@@ -208,7 +221,7 @@
         // Love Thy Neighbor KG newperson
         $newperson = new Person(
             $id, $first_name, $last_name,
-            $phone1, $email, $email_consent,
+            $phone_number, $email, $email_consent,
             $birthday, $t_shirt_size, $state,
             $city, $street_address, $zip_code,
             $emergency_contact_first_name, 
