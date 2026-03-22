@@ -252,14 +252,14 @@ function archive_volunteer($volunteer_id) {
         // Move data from dbpersons to dbarchived_volunteers
         $query = "INSERT INTO dbarchived_volunteers (
                     id, start_date, first_name, last_name, street_address, city, state, zip_code,
-                    phone1, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
+                    phone_number, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
                     emergency_contact_first_name, contact_num, emergency_contact_relation, contact_method, type,
                     status, notes, password, skills, interests, archived_date, emergency_contact_last_name, 
                     is_new_volunteer, is_community_service_volunteer, total_hours_volunteered
                  ) 
                  SELECT 
                     id, start_date, first_name, last_name, street_address, city, state, zip_code,
-                    phone1, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
+                    phone_number, phone1type, emergency_contact_phone, emergency_contact_phone_type, birthday, email,
                     emergency_contact_first_name, contact_num, emergency_contact_relation, contact_method, type,
                     status, notes, password, skills, interests, NOW(),
                     emergency_contact_last_name, is_new_volunteer, is_community_service_volunteer, total_hours_volunteered
@@ -633,7 +633,7 @@ function make_a_person($result_row) {
     @$result_row['city'],
     @$result_row['state'],
     @$result_row['zip_code'],
-    @$result_row['phone1'],
+    @$result_row['phone_number'],
     @$result_row['over21'],
     @$result_row['phone1type'],
     @$result_row['emergency_contact_phone'],
@@ -875,7 +875,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             first_name='$first_name', last_name='$last_name',
             `t-shirt_size`='$t_shirt_size', street_address='$street_address',
             city='$city', state='$state', zip_code='$zip_code',
-            email='$email', phone1='$phone1',
+            email='$email', phone_number='$phone1',
             emergency_contact_first_name='$emergency_contact_first_name',
             emergency_contact_relation='$emergency_contact_relation',
             emergency_contact_phone='$emergency_contact_phone',
@@ -963,7 +963,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             if (!$first) {
                 $where .= ' and ';
             }
-            $where .= "phone1 like '%$phone%'";
+            $where .= "phone_number like '%$phone%'";
             $first = false;
         }
 		if ($zip) {
