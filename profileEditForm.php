@@ -140,7 +140,7 @@
             <input type="date" id="birthday" name="birthday" value="<?php //echo hsc($person->get_birthday()); ?>" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>"> -->
 
             <label for="t_shirt_size"><em>* </em>T-Shirt Size</label>
-            <select id="state" name="state" required>
+            <select id="t_shirt_size" name="t_shirt_size" required>
                 <option value="x_small">X-Small</option>
                 <option value="small">Small</option>
                 <option value="medium">Medium</option>

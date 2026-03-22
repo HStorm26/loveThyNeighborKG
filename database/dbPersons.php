@@ -49,10 +49,10 @@ function add_person($person) {
             $person->get_start_date() . '","' .
             $person->get_first_name() . '","' .
             $person->get_last_name() . '","' .
-            //$person->get_street_address() . '","' .
+            $person->get_street_address() . '","' .
             $person->get_city() . '","' .
             $person->get_state() . '","' .
-            //$person->get_zip_code() . '","' .
+            $person->get_zip_code() . '","' .
             $person->get_phone1() . '","' .
             $person->get_over_21() . '","' .
             $person->get_phone1type() . '","' .
@@ -868,17 +868,21 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
 */
     // updates the required fields of a person's account
     function update_person_required(
-        $id, $first_name, $last_name, $city, $state,
-        $email, $phone1, $email_prefs, $affiliation,
-        $branch
-    ) {
+        $id, $first_name, $last_name, $t_shirt_size, $street_address, $city,
+        $state, $zip_code, $email, $phone1, $email_consent, 
+        $emergency_contact_first_name, $emergency_contact_relation,
+        $emergency_contact_phone
+    ) {     // UPDATED TO INCLUDE REMOVED FIELDS
         $query = "update dbpersons set 
-            first_name='$first_name', last_name='$last_name', 
-            city='$city', state='$state',
+            first_name='$first_name', last_name='$last_name',
+            t_shirt_size='$t_shirt_size', street_address='$street_address',
+            city='$city', state='$state', zip_code='$zip_code',
             email='$email', phone1='$phone1',
-            affiliation='$affiliation', branch='$branch',
-            email_prefs='$email_prefs'
-        
+            emergency_contact_first_name='$emergency_contact_first_name',
+            emergency_contact_relation='$emergency_contact_relation',
+            emergency_contact_phone='$emergency_contact_phone',
+            email_prefs='$email_consent'
+
             where id='$id'";
         $connection = connect();
         $result = mysqli_query($connection, $query);
