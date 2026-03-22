@@ -30,57 +30,41 @@
         $id = $userID;
     }
     require_once('database/dbPersons.php');
-    //if (isset($_GET['removePic'])) {
-     // if ($_GET['removePic'] === 'true') {
-       // remove_profile_picture($id);
-      //}
-    //}
 
-   $user = retrieve_person($id);
-  $verified_ids = get_verified_ids($user->get_id());
+    $user = retrieve_person($id);
+    $verified_ids = get_verified_ids($user->get_id());
 
-   if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_hours'])) {
-    require_once('database/dbPersons.php'); // already required, so you can just remove the duplicate
-    $con = connect();
-
-    $newHours = floatval($_POST['new_hours']);
-    $safeID = mysqli_real_escape_string($con, $id);
-
-    $update = mysqli_query($con, "
-        UPDATE dbpersons 
-        SET total_hours_volunteered = $newHours 
-        WHERE id = '$safeID'
-    ");
-
-    if ($update) {
-        $user = retrieve_person($id); // refresh with updated hours
-        echo '
-        <div id="success-message" class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">
-          Hours updated successfully!
-        </div>
-        <script>
-          setTimeout(() => {
-            const msg = document.getElementById("success-message");
-            if (msg) msg.remove();
-          }, 3000);
-        </script>
-        ';
-    } else {
-        echo '<div class="absolute left-[40%] top-[15%] z-50 bg-red-800 p-4 text-white rounded-xl text-xl">Failed to update hours.</div>';
+    if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_hours'])) {
+        $con = connect();
+        $newHours = floatval($_POST['new_hours']);
+        $safeID = mysqli_real_escape_string($con, $id);
+        $update = mysqli_query($con, "
+            UPDATE dbpersons 
+            SET total_hours_volunteered = $newHours 
+            WHERE id = '$safeID'
+        ");
+        if ($update) {
+            $user = retrieve_person($id);
+            echo '
+            <div id="success-message" style="position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;background:#166534;color:#fff;padding:1rem 2rem;border-radius:0.5rem;font-size:1.1rem;">
+              Hours updated successfully!
+            </div>
+            ';
+        } else {
+            echo '<div style="position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;background:#991b1b;color:#fff;padding:1rem 2rem;border-radius:0.5rem;font-size:1.1rem;">Failed to update hours.</div>';
+        }
     }
-  
-}
 
     $viewingOwnProfile = $id == $userID;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      if (isset($_POST['url'])) {
-        if (!update_profile_pic($id, $_POST['url'])) {
-          header('Location: viewProfile.php?id='.$id.'&picsuccess=False');
-        } else {
-          header('Location: viewProfile.php?id='.$id.'&picsuccess=True');
+        if (isset($_POST['url'])) {
+            if (!update_profile_pic($id, $_POST['url'])) {
+                header('Location: viewProfile.php?id='.$id.'&picsuccess=False');
+            } else {
+                header('Location: viewProfile.php?id='.$id.'&picsuccess=True');
+            }
         }
-      }
     }
 ?>
 <!DOCTYPE html>
@@ -89,231 +73,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Love Thy Neighbor | Profile Page</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    function showSection(sectionId) {
-      const sections = document.querySelectorAll('.profile-section');
-      sections.forEach(section => section.classList.add('hidden'));
-      document.getElementById(sectionId).classList.remove('hidden');
-
-      const tabs = document.querySelectorAll('.tab-button');
-      tabs.forEach(tab => {
-        tab.classList.remove('border-b-4', 'border-[#C9AB81]');
-        tab.classList.add('hover:border-b-2', 'hover:border-[#C9AB81]');
-      });
-
-      const activeTab = document.querySelector(`[data-tab="${sectionId}"]`);
-      activeTab.classList.add('border-b-4', 'border-[#C9AB81]');
-      activeTab.classList.remove('hover:border-b-2', 'hover:border-[#C9AB81]');
-    }
-
-    window.onload = () => showSection('personal');
-  </script>
-  <?php 
-    require_once('header.php'); 
+  <?php
+    require_once('header.php');
     require_once('include/output.php');
   ?>
-
-    <script>
-
-      function openModal(modalID) {
-          document.getElementById(modalID).classList.remove('hidden');
-      }
-
-      function closeModal(modalID) {
-          document.getElementById(modalID).classList.add('hidden');
-      }
-
-      window.onload = () => showSection('personal');
-  </script>
-
+  <link rel="stylesheet" href="css/viewProfile.css">
 </head>
-            <?php if ($id == 'vmsroot'): ?>
-		<div class="absolute left-[40%] top-[20%] bg-red-800 p-4 text-white rounded-xl text-xl">The root user does not have a profile.</div>
-                </main></body></html>
-                <?php die() ?>
-            <?php elseif (!$user): ?>
-		<div class="absolute left-[40%] top-[20%] bg-red-800 p-4 text-white rounded-xl text-xl">User does not exist.</div>
-                </main></body></html>
-                <?php die() ?>
-            <?php endif ?>
-            <?php if (isset($_GET['editSuccess'])): ?>
-		<div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">Profile updated successfully!</div>
-            <?php endif ?>
-            <?php if (isset($_GET['rscSuccess'])): ?>
-		<div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">User role/status updated successfully!</div>
-            <?php endif ?>
+<body>
 
-<body class="bg-gray-100">
-  <!-- Hero Section -->
-  <div class="h-48 relative" style="background-color: var(--page-background-color);">
+<?php if ($id == 'vmsroot'): ?>
+  <main class="view-profile-wrap">
+    <div class="toast-error" style="position:static;transform:none;margin-bottom:1rem;">The root user does not have a profile.</div>
+  </main>
+  <?php die() ?>
+<?php elseif (!$user): ?>
+  <main class="view-profile-wrap">
+    <div class="toast-error" style="position:static;transform:none;margin-bottom:1rem;">User does not exist.</div>
+  </main>
+  <?php die() ?>
+<?php endif ?>
+
+<?php if (isset($_GET['editSuccess'])): ?>
+  <div class="toast-success">Profile updated successfully!</div>
+<?php endif ?>
+<?php if (isset($_GET['rscSuccess'])): ?>
+  <div class="toast-success">User role/status updated successfully!</div>
+<?php endif ?>
+
+<main class="view-profile-wrap">
+
+  <h2 class="view-profile-title">
+    <?php if ($viewingOwnProfile): ?>
+      My Profile
+    <?php else: ?>
+      Viewing <?php echo htmlspecialchars($user->get_first_name() . ' ' . $user->get_last_name()); ?>
+    <?php endif ?>
+  </h2>
+
+  <!-- Top action buttons -->
+  <div class="profile-actions">
+    <a href="editProfile.php<?php if ($id != $userID) echo '?id=' . urlencode($id); ?>" class="btn-primary">Edit Profile</a>
+    <a href="index.php" class="btn-secondary">Return to Dashboard</a>
   </div>
 
-  <!-- Profile Content -->
-<div class="max-w-6xl mx-auto px-4 mt-4 relative z-10 flex flex-col gap-6">
-      <!-- Left Box -->
-<div class="w-full bg-white border border-gray-300 rounded-2xl shadow-lg p-6 flex flex-col justify-between">
-        <div>
-	<div class="flex justify-between items-center">
-	<?php if ($viewingOwnProfile): ?>
-          <h2 class="text-xl font-semibold mb-4">My Profile</h2>
+  <!-- Radio inputs must be siblings of .tab-card to use ~ selector -->
+  <input class="tab-radio" type="radio" name="profile-tab" id="tab-personal" checked>
+  <input class="tab-radio" type="radio" name="profile-tab" id="tab-contact">
+  <input class="tab-radio" type="radio" name="profile-tab" id="tab-notifs">
 
-	<?php else: ?>
-	  <h2 class="text-xl font-semibold mb-4">Viewing <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
-	<?php endif ?>
-	</div>
-        <div class="space-y-2 divide-y divide-gray-300">
-          <div class="flex justify-between py-2">
-            <span class="font-medium">Joined</span><span>Jan 2022</span>
-          </div>
-          <div class="flex justify-between py-2">
-            <span class="font-medium">Branch</span><span><?php echo ucfirst($user->get_branch()) ?></span>
-          </div>
-          <div class="flex justify-between py-2">
-            <span class="font-medium">Affiliation</span><span><?php echo ucfirst($user->get_affiliation()) ?></span>
-          </div>
-        </div>
+  <div class="tab-card">
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <label class="tab-label" for="tab-personal">Personal Information</label>
+      <label class="tab-label" for="tab-contact">Contact Information</label>
+      <label class="tab-label" for="tab-notifs">Email Preferences</label>
+    </div>
+
+    <!-- Personal Information panel -->
+    <div class="tab-panel" id="panel-personal">
+      <div class="field-row">
+        <span class="field-label">Username</span>
+        <span class="field-value"><?php echo htmlspecialchars($user->get_id()); ?></span>
       </div>
-      <div class="mt-6 space-y-2">
-        <button type="button" class="text-lg font-medium w-full px-4 py-2 bg-[#C9AB81] text-[#1F1F21] rounded-md hover:bg-[#1F1F21] hover:text-[#C9AB81] cursor-pointer" onclick="openModal('verifiedIdsModal')">
-          View Verified IDs
-        </button>
-        <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#C9AB81] text-[#1F1F21] rounded-md hover:bg-[#1F1F21] hover:text-[#C9AB81] cursor-pointer">Edit Profile</button>
-        <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-[#1F1F21] cursor-pointer">Return to Dashboard</button>
+      <div class="field-row">
+        <span class="field-label">Name</span>
+        <span class="field-value"><?php echo htmlspecialchars($user->get_first_name() . ' ' . $user->get_last_name()); ?></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Date of Birth</span>
+        <span class="field-value"><?php echo date('m/d/Y', $user->get_birthday()); ?></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Address</span>
+        <span class="field-value"><?php echo htmlspecialchars($user->get_street_address() . ', ' . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code()); ?></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Member Since</span>
+        <span class="field-value">Jan 2022</span>
       </div>
     </div>
 
-    <!-- Right Box -->
-<div class="w-full bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
-        <!-- Tabs -->
-      <div class="flex border-b border-gray-300 mb-4">
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E] border-b-4 border-[#1F1F21]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="volunteer" onclick="showSection('volunteer')">Email Preferences</button>
+    <!-- Contact Information panel -->
+    <div class="tab-panel" id="panel-contact">
+      <div class="field-row">
+        <span class="field-label">Email</span>
+        <span class="field-value">
+          <a href="mailto:<?php echo htmlspecialchars($user->get_email()); ?>"><?php echo htmlspecialchars($user->get_email()); ?></a>
+        </span>
       </div>
-
-      <!-- Personal Section -->
-      <div id="personal" class="profile-section space-y-4">
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Username</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_id() ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Name</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_first_name() ?> <?php echo $user->get_last_name() ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Date of Birth</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo date('m/d/Y', strtotime($user->get_birthday())) ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Address</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_street_address() . ', ' . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code() ?></p>
-        </div>
+      <div class="field-row">
+        <span class="field-label">Phone Number</span>
+        <span class="field-value">
+          <a href="tel:<?php echo htmlspecialchars($user->get_phone1()); ?>"><?php echo formatPhoneNumber($user->get_phone1()); ?></a>
+        </span>
       </div>
-
-      <!-- Contact Section -->
-      <div id="contact" class="profile-section space-y-4 hidden">
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Email</span>
-          <p class="text-gray-900 font-medium text-xl"><a href="mailto:<?php echo $user->get_email() ?>"><?php echo $user->get_email() ?></a></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Phone Number</span>
-          <p class="text-gray-900 font-medium text-xl"><a href="tel:<?php echo $user->get_phone1() ?>"><?php echo formatPhoneNumber($user->get_phone1()) ?></a></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Name</span>
-          <?php if ($user->get_emergency_contact_first_name()):?>
-            <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_emergency_contact_first_name()?></p>
-          <?php else: ?>
-            <p class="text-gray-900 font-medium text-xl">N/A</p>
-          <?php endif ?>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Relation</span>
-          <?php if ($user->get_emergency_contact_relation()):?>
-            <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_emergency_contact_relation()?></p>
-          <?php else: ?>
-            <p class="text-gray-900 font-medium text-xl">N/A</p>
-          <?php endif ?>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Phone Number</span>
+      <div class="field-row">
+        <span class="field-label">Emergency Contact Name</span>
+        <span class="field-value">
+          <?php echo $user->get_emergency_contact_first_name() ? htmlspecialchars($user->get_emergency_contact_first_name()) : 'N/A'; ?>
+        </span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Emergency Contact Relation</span>
+        <span class="field-value">
+          <?php echo $user->get_emergency_contact_relation() ? htmlspecialchars($user->get_emergency_contact_relation()) : 'N/A'; ?>
+        </span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Emergency Contact Phone</span>
+        <span class="field-value">
           <?php if ($user->get_emergency_contact_phone()): ?>
-            <p class="text-gray-900 font-medium text-xl"><a href="tel:<?php echo $user->get_emergency_contact_phone() ?>"><?php echo formatPhoneNumber($user->get_emergency_contact_phone()) ?></a></p>
+            <a href="tel:<?php echo htmlspecialchars($user->get_emergency_contact_phone()); ?>"><?php echo formatPhoneNumber($user->get_emergency_contact_phone()); ?></a>
           <?php else: ?>
-            <p class="text-gray-900 font-medium text-xl">N/A</p>
+            N/A
           <?php endif ?>
-        </div>
- 
+        </span>
       </div>
+    </div>
 
-      <!-- Email Prefs Section -->
-      <div id="volunteer" class="profile-section space-y-4 hidden">
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Email</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_email() ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Receive Emails?</span>
-          <?php if ($user->get_email_prefs()):?>
-            <p class="text-gray-900 font-medium text-xl"> Yes </p>
-          <?php else: ?>
-            <p class="text-gray-900 font-medium text-xl"> No </p>
-          <?php endif ?>
-        </div>
-
-
-	      
+    <!-- Email Preferences panel -->
+    <div class="tab-panel" id="panel-notifs">
+      <div class="field-row">
+        <span class="field-label">Email</span>
+        <span class="field-value"><?php echo htmlspecialchars($user->get_email()); ?></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Receive Emails?</span>
+        <span class="field-value"><?php echo $user->get_email_prefs() ? 'Yes' : 'No'; ?></span>
       </div>
     </div>
   </div>
 
-  <div id="verifiedIdsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full hidden" style="z-index: 1000;">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
-        
-        <div class="flex justify-between items-center pb-3 border-b">
-            <h3 class="text-xl font-medium text-gray-900">Verified IDs for <?php echo htmlspecialchars($user->get_first_name()); ?></h3>
-            <button class="text-black close-modal cursor-pointer font-bold text-2xl" onclick="closeModal('verifiedIdsModal')">&times;</button>
-        </div>
+</main>
 
-        <div class="mt-4">
-            <?php if (empty($verified_ids)): ?>
-                <p class="text-gray-600 italic">No verified IDs found for this user.</p>
-            <?php else: ?>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-sm font-light">
-                        <thead class="border-b font-medium">
-                            <tr>
-                                <th scope="col" class="px-6 py-4">ID Type</th>
-                                <th scope="col" class="px-6 py-4">Date Verified</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($verified_ids as $vid): ?>
-                                <tr class="border-b hover:bg-gray-100">
-                                    <td class="whitespace-nowrap px-6 py-4 font-medium text-green-700">
-                                        ✓ <?php echo htmlspecialchars($vid['id_type']); ?>
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-gray-700">
-                                        <?php echo date("M j, Y", strtotime($vid['approved_at'])); ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </div>
+<!-- Verified IDs Modal (CSS-only :target) -->
+<div id="verified-ids-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Verified IDs for <?php echo htmlspecialchars($user->get_first_name()); ?></h3>
+      <a href="#" class="modal-close" aria-label="Close">&times;</a>
+    </div>
 
-        <div class="mt-6 flex justify-end">
-            <button class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300" onclick="closeModal('verifiedIdsModal')">
-                Close
-            </button>
-        </div>
-        
+    <?php if (empty($verified_ids)): ?>
+      <p style="color:#6b7280;font-style:italic;">No verified IDs found for this user.</p>
+    <?php else: ?>
+      <table class="modal-table">
+        <thead>
+          <tr>
+            <th>ID Type</th>
+            <th>Date Verified</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($verified_ids as $vid): ?>
+            <tr>
+              <td class="verified-badge">&#10003; <?php echo htmlspecialchars($vid['id_type']); ?></td>
+              <td><?php echo date("M j, Y", strtotime($vid['approved_at'])); ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif ?>
+
+    <div class="modal-footer">
+      <a href="#">Close</a>
     </div>
   </div>
+</div>
+
 </body>
 </html>
