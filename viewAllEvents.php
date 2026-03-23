@@ -150,6 +150,20 @@
                 <a href="viewAllEvents.php" class="button cancel">Clear</a>
             </form>
 
+            
+            <?php //Note if there is no data for table(s) listed
+            $noUpcoming = empty($upcomingEvents);
+            $noArchived = empty($upcomingArchivedEvents);
+
+            if (!($noUpcoming && $noArchived)) {
+                if ($noUpcoming) {
+                    echo "<p class='no-events'>Note: no upcoming events are listed.</p>";
+                } elseif ($noArchived) {
+                    echo "<p class='no-events'>Note: no archived events are listed.</p>";
+                }
+            } 
+            ?>
+
 
                 <?php if (!empty($upcomingEvents) || !empty($upcomingArchivedEvents)): ?>
                     <?php if (!empty($upcomingEvents)): ?>
