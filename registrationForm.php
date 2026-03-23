@@ -66,37 +66,6 @@
             <label for="birthdate"><em>* </em>Date of Birth</label>
             <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">
 
-            <label>T-Shirt Size</label>
-            <div class="radio-group">
-                <div class="radio-element">
-                    <input type="radio" id="XS" name="t-shirt_size" value="Extra Small">
-                    <label for="Extra Small">XS</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="S" name="t-shirt_size" value="Small">
-                    <label for="Small">S</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="M" name="t-shirt_size" value="Medium">
-                    <label for="Medium">M</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="L" name="t-shirt_size" value="Large">
-                    <label for="Large">L</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="XL" name="t-shirt_size" value="Extra Large">
-                    <label for="Extra Large">XL</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="XXL" name="t-shirt_size" value="2X Large">
-                    <label for="2X Large">XXL</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="XXXL" name="t-shirt_size" value="3X Large">
-                    <label for="3X Large">XXXL</label>
-                </div>
-            </div>
             <div class="median-div"></div>
             
             <label for="street_address"><em>* </em>Street Address</label>
