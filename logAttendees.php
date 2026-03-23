@@ -53,7 +53,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Logging Attendance for <?php echo $event_name; ?> | Whiskey Valor Foundation</title>
+        <title>Logging Attendance for <?php echo $event_name; ?> | Love Thy Neighbor Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

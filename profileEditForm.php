@@ -182,11 +182,11 @@
             
             <!-- <div class="median-div"></div>
             <label for="affiliation"><em>* </em>Military Affiliation</label>
-            <?php echo hsc($person->get_affiliation()); ?>
+            <?php //echo hsc($person->get_affiliation()); ?> -->
             </select>
 
-            <label for="branch"><em>* </em>Branch of Service</label>
-            <?php echo hsc($person->get_branch()); ?> -->
+            <!-- <label for="branch"><em>* </em>Branch of Service</label>
+            <?php //echo hsc($person->get_branch()); ?> -->
         </fieldset>
 
         <fieldset class="section-box">

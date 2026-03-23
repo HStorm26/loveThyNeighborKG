@@ -60,7 +60,9 @@
                     <input type="radio" id="no" name="age" value="false">
                     <label for="no">No</label>
                 </div>
-            </div>-->
+            </div>
+            <div class="median-div"></div> -->
+
             <div class="median-div"></div>
             
             <label for="street_address"><em>* </em>Street Address</label>

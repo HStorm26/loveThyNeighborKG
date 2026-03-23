@@ -90,7 +90,7 @@ function add_hours_to_person($person_id, $hours) {
     $con = connect();
 
     $escaped_id = mysqli_real_escape_string($con, $person_id);
-    $hours_value = floatval($hours);
+    $hours_value = intval($hours);
 
     $query = "UPDATE dbpersons SET total_hours_volunteered = total_hours_volunteered + $hours_value WHERE id = '$escaped_id'";
     $result = mysqli_query($con, $query);
@@ -854,8 +854,10 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         $id, $first_name, $last_name, $t_shirt_size, $street_address, $city,
         $state, $zip_code, $email, $phone1, $email_consent, 
         $emergency_contact_first_name, $emergency_contact_relation,
-        $emergency_contact_phone, $photo_release, $community_service,
-        $notes
+        $emergency_contact_phone
+        //  ADD THESE BACK ONCE THEY'RE FULLY INCORPORATED  \/
+        //, $photo_release, $community_service, $notes
+
     ) {     // UPDATED TO INCLUDE REMOVED FIELDS
         $query = "update dbpersons set 
             first_name='$first_name', last_name='$last_name',
@@ -865,12 +867,13 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             emergency_contact_first_name='$emergency_contact_first_name',
             emergency_contact_relation='$emergency_contact_relation',
             emergency_contact_phone='$emergency_contact_phone',
-            email_prefs='$email_consent',
-            photo_release='$photo_release',
-            community_service='$community_service',
-            notes='$notes;
+            email_prefs='$email_consent'
 
             where id='$id'";
+            // ADD THESE BACK ONCE THEY'RE FULLY INCORPORATED   \/
+            // photo_release='$photo_release',
+            // community_service='$community_service',
+            // notes='$notes
         $connection = connect();
         $result = mysqli_query($connection, $query);
         mysqli_commit($connection);
@@ -1456,31 +1459,31 @@ function get_total_vol_hours($dateFrom, $dateTo) {
      * @param string $user_id The user's ID (username)
      * @return array List of associative arrays ['id_type', 'approved_at']
      */
-    function get_verified_ids($user_id) {
-        $con = connect();
-        if (!$con) return [];
+    // function get_verified_ids($user_id) {
+    //     $con = connect();
+    //     if (!$con) return [];
 
-        $query = "SELECT id_type, approved_at FROM user_verified_ids WHERE user_id = ? ORDER BY approved_at DESC";
-        $stmt = $con->prepare($query);
+    //     $query = "SELECT id_type, approved_at FROM user_verified_ids WHERE user_id = ? ORDER BY approved_at DESC";
+    //     $stmt = $con->prepare($query);
 
-        if ($stmt) {
-            $stmt->bind_param("s", $user_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    //     if ($stmt) {
+    //         $stmt->bind_param("s", $user_id);
+    //         $stmt->execute();
+    //         $result = $stmt->get_result();
 
-            $ids = [];
-            while ($row = $result->fetch_assoc()) {
-                $ids[] = $row;
-            }
+    //         $ids = [];
+    //         while ($row = $result->fetch_assoc()) {
+    //             $ids[] = $row;
+    //         }
 
-            $stmt->close();
-            mysqli_close($con);
-            return $ids;
-        }
+    //         $stmt->close();
+    //         mysqli_close($con);
+    //         return $ids;
+    //     }
 
-        mysqli_close($con);
-        return [];
-    }
+    //     mysqli_close($con);
+    //     return [];
+    // }
 
     /*
     function get_tot_vol_hours($type,$stats,$dateFrom,$dateTo,$lastFrom,$lastTo){

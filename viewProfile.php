@@ -32,7 +32,7 @@
     require_once('database/dbPersons.php');
 
     $user = retrieve_person($id);
-    $verified_ids = get_verified_ids($user->get_id());
+    // $verified_ids = get_verified_ids($user->get_id());
 
     if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_hours'])) {
         $con = connect();
@@ -141,7 +141,7 @@
       </div>
       <div class="field-row">
         <span class="field-label">Date of Birth</span>
-        <span class="field-value"><?php echo date('m/d/Y', $user->get_birthday()); ?></span>
+        <span class="field-value"><?php echo $user->get_birthday() ? date('m/d/Y', strtotime($user->get_birthday())) : 'N/A'; ?></span>
       </div>
       <div class="field-row">
         <span class="field-label">Address</span>
@@ -203,43 +203,6 @@
       </div>
     </div>
   </div>
-
 </main>
-
-<!-- Verified IDs Modal (CSS-only :target) -->
-<div id="verified-ids-modal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>Verified IDs for <?php echo htmlspecialchars($user->get_first_name()); ?></h3>
-      <a href="#" class="modal-close" aria-label="Close">&times;</a>
-    </div>
-
-    <?php if (empty($verified_ids)): ?>
-      <p style="color:#6b7280;font-style:italic;">No verified IDs found for this user.</p>
-    <?php else: ?>
-      <table class="modal-table">
-        <thead>
-          <tr>
-            <th>ID Type</th>
-            <th>Date Verified</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($verified_ids as $vid): ?>
-            <tr>
-              <td class="verified-badge">&#10003; <?php echo htmlspecialchars($vid['id_type']); ?></td>
-              <td><?php echo date("M j, Y", strtotime($vid['approved_at'])); ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif ?>
-
-    <div class="modal-footer">
-      <a href="#">Close</a>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
