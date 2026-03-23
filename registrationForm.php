@@ -63,9 +63,6 @@
             </div>
             <div class="median-div"></div> -->
 
-            <label for="birthdate"><em>* </em>Date of Birth</label>
-            <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">
-
             <div class="median-div"></div>
             
             <label for="street_address"><em>* </em>Street Address</label>
@@ -253,7 +250,6 @@
                 </div>
             </div>   
         </fieldset>
--->
         <p class="text-center notice"></p>
         <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
     </form>
