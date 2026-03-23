@@ -1258,7 +1258,7 @@ ALTER TABLE `dbscheduledemails`
 -- Constraints for table `dbroleevents`
 --
 ALTER TABLE `dbroleevents`
-  ADD CONSTRAINT `dbroleevents_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `dbevents` (`id`),
+  ADD CONSTRAINT `dbroleevents_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `dbevents` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `dbroleevents_ibfk_2` FOREIGN KEY (`roleID`) REFERENCES `dbroles` (`role_id`);
 
 --
