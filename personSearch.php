@@ -33,7 +33,7 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: rgb(59, 125, 35);
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
@@ -47,7 +47,7 @@ require_once('header.php');
         }   
 
         body, main {
-        background-color: #1F1F21;
+        background-color: rgb(255, 255, 255) !important;
         }
 
         .text-blue-700,
@@ -56,11 +56,11 @@ require_once('header.php');
         }   
 
         .info-section .info-text {
-         color: #C9AB81 !important;
+         color: rgb(59, 125, 35) !important;
         }
 
         .blue-div {
-        background-color: #C9AB81 !important;
+        background-color: rgb(59, 125, 35) !important;
         }
 
         .main-content-box label {
@@ -81,13 +81,13 @@ require_once('header.php');
         .main-content-box table th,
         .main-content-box table td {
             background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
-            border: 1px solid #C9AB81 !important;
+            color: rgb(59, 125, 35) !important;
+            border: 1px solid rgb(59, 125, 35) !important;
         }
 
         .main-content-box table a.text-blue-700,
         .main-content-box table a.text-blue-700:visited {
-            color: #C9AB81 !important;
+            color: rgb(59, 125, 35) !important;
             }
 
         .main-content-box table thead.bg-blue-400 th {
@@ -96,7 +96,7 @@ require_once('header.php');
 
         .main-content-box table a.text-blue-700,
         .main-content-box table a.text-blue-700:visited {
-            color: #C9AB81 !important;
+            color: rgb(59, 125, 35) !important;
         }
     
 </style>
