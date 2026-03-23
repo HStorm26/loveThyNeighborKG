@@ -31,7 +31,6 @@
             <label for="last_name"><em>* </em>Last Name</label>
             <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name">
 
-<<<<<<< HEAD
 
             <div class="median-div"></div>
 
@@ -52,9 +51,6 @@
             </select>
 
             <!--<label><em>* </em>Are you 21 or older?</label>
-=======
-            <!-- <label><em>* </em>Are you 21 or older?</label>
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="yes" name="age" value="true" required>
@@ -64,9 +60,6 @@
                     <input type="radio" id="no" name="age" value="false">
                     <label for="no">No</label>
                 </div>
-<<<<<<< HEAD
-            </div>-->
-=======
             </div>
             <div class="median-div"></div> -->
 
@@ -104,7 +97,6 @@
                     <label for="3X Large">XXXL</label>
                 </div>
             </div>
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
             <div class="median-div"></div>
             
             <label for="street_address"><em>* </em>Street Address</label>
@@ -171,32 +163,6 @@
 
             <label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
-<<<<<<< HEAD
-=======
-
-            <!--<div class="median-div"></div>
-            <label for="affiliation"><em>* </em>Military Affiliation</label>
-            <select id="affiliation" name="affiliation" required>
-                <option value="" disabled selected></option>
-                <option value="Active duty">Active duty</option>
-                <option value="Family">Family member (spouse, child, or parent)</option>
-                <option value="Reserve">Reservist</option>
-                <option value="Veteran">Veteran</option>
-                <option value="Civilian">Civilian</option>
-            </select>
-
-            <label for="branch"><em>* </em>Branch of Service</label>
-            <select id="branch" name="branch" required>
-                <option value="" disabled selected></option>
-                <option value="Air Force">Air Force</option>
-                <option value="Army">Army</option>
-                <option value="Coast Guard">Coast Guard</option>
-                <option value="Marine Corp">Marine Corp</option>
-                <option value="Navy">Navy</option>
-                <option value="Space Force">Space Force</option>
-            </select> -->
-
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
         </fieldset>
 
         <fieldset class="section-box mb-4">
@@ -208,11 +174,7 @@
             <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
 
             <label for="email_consent">E-mail Notifications</label>
-<<<<<<< HEAD
             <p>By checking the box below, you consent to recieve emails from the Love Thy Neighbor Community Food Pantry in King George, Virginia. You may change this at any time.</p>
-=======
-            <p>By checking the box below, you consent to recieve emails from Love Thy Neighbor. You may change this at any time.</p>
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
 
             <div class="median-div"></div>
@@ -227,17 +189,10 @@
             <p class="mb-2">Please provide us with someone to contact on your behalf in case of an emergency.</p>
 	    <div class="blue-div"></div>
 
-<<<<<<< HEAD
             <label for="emergency_contact_first_name" required><em>* </em>Contact First Name and Last Name</label>
             <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name and last name">
 
             <!--<label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
-=======
-            <label for="emergency_contact_first_name" required><em>* </em>Contact Name</label>
-            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact name">
-
-            <!-- <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
             <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name"> -->
 
             <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
@@ -247,73 +202,6 @@
             <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
         </fieldset>
 
-<<<<<<< HEAD
-=======
-            <!--<label><em>* </em>Contact Phone Type</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
-            </div> -->
-        </fieldset>
-
-        <!-- <fieldset class="section-box mb-4">
-            <h3 class="mb-2">Other Required Information</h3>
-	    <div class="blue-div"></div>
-
-           <label><em>* </em>Are you volunteering for court-ordered community service?</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="yes" name="is_community_service_volunteer" value="yes" required>
-                <label for="yes">Yes</label>
-	      </div>
-
-	      <div class="radio-element">
-                <input type="radio" id="no" name="is_community_service_volunteer" value="no">
-                <label for="no">No</label>
-	      </div>
-            </div>
-         
-            <label>Are there any specific skills you have that you believe could be useful for volunteering at the FredSPCA</label>
-            <input type="text" id="skills" name="skills" placeholder="">
-
-            <label>Any interests/hobbies?</label>
-            <input type="text" id="interests" name="interests" placeholder="">
-
-
-        </fieldset> -->
-
-        
-               
-
-                
-        <script>
-            
-
-            
-           
-
-            
-            
-
-             // Event listeners for changes in volunteer/participant selection and the complete statuses
-            //document.querySelectorAll('input[name="is_community_service_volunteer"]').forEach(radio => {
-              //  radio.addEventListener('change', toggleTrainingSection);
-            //});
-
-
-
-            
-            // Initial check on page load
-            
-        </script>
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
         <script>
         // Initialize Cleave.js for primary phone number
         new Cleave('#phone1', {
@@ -348,7 +236,6 @@
         </fieldset>
 
         <fieldset class="section-box mb-4">
-<<<<<<< HEAD
             <h3>Volunteer Information</h3>
             <p class="mb-2">Are you volunteering to complete required community service (school, court, etc.)?</p>
         <div class="blue-div"></div>
@@ -367,26 +254,6 @@
         
         </fieldset>
         
-=======
-            <h3>Consent Notice</h3>
-            <p class="mb-2">Please review the following before creating your account.</p>
-        <div class="blue-div"></div>
-            <label><em>* </em> Photo Release</label>
-            <p>I consent to have photographs and videos taken for Love Thy Neighbor to use for outreach and promotion.<!-- will work on refining this at a later date--></p>
-            <div class="radio-group">
-                <div class="radio-element">
-                    <input type="radio" id="agree" name="photo_release" value="yes" required>
-                    <label for="agree">I agree.</label>
-                </div>
-                <div class="radio-element">
-                    <input type="radio" id="disagree" name="photo_release" value="no">
-                    <label for="disagree">I do not agree.</label>
-                </div>
-            </div>
-        </fieldset>
-
-<!-- If LTN has their own privacy policy then we will replace this with theirs. until then it's commented out.  
->>>>>>> f07b7790a2802a320e2fc0496e455ee11bcc8a61
         <fieldset class="section-box mb-4">
             <h3>Consent Notice</h3>
             <p class="mb-2">Please review the following before creating your account.</p>
