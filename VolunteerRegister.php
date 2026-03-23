@@ -6,7 +6,7 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Register | Love Thy Neighbor Community Food Pantry</title>
+    <title>Love Thy Neighbor | Register</title>
     <link href="css/base.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <!--<?php
