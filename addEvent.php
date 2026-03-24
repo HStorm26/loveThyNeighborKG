@@ -206,9 +206,9 @@
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1 style="color: var(--accent-color); font-weight: bold;">Create Event</h1>
+        <h1 style="color: var(--main-color); font-weight: bold;">Create Event</h1>
         <main class="date">
-            <h2 style="color: var(--accent-color); font-weight: bold;">New Event Form</h2>
+            <h2 style="color: var(--main-color); font-weight: bold;">New Event Form</h2>
             <form id="new-event-form" method="POST">
                 <div class="event-sect">
                 <label for="name">* Event Name </label>
@@ -345,7 +345,7 @@
 
                 <div class="event-sect">
                     <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                        <legend style="color: var(--accent-color); font-weight:bold;">Make this a recurring event</legend>
+                        <legend style="color: var(--main-color); font-weight:bold;">Make this a recurring event</legend>
                         <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
                             <input type="checkbox" id="recurring" name="recurring" value="1">
                             Recurring
