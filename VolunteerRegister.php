@@ -41,28 +41,6 @@
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
-        // Original array. Changed to fit WVF needs
-        /*$required = array(
-            'first_name', 'last_name', 'birthdate',
-            'street_address', 'city', 'state', 'zip', 
-            'email', 'phone', 'phone_type',
-            'emergency_contact_first_name', 'emergency_contact_last_name',
-            'emergency_contact_relation', 'emergency_contact_phone',
-            'emergency_contact_phone_type',
-            'username', 'password',
-            'is_community_service_volunteer',
-            'is_new_volunteer', 
-            'total_hours_volunteered'
-        );*/
-        // Whiskey Valor array.
-        /*$required = array(
-            'first_name', 'last_name', 'age',
-            'city', 'state', 
-            'affiliation', 'branch',
-            'email', 'username', 'password',
-            'privacy_consent'
-        ); */
-
         //  id, first_name, last_name, phone_number, email, email_prefs,
         //  birthday, t-shirt_size, state, city, street_address, zip_code,
         //  emergency_contact_first_name, emergency_contact_phone,
@@ -162,14 +140,6 @@
             $errors = true;
         }
 
-        /*$skills = isset($args['skills']) ? $args['skills'] : '';
-        $interests = isset($args['interests']) ? $args['interests'] : '';
-
-        $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
-        $is_new_volunteer = isset($args['is_new_volunteer']) ? (int)$args['is_new_volunteer'] : 1;
-        $total_hours_volunteered = isset($args['total_hours_volunteered']) ? (float)$args['total_hours_volunteered'] : 0.00;*/
-
-        //$type = ($is_community_service_volunteer === 1) ? 'volunteer' : 'participant';
         $type = "Volunteer";
         $archived = 0;
         $status = "Active";
@@ -194,29 +164,6 @@
             echo '<p class="error">Your form submission contained unexpected or invalid input.</p>';
             die();
         }
-
-        /*$newperson = new Person(
-            $id, $password, date("Y-m-d"),
-            $first_name, $last_name, $birthday,
-            $street_address, $city, $state, $zip_code,
-            $phone1, $phone1type, $email,
-            $emergency_contact_first_name, $emergency_contact_last_name,
-            $emergency_contact_phone, $emergency_contact_phone_type,
-            $emergency_contact_relation, $type, $status, $archived, 
-            $skills, $interests, $training_level,
-            $is_community_service_volunteer, $is_new_volunteer,
-            $total_hours_volunteered
-        ); */
-
-        /*$newperson = new Person(    Whiskey Valor
-            $id, date("Y-m-d"),
-            $first_name, $last_name, null,
-            $city, $state, null, $phone1, $age, 
-            null, null, null, null, 
-            $email, $email_consent, 
-            null, null, null, null, null, null, null, 
-            $password, $affiliation, $branch, null, null
-        );*/
 
         // Love Thy Neighbor KG newperson
         $newperson = new Person(
