@@ -60,7 +60,9 @@
                     <input type="radio" id="no" name="age" value="false">
                     <label for="no">No</label>
                 </div>
-            </div>-->
+            </div>
+            <div class="median-div"></div> -->
+
             <div class="median-div"></div>
             
             <label for="street_address"><em>* </em>Street Address</label>
@@ -144,7 +146,7 @@
             <div class="median-div"></div>
 
             <label for="phone1"><em>* </em>Phone Number</label>
-            <input type="tel" id="phone1" class="phone" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
+            <input type="tel" id="phone1" class="phone" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Ex. 555-555-5555">
 
         </fieldset>
 
@@ -163,8 +165,18 @@
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
             <label for="emergency_contact_phone"><em>* </em>Contact Phone Number</label>
-            <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
+            <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Enter emergency contact phone number. Ex. 555-555-5555">
         </fieldset>
+
+        <script>
+        // Initialize Cleave.js for primary phone number
+        new Cleave('#emergency_contact_phone', {
+            phone: true,
+            phoneRegionCode: 'US',
+            delimiter: '-',
+            numericOnly: true,
+        });
+        </script>
 
         <script>
         // Initialize Cleave.js for primary phone number
@@ -203,16 +215,16 @@
             <h3>Volunteer Information</h3>
             <p class="mb-2">Are you volunteering to complete required community service (school, court, etc.)?</p>
         <div class="blue-div"></div>
-            <label><em>* </em> Confirmation of Volunteer Status</label>
-            <p>I acknowledge that the details I've provided about why I am volunteering accurately reflect my intentions and current situation.</p>
+            <label><em>* </em> Community Service Requirement Confirmation</label>
+            <p>Please indicate whether your volunteer participation is to fufill a required community service obligation.</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="is_community_service_volunteer" value="yes" required>
-                    <label for="agree">I agree.</label>
+                    <label for="agree">Yes, I am completing required community service</label>
                 </div>
                 <div class="radio-element">
-                    <input type="radio" id="disagree" name="is_community_service_volunteer" value="no">
-                    <label for="disagree">I do not agree.</label>
+                    <input type="radio" id="disagree" name="is_community_service_volunteer" value="no" required>
+                    <label for="disagree">No, I am volunteering by choice</label>
                 </div> 
             </div>
         
@@ -227,12 +239,12 @@
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="privacy_consent" value="yes" required>
-                    <label for="agree">I agree.</label>
+                    <label for="agree">Yes</label>
                 </div>
-                <div class="radio-element">
+                <!--<div class="radio-element">
                     <input type="radio" id="disagree" name="privacy_consent" value="no">
                     <label for="disagree">I do not agree.</label>
-                </div>
+                </div>-->
             </div>
             <br>
             <label><em>* </em> Picture Policy</label>
@@ -240,12 +252,12 @@
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="photo_release" value="yes" required>
-                    <label for="agree">I agree.</label>
+                    <label for="agree">Yes</label>
                 </div>
-                <div class="radio-element">
+                <!--<div class="radio-element">
                     <input type="radio" id="disagree" name="photo_release" value="no">
                     <label for="disagree">I do not agree.</label>
-                </div>
+                </div>-->
             </div>   
         </fieldset>
         <p class="text-center notice"></p>
@@ -253,3 +265,33 @@
     </form>
    </div> 
 </main>
+<script>
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("password-reenter");
+
+// Check password strength
+password.addEventListener("input", function () {
+    const value = password.value;
+
+    const isValid =
+        value.length >= 8 &&
+        /[A-Z]/.test(value) &&
+        /[a-z]/.test(value) &&
+        /[0-9]/.test(value);
+
+    if (!isValid) {
+        password.setCustomValidity("Password must be at least 8 characters, include uppercase, lowercase, and a number.");
+    } else {
+        password.setCustomValidity("");
+    }
+});
+
+// Check password match
+confirmPassword.addEventListener("input", function () {
+    if (confirmPassword.value !== password.value) {
+        confirmPassword.setCustomValidity("Passwords do not match.");
+    } else {
+        confirmPassword.setCustomValidity("");
+    }
+});
+</script>
