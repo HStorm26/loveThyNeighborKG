@@ -148,8 +148,8 @@
         <span class="field-value"><?php echo htmlspecialchars($user->get_street_address() . ', ' . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code()); ?></span>
       </div>
       <div class="field-row">
-        <span class="field-label">Member Since</span>
-        <span class="field-value">Jan 2022</span>
+        <span class="field-label">T-Shirt Size</span>
+        <span class="field-value"><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $user->get_t_shirt_size()))); ?></span>
       </div>
     </div>
 
