@@ -1,14 +1,6 @@
 <?php
 include_once("../database/dbpersonhours.php");
+include_once("../database/dbRoles.php");
 
-$t = calcPersonHours('vmsroot');
-echo($t);
-echo('\n');
-$t = getEvetnPartipants(122);
-foreach ($t as $p)
-    {
-        print($p);
-        print('|');
-    }
-
-unregisterPersonForEvent( 120,'vmsroot');
+$r = getRolesForPersonEvent("email", 248);
+var_dump($r);

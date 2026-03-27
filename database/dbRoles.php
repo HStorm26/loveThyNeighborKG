@@ -33,8 +33,107 @@ function update_role_description($role_id, $role_description) {
     mysqli_close($con);
     return $ok;
 }
+// --------------------------------------
+// Daniel's person_roles functions
+// (No, I was not the one who broke with the naming plan)
+// 
+// I tried to make the names as intuitive as possible
+// ------------------------------------
+function getRolesForPersonEvent($personId, $eventId)
+// this returns the roleID, not the name.
+{
+    
+    $con = connect();
+    $stmt = $con->prepare("SELECT `role_id` FROM `person_roles` WHERE `person_id` = ? AND `event_id` = ?");
+    $stmt->bind_param("si", $personId, $eventId);
+    $stmt->execute();
+    $stmt->bind_result($row);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $rows[] = $row;
+        }
+    $con->close();
+    return $rows;
+}
+function getRolesForPerson($personID)
+//this will return an array of the uniquie roles that a person has done
+{
+    $con = connect();
+    $stmt = $con->prepare("SELECT DISTINCT `role_id` FROM `person_roles` WHERE `person_id` = ?");
+    $stmt->bind_param("s", $personId);
+    $stmt->execute();
+    $stmt->bind_result($row);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $rows[] = $row;
+        }    
+    $con->close();
+    return $rows;
+}
 
-function delete_role($role_id) {
+function addPersonRoleToEvent($personID,$roleID,$eventID)
+// no return adds to the table 
+{
+    $con = connect();
+    $stmt = $con->prepare("INSERT INTO `person_roles` (`person_id`, `role_id`, `event_id`) VALUES (?, ?, ?)");
+     $stmt->bind_param("sii", $personID,$roleID,$eventID);
+    $stmt->execute();
+    $con->close();
+}
+
+function removePersonRoleFromEvent($personID,$roleID,$eventID)
+// no return, just removes
+{
+    $con = connect();
+    $stmt = $con->prepare("DELETE FROM `person_roles` WHERE `person_id` = ? AND `role_id` = ? AND `event_id` = ?");
+    $stmt->bind_param("sii", $personID,$roleID,$eventID);
+    $stmt->execute();
+    $con->close();
+}
+
+function getPersonsForRoleEvent($roleID,$eventID)
+// this returns the personID
+{
+    $con = connect();
+    $stmt = $con->prepare("SELECT `person_id` FROM `person_roles` WHERE `role_id` = ? AND `event_id` = ?");
+    $stmt->bind_param("ii", $roleId, $eventId);
+    $stmt->execute();
+    $stmt->bind_result($row);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $rows[] = $row;
+        }    
+    $con->close();
+    return $rows;
+    
+}
+
+function getPersonsForRole($roleID)
+// returns an array of personIDs
+{
+    $con = connect();
+    $stmt = $con->prepare("SELECT DISTINCT `person_id` FROM `person_roles` WHERE `role_id` = ?");
+    $stmt->bind_param("i", $roleID);
+    $stmt->execute();
+    $stmt->bind_result($row);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $rows[] = $row;
+        }    
+    $con->close();
+    return $rows;
+}
+
+
+//---------------------------------------
+// end Daniel's functions
+// -------------------------------
+
+function delete_role($role_id) { //no longer use this one
     $con = connect();
 
     $stmt = $con->prepare("DELETE FROM person_roles WHERE role_id = ?");
