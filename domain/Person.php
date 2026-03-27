@@ -18,70 +18,62 @@
 class Person {
 
 	private $id; // (username)
-	private $start_date; // (dete of account creation)
+	//private $start_date; // (dete of account creation)
 	private $first_name;
 	private $last_name;
-	private $street_address;
-	private $city;
-	private $state;
-	private $zip_code;
 	private $phone1;
-	private $age; // if they're over or under 21
-	private $phone1type;
-	private $emergency_contact_phone;
-	private $emergency_contact_phone_type;
-	private $birthday;
 	private $email;
 	private $email_prefs;
+	private $birthday;
+	private $t_shirt_size;
+	private $state;
+	private $city;
+	private $street_address;
+	private $zip_code;
 	private $emergency_contact_first_name;
-	private $contact_num;
+	private $emergency_contact_phone;
 	private $emergency_contact_relation;
+	private $archived;
+	private $password;
+	private $contact_num;
 	private $contact_method;
 	private $type;
 	private $status;
+	private $photo_release;
+	private $community_service;
 	private $notes;
-	private $password;
-	private $affiliation;
-	private $branch;
-	private $archived;
-	private $emergency_contact_last_name;
-	private $access_level;
 
 	function __construct(
-        $id, $start_date, $first_name, $last_name, $street_address, $city, $state,
-		$zip_code, $phone1, $age, $phone1type, $emergency_contact_phone,
-		$emergency_contact_phone_type, $birthday, $email, $email_prefs,
-		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
-		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
-		$emergency_contact_last_name) {
+        $id, $first_name, $last_name, $phone1, $email, $email_prefs, $birthday,
+		$t_shirt_size, $state, $city, $street_address, $zip_code,
+		$emergency_contact_first_name, $emergency_contact_phone, $emergency_contact_relation,
+		$archived, $password, $contact_num, $contact_method, $type,
+		$status, $photo_release, $community_service, $notes
+		) {
         $this->id = $id;
-		$this->start_date = $start_date;
-		$this->first_name = $first_name;
-		$this->last_name = $last_name;
-		$this->street_address = $street_address;
-		$this->city = $city;
-		$this->state = $state;
-		$this->zip_code = $zip_code;
-		$this->phone1 = $phone1;
-		$this->age = $age;
-		$this->phone1type = $phone1type;
-		$this->emergency_contact_phone = $emergency_contact_phone;
-		$this->emergency_contact_phone_type = $emergency_contact_phone_type;
-		$this->birthday = $birthday;
-		$this->email = $email;
-		$this->email_prefs = $email_prefs;
-		$this->emergency_contact_first_name = $emergency_contact_first_name;
-		$this->contact_num = $contact_num;
-		$this->emergency_contact_relation = $emergency_contact_relation;
-		$this->contact_method = $contact_method;
-		$this->type = $type;
-		$this->status = $status;
-		$this->notes = $notes;
-		$this->password = $password;
-		$this->affiliation = $affiliation;
-		$this->branch = $branch;
-		$this->archived = $archived;
-		$this->emergency_contact_last_name = $emergency_contact_last_name;
+        $this->first_name = $first_name;
+        $this->last_name = $last_name;
+        $this->phone1 = $phone1;
+        $this->email = $email;
+        $this->email_prefs = $email_prefs;
+        $this->birthday = $birthday;
+        $this->t_shirt_size = $t_shirt_size;
+        $this->state = $state;
+        $this->city = $city;
+        $this->street_address = $street_address;
+        $this->zip_code = $zip_code;
+        $this->emergency_contact_first_name = $emergency_contact_first_name;
+        $this->emergency_contact_phone = $emergency_contact_phone;
+        $this->emergency_contact_relation = $emergency_contact_relation;
+        $this->archived = $archived;
+        $this->password = $password;
+        $this->contact_num = $contact_num;
+        $this->contact_method = $contact_method;
+        $this->type = $type;
+        $this->status = $status;
+        $this->photo_release = $photo_release;
+        $this->community_service = $community_service;
+        $this->notes = $notes;
 
         #$this->access_level = ($id == 'vmsroot') ? 3 : 1;
 
@@ -104,10 +96,6 @@ class Person {
 		return $this->id;
 	}
 
-	function get_start_date() {
-		return $this->start_date;
-	}
-
 	function get_first_name() {
 		return $this->first_name;
 	}
@@ -116,35 +104,11 @@ class Person {
 		return $this->last_name;
 	}
 
-	function get_over_21() {
-		return $this->age;
-	}
-
-
-	function get_street_address() {
-		return $this->street_address;
-	}
-
-	function get_city() {
-		return $this->city;
-	}
-
-	function get_state() {
-		return $this->state;
-	}
-
-	function get_zip_code() {
-		return $this->zip_code;
-	}
-
 	function get_phone1() {
 		return $this->phone1;
 	}
 
-	function get_phone1type() {
-		return $this->phone1type;
-	}
-
+	
 	function get_email() {
 		return $this->email;
 	}
@@ -153,70 +117,79 @@ class Person {
 		return $this->email_prefs;
 	}
 
-	function get_affiliation() {
-		return $this->affiliation;
+	function get_birthday() {
+		return $this->birthday;
 	}
 
-	function get_branch() {
-		return $this->branch;
+
+	function get_t_shirt_size() {
+		return $this->t_shirt_size;
+	}
+
+	function get_state() {
+		return $this->state;
+	}
+
+	function get_city() {
+		return $this->city;
+	}
+
+	function get_street_address() {
+		return $this->street_address;
+	}
+
+	function get_zip_code() {
+		return $this->zip_code;
 	}
 
 	function get_emergency_contact_first_name() {
 		return $this->emergency_contact_first_name;
 	}
 
-	function get_emergency_contact_last_name() {
-		return $this->emergency_contact_last_name;
-	}
 
 	function get_emergency_contact_phone() {
 		return $this->emergency_contact_phone;
 	}
 
-	function get_emergency_contact_phone_type() {
-		return $this->emergency_contact_phone_type;
-	}
-
-	function get_birthday() {
-		return $this->birthday;
-	}
-
-
-	function get_contact_num() {
-		return $this->contact_num;
-	}
 
 	function get_emergency_contact_relation() {
 		return $this->emergency_contact_relation;
 	}
+    function get_archived() {
+        return $this->archived;
+    }
 
-	function get_contact_method() {
-		return $this->contact_method;
-	}
+    function get_password() {
+        return $this->password;
+    }
 
-	//function get_photo_release_notes() {
-	//	return $this->photo_release_notes;
-	//}
+    function get_contact_num() {
+        return $this->contact_num;
+    }
+
+    function get_contact_method() {
+        return $this->contact_method;
+    }
 
 	function get_type() {
 		return $this->type;
 	}
 
-	function get_status() {
-		return $this->status;
-	}
+    function get_status() {
+        return $this->status;
+    }
+
+    function get_photo_release() {
+        return $this->photo_release;
+    }
+
+    function get_community_service() {
+        return $this->community_service;
+    }
 
 	function get_notes() {
-		return $this->notes;
-	}
-
-	function get_password() {
-		return $this->password;
-	}
-
-	function get_archived() {
-		return $this->archived;
-	}
+        return $this->notes;
+    }
 
 	function get_access_level() {
 		$access = ($this->id == 'vmsroot') ? 3 : 1;

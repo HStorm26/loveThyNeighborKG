@@ -539,7 +539,7 @@ if (date("H:i:s") > "18:19:59") {
     }
 
         /* Accessibility menu styles */
-        .accessibility-btn {
+        /* .accessibility-btn {
             position: fixed;
             bottom: 18px;
             right: 18px;
@@ -560,10 +560,10 @@ if (date("H:i:s") > "18:19:59") {
             height: 100%;
             object-fit: contain;
             filter: invert(1);
-        }
+        } */
 
         /* Modal */
-        .accessibility-modal-backdrop {
+        /* .accessibility-modal-backdrop {
             display: none;
             position: fixed;
             inset: 0;
@@ -595,7 +595,7 @@ if (date("H:i:s") > "18:19:59") {
         .accessibility-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
         .accessibility-actions button { padding:8px 12px; border-radius:8px; cursor:pointer; border:none; }
         .accessibility-actions .save { background:var(--wv-accent-color); color:var(--wv-accent-foreground); }
-        .accessibility-actions .reset { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); }
+        .accessibility-actions .reset { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); } */
 
         /* Bigger base font sizes applied by class toggles via JS */
 
@@ -1041,11 +1041,11 @@ document.querySelectorAll(".icon-butt").forEach(el => {
   window.addEventListener("load", updateDateAndCheckBoxes);
 </script>
 <!-- Accessibility Button + Modal -->
-<button class="accessibility-btn" id="accessibilityBtn" aria-haspopup="dialog" aria-controls="accessibilityModal" title="Accessibility settings">
+<!-- <button class="accessibility-btn" id="accessibilityBtn" aria-haspopup="dialog" aria-controls="accessibilityModal" title="Accessibility settings">
     <img src="images/accessibility-menu.png" alt="Accessibility Menu">
-</button>
+</button> -->
 
-<div class="accessibility-modal-backdrop" id="accessibilityBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+<!-- <div class="accessibility-modal-backdrop" id="accessibilityBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="accessibility-modal" id="accessibilityModal">
         <div class="modal-header">
             <h3>Accessibility Settings</h3>
@@ -1070,18 +1070,18 @@ document.querySelectorAll(".icon-butt").forEach(el => {
                 <option value="opendyslexic">OpenDyslexic</option>
                 <option value="times">Times New Roman</option>
             </select>
-        </div>
+        </div> -->
 
         <!-- Color scheme removed; keeping font controls only -->
 
-        <div class="accessibility-actions">
+        <!-- <div class="accessibility-actions">
             <button class="reset" id="accReset">Reset</button>
             <button class="save" id="accSave">Save</button>
         </div>
     </div>
-</div>
+</div> -->
 
-<script>
+<!-- <script>
     (function(){
         const KEY = 'wv_accessibility_settings';
         const defaults = { fontSize: 14, fontFamily: 'nunito' };
@@ -1177,6 +1177,6 @@ document.querySelectorAll(".icon-butt").forEach(el => {
             const s = getSettings();
             applySettings(s);
         });
-    })();
+    })(); -->
 </script>
 </header>

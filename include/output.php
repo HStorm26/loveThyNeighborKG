@@ -15,8 +15,10 @@
         if (!$time) {
             return '';
         }
-        $hour = substr($time, 0, 2);
-        $minute = substr($time, 3, 2);
+        $tempTime = explode(':', $time);
+
+        $hour = $tempTime[0];
+        $minute = $tempTime[1];
         $hour = intval($hour);
         if ($hour < 12) {
             if ($hour == 0) {

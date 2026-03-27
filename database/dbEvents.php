@@ -215,11 +215,11 @@ function remove_user_from_event($event_id, $user_id) {
     $result = boolval($result);
     mysqli_close($connection);
     //If true email user 
-    if ($result == TRUE)
+    /*if ($result == TRUE) if we want to email users that they've been taken off the list we need to update emailHandler so they can do that.
     {
         emailHandler($event_id, $user_id, 1, "Removed from event because TEST");
         
-    }
+    }*/
     return $result;
 }
 

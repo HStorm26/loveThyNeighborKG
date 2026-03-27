@@ -137,10 +137,21 @@
             <input type="text" id="last_name" name="last_name" value="<?php echo hsc($person->get_last_name()); ?>" required placeholder="Enter your last name">
 
             <!--<label for="birthday"><em>* </em>Date of Birth</label>
-            <input type="date" id="birthday" name="birthday" value="<?php //echo hsc($person->get_birthday()); ?>" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">
+            <input type="date" id="birthday" name="birthday" value="<?php //echo hsc($person->get_birthday()); ?>" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>"> -->
+
+            <label for="t-shirt_size"><em>* </em>T-Shirt Size</label>
+            <select id="t-shirt_size" name="t-shirt_size" required>
+                <option value="x_small" <?php if($person->get_t_shirt_size() == 'x_small') echo 'selected'; ?>>X-Small</option>
+                <option value="small" <?php if($person->get_t_shirt_size() == 'small') echo 'selected'; ?>>Small</option>
+                <option value="medium" <?php if($person->get_t_shirt_size() == 'medium') echo 'selected'; ?>>Medium</option>
+                <option value="large" <?php if($person->get_t_shirt_size() == 'large') echo 'selected'; ?>>Large</option>
+                <option value="x_large" <?php if($person->get_t_shirt_size() == 'x_large') echo 'selected'; ?>>X-Large</option>
+                <option value="xx_large" <?php if($person->get_t_shirt_size() == 'xx_large') echo 'selected'; ?>>XX-Large</option>
+                <option value="xxx_large" <?php if($person->get_t_shirt_size() == 'xxx_large') echo 'selected'; ?>>XXX-Large</option>
+            </select>  
 
             <label for="street_address"><em>* </em>Street Address</label>
-            <input type="text" id="street_address" name="street_address" value="<?php //echo hsc($person->get_street_address()); ?>" required placeholder="Enter your street address"> -->
+            <input type="text" id="street_address" name="street_address" value="<?php echo hsc($person->get_street_address()); ?>" required placeholder="Enter your street address">
 
             <label for="city"><em>* </em>City</label>
             <input type="text" id="city" name="city" value="<?php echo hsc($person->get_city()); ?>" required placeholder="Enter your city">
@@ -166,15 +177,16 @@
                 ?>
             </select>
 
-            <!--<label for="zip_code"><em>* </em>Zip Code</label>
-            <input type="text" id="zip_code" name="zip_code" value="<?php //echo hsc($person->get_zip_code()); ?>" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">-->
-            <div class="median-div"></div>
+            <label for="zip_code"><em>* </em>Zip Code</label>
+            <input type="text" id="zip_code" name="zip_code" value="<?php echo hsc($person->get_zip_code()); ?>" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
+            
+            <!-- <div class="median-div"></div>
             <label for="affiliation"><em>* </em>Military Affiliation</label>
-            <?php echo hsc($person->get_affiliation()); ?>
+            <?php //echo hsc($person->get_affiliation()); ?> -->
             </select>
 
-            <label for="branch"><em>* </em>Branch of Service</label>
-            <?php echo hsc($person->get_branch()); ?>
+            <!-- <label for="branch"><em>* </em>Branch of Service</label>
+            <?php //echo hsc($person->get_branch()); ?> -->
         </fieldset>
 
         <fieldset class="section-box">
@@ -196,32 +208,32 @@
 
         </fieldset>
 
-        <!--<fieldset class="section-box">
+        <fieldset class="section-box">
             <h3 class="mt-2">Emergency Contact</h3>
             <div class="blue-div"></div>
 
             <p>Please provide us with someone to contact on your behalf in case of an emergency.</p>
-            <label for="emergency_contact_first_name" required>First Name</label>
-            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" value="<?php //echo hsc($person->get_emergency_contact_first_name()); ?>" placeholder="Enter emergency contact name">
+            <label for="emergency_contact_first_name" required><em>* </em>First Name</label>
+            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" value="<?php echo hsc($person->get_emergency_contact_first_name()); ?>" placeholder="Enter emergency contact name">
 
-            <label for="emergency_contact_last_name" required>Last Name</label>
-            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" value="<?php //echo hsc($person->get_emergency_contact_last_name()); ?>" placeholder="Enter emergency contact name">
+            <!-- <label for="emergency_contact_last_name" required>Last Name</label>
+            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" value="<?php //echo hsc($person->get_emergency_contact_last_name()); ?>" placeholder="Enter emergency contact name"> -->
 
-            <label for="emergency_contact_relation">Contact Relation to You</label>
-            <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" value="<?php //echo hsc($person->get_emergency_contact_relation()); ?>" placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
+            <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
+            <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" value="<?php echo hsc($person->get_emergency_contact_relation()); ?>" placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
-            <label for="emergency_contact_phone">Phone Number</label>
-            <input type="tel" id="emergency_contact_phone" class="phone" name="emergency_contact_phone" value="<?php //echo formatPhoneNumber($person->get_emergency_contact_phone()); ?>" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
+            <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
+            <input type="tel" id="emergency_contact_phone" class="phone" name="emergency_contact_phone" value="<?php echo formatPhoneNumber($person->get_emergency_contact_phone()); ?>" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
 
-            <label>Phone Type</label>
+            <!-- <label>Phone Type</label>
             <div class="radio-group">
                 <?php //$type = $person->get_emergency_contact_phone_type(); ?>
                 <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" <?php //if ($type == 'cellphone') echo 'checked'; ?> ><label for="phone-type-cellphone">Cell</label>
                 <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" <?php //if ($type == 'home') echo 'checked'; ?> ><label for="phone-type-home">Home</label>
                 <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" <?php //if ($type == 'work') echo 'checked'; ?> ><label for="phone-type-work">Work</label>
-            </div>
+            </div> -->
         
-        </fieldset>-->
+        </fieldset>
 
         <!--<fieldset class="section-box">
             <h3 class="mt-2">Volunteer Information</h3>
