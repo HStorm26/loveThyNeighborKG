@@ -26,6 +26,16 @@ function addRoleToEvent($eventID, $roleID, $capacity, $notes = "") {
     return true;
 }
 
+// need function to delete 
+function removeRoleEvent($roleID,$eventID)
+{
+    $con = connect();
+    $stmt = $con->prepare("DELETE FROM `dbroleevents` WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("ii", $roleID, $eventID);
+    $stmt->execute();
+    $con->close();
+}
+
 // notes feild geters / setters
 // these will be used to update the per-event description, ususally the time info
 function getNotesForRoleEvent($roleID,$eventID)
@@ -37,6 +47,7 @@ function getNotesForRoleEvent($roleID,$eventID)
     $stmt->execute();
     $stmt->bind_result($notes);
     $stmt->fetch();
+    $con->close();
     return $notes;
 }
 
@@ -47,6 +58,7 @@ function updateNotesForRoleEvent($notes,$roleID,$eventID)
     $stmt = $con->prepare("UPDATE `dbroleevents` SET `notes` = ? WHERE `roleID` = ? AND `eventID` = ?");
     $stmt->bind_param("sii", $notes, $roleID, $eventID);
     $stmt->execute();
+    $con->close();
 }
 
 
