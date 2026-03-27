@@ -61,7 +61,7 @@ function getRolesForPerson($personID)
 {
     $con = connect();
     $stmt = $con->prepare("SELECT DISTINCT `role_id` FROM `person_roles` WHERE `person_id` = ?");
-    $stmt->bind_param("s", $personId);
+    $stmt->bind_param("s", $personID);
     $stmt->execute();
     $stmt->bind_result($row);
     $rows = [];
@@ -98,7 +98,7 @@ function getPersonsForRoleEvent($roleID,$eventID)
 {
     $con = connect();
     $stmt = $con->prepare("SELECT `person_id` FROM `person_roles` WHERE `role_id` = ? AND `event_id` = ?");
-    $stmt->bind_param("ii", $roleId, $eventId);
+    $stmt->bind_param("ii", $roleID, $eventID);
     $stmt->execute();
     $stmt->bind_result($row);
     $rows = [];
