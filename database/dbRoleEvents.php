@@ -7,10 +7,12 @@ include_once('dbinfo.php');
 */
 
 // for now, adds given eventID & roleID with capacity to this db for future use
-function addRoleToEvent($eventID, $roleID, $capacity) {
+// Daniel modified to have a default value for notes so that it would not break any current uses,
+// but allows us to add it when we make it.
+function addRoleToEvent($eventID, $roleID, $capacity, $notes = "") {
     $con = connect();
 
-    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity) VALUES ('$eventID', '$roleID', '$capacity')";
+    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity, notes) VALUES ('$eventID', '$roleID', '$capacity', '$notes')";
 
     $result = mysqli_query($con, $query);
 
@@ -23,6 +25,32 @@ function addRoleToEvent($eventID, $roleID, $capacity) {
     mysqli_close($con);
     return true;
 }
+
+// notes feild geters / setters
+// these will be used to update the per-event description, ususally the time info
+function getNotesForRoleEvent($roleID,$eventID)
+// returns a string
+{
+    $con = connect();
+    $stmt = $con->prepare("SELECT `notes` FROM `dbroleevents` WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("ii", $roleID, $eventID);
+    $stmt->execute();
+    $stmt->bind_result($notes);
+    $stmt->fetch();
+    return $notes;
+}
+
+function updateNotesForRoleEvent($notes,$roleID,$eventID)
+// no return
+{
+    $con = connect();
+    $stmt = $con->prepare("UPDATE `dbroleevents` SET `notes` = ? WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("sii", $notes, $roleID, $eventID);
+    $stmt->execute();
+}
+
+
+
 
 
 // ===== might need to change to accommodate dbRoles better? =====
