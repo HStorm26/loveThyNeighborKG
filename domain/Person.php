@@ -195,7 +195,4 @@ class Person {
 		$access = ($this->id == 'vmsroot') ? 3 : 1;
 		return $access;
 	}
-	public function equals($other) {
-		return $this->get_id() == $other->get_id();
-	}
 }
