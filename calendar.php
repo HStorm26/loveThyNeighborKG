@@ -101,35 +101,6 @@
             </form>
         </div>
         
-        <!-- TODO: WVF filter calendar to weekly or daily.-->
-        <div id="view-filter-wrapper" class="hidden"> 
-            <form id="filter-view">
-                <p>View by month, week, or day?</p>
-                <div>
-                    <select id="views">
-                        <?php
-                        $views = ['Month', 'Week', 'day'];
-                        $digit = 1;
-                            foreach ($views as $m) {
-                                $view_digits = str_pad($digit, 2, '0', STR_PAD_LEFT);
-                                if ($view_digits == $view2digit) {
-                                    echo "<option value='$view_digits' selected>$m</option>";
-                                } else {
-                                    echo "<option value='$view_digits'>$m</option>";
-                                }
-                                $digit++;
-                            }
-                        ?>
-                    </select>
-                    <!-- TODO: Make this show view. Might edit this to use icons?-->
-                    <input id="calendar-view" type="number" value="<?php echo $year ?>" required min="2023">
-                </div>
-                <input type="hidden" id="jumper-value" name="month" value="<?php echo 'VIEW FILTER TEST' ?>">
-                <input type="submit" value="View"> 
-                <button id="filter-cancel" class="cancel" type="button">Cancel</button>
-            </form> 
-
-        </div>
         <main class="calendar-view">
             
             <h1 class='calendar-header' style="height: 75px;">
