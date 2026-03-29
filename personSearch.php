@@ -64,7 +64,7 @@ require_once('header.php');
         }
 
         .main-content-box label {
-        color: #000000 !important;
+        color: var(--main-color) !important;
         }
         
         .text-blue-700 {
