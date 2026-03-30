@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Fetch the event name before canceling
         $event_name = fetch_event_name($pending_event_id);
 
-        if (remove_user_from_pending_event($pending_event_id, $user_id)) {
+        if (remove_user_from_event($pending_event_id, $user_id)) {
             $cancel_success = "Successfully canceled your request for event: $event_name.";
         } else {
             $cancel_error = "Failed to cancel registration for event $pending_event_id.";
@@ -136,9 +136,7 @@ function fetch_event_name($event_id) {
 function fetch_my_pending($userid) {
     $connection = connect();
     $query = "SELECT e.id, e.name, e.date 
-              FROM dbevents e
-              INNER JOIN dbapplications ap ON e.id = ap.event_id
-              WHERE ap.user_id = '$userid' and ap.status='Pending'";
+              FROM dbevents e";
     $result = mysqli_query($connection, $query);
 
     if (!$result) {
@@ -245,7 +243,7 @@ $pending_events = fetch_my_pending($user_id);
                                         <?php echo htmlspecialchars($event['name']); ?>
                                     </a>
                                 </td>
-                                <td><?php echo htmlspecialchars($event['startDate']); ?></td>
+                                <td><?php echo htmlspecialchars($event['date']); ?></td>
                                 <td>
                                     <form method="POST" style="display:inline;">
                                         <input type="hidden" name="pending_event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
