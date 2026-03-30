@@ -392,11 +392,6 @@
                 <?php endif ?>
 
                 <!-- end of Thomas's work -->
-
-                <a href="logAttendees.php?id=<?php echo urlencode($id); ?>" class="button signup">Log Event Attendees</a>
-
-
-                <!-- <a href="editEvent.php?id=<?= $id ?>" class="button cancel">Edit Event Details</a> -->
                 
 
             <?php endif ?>
