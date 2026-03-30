@@ -721,11 +721,11 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['calendar.php'] = 0; //WVF - Everyone can see this
         $permission_array['eventsearch.php'] = 1; 
         $permission_array['changepassword.php'] = 1;
-        $permission_array['editprofile.php'] = 1; //WVF - Repurpose for SCRUM-5
+        $permission_array['editprofile.php'] = 2; // Brooke is allowing the admin to now edit profile
         $permission_array['inbox.php'] = 1; //WVF - Not for registered users, since they want emails. But would be good for 'suggestions' for ADMINS to see 
         $permission_array['date.php'] = 1; 
         $permission_array['event.php'] = 0; 
-        $permission_array['viewprofile.php'] = 1;
+        $permission_array['viewprofile.php'] = 2; // Brooke is allowing the admin to now view profile
         $permission_array['viewnotification.php'] = 1;
         $permission_array['volunteerreport.php'] = 1; //WVF - Attendance Report?
         $permission_array['viewmyupcomingevents.php'] = 1;
@@ -777,11 +777,11 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['createemail.php'] = 2;
         $permission_array['viewdrafts.php'] = 2;  // Not sure if we want normal users to be able to send emails
         $permission_array['editdrafts.php'] = 2;
-        $permission_array['logattendees.php'] = 2;
         $permission_array['processattendees.php'] = 2;
         $permission_array['viewdata.php'] = 2;
         $permission_array['deleteusersearch.php'] = 2;
         $permission_array['noshows.php'] = 2;
+        $permission_array['view_users_kg.php'] = 2;
         // LOWERCASE
 
 
@@ -829,13 +829,7 @@ if (date("H:i:s") > "18:19:59") {
     <span>View Events</span>
   </div>
 </a>
-<a href="editHours.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Change Event Hours</span>
-  </div>
-</a>
-<a href="viewUsers.php" style="text-decoration: none;">
+<a href="view_users_kg.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/users-solid.svg">
     <span>View Users</span>
@@ -894,6 +888,8 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
                         <div class="dropdown">
+                            <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>  
+                            <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>  
                             <a href="changePassword.php" class="dropdown-link"><div>Change Password</div></a>
                             <a href="logout.php" class="dropdown-link"><div>Log Out</div></a>
                         </div>
@@ -925,12 +921,6 @@ if (date("H:i:s") > "18:19:59") {
   <div class="in-nav">
     <img src="images/new-event.svg">
     <span>Sign-Up</span>
-  </div>
-</a>
-<a href="editHours.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Edit Hours</span>
   </div>
 </a>
                    </div>
