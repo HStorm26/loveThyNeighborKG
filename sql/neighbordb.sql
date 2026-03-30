@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Mar 21, 2026 at 06:47 PM
+-- Host: 127.0.0.1
+-- Generation Time: Mar 30, 2026 at 06:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,8 @@ INSERT INTO `dbeventpersons` (`id`, `eventID`, `userID`, `notes`, `attended`) VA
 (36, 184, 'edarnell', 'Skills: 11 | Dietary restrictions:  | Disabilities: 22 | Materials: 33', 0),
 (37, 178, 'edarnell', 'Skills: Skills | Dietary restrictions:  | Disabilities: Alergies | Materials: Nope', 0),
 (38, 186, 'amongustest', 'Skills: sus | Dietary restrictions:  | Disabilities:  | Materials: ', 0),
-(39, 186, 'vmsroot', 'Skills: among us | Dietary restrictions:  | Disabilities:  | Materials: ', 0);
+(39, 186, 'vmsroot', 'Skills: among us | Dietary restrictions:  | Disabilities:  | Materials: ', 0),
+(40, 250, 'vmsroot2', '', 0);
 
 -- --------------------------------------------------------
 
@@ -85,18 +86,19 @@ CREATE TABLE `dbevents` (
   `endTime` char(5) NOT NULL,
   `description` text NOT NULL,
   `capacity` int(11) NOT NULL,
-  `location` text DEFAULT NULL
+  `location` text DEFAULT NULL,
+  `archived` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `dbevents`
 --
 
-INSERT INTO `dbevents` (`id`, `name`, `date`, `startTime`, `endTime`, `description`, `capacity`, `location`) VALUES
-(1, 'Make this work', '2026-3-30', '08:00', '20:30', 'I want cake', 12, 'my house'),
-(2, 'Brooke wants this to work', '2026-3-29', '8:00', '20:30', 'I want water', 2, 'the basement'),
-(248, 'test', '2026-03-21', '13:00', '14:00', 't', 1, 't'),
-(249, 'test', '2026-03-21', '13:00', '14:00', 't', 1, 't');
+INSERT INTO `dbevents` (`id`, `name`, `date`, `startTime`, `endTime`, `description`, `capacity`, `location`, `archived`) VALUES
+(1, 'Make this work', '2026-3-30', '08:00', '20:30', 'I want cake', 12, 'my house', 0),
+(2, 'Brooke wants this to work', '2026-3-29', '8:00', '20:30', 'I want water', 2, 'the basement', 1),
+(248, 'test', '2026-03-21', '13:00', '14:00', 't', 1, 't', 1),
+(1001, 'thing', '2026-04-01', '05:00', '06:00', 'place', 2, 'no', 0);
 
 -- --------------------------------------------------------
 
@@ -423,7 +425,8 @@ INSERT INTO `dbmessages` (`id`, `senderID`, `recipientID`, `title`, `body`, `tim
 (469, 'vmsroot', 'vmsroot', 'Britorsk has been added as a volunteer', 'New volunteer account has been created', '2026-02-05-13:32', 1, 0),
 (470, 'vmsroot', 'vmsroot', 'You are now signed up for Whiskey Tasting!', 'Thank you for signing up for Whiskey Tasting!', '2026-02-06-16:11', 1, 0),
 (471, 'vmsroot', 'vmsroot', 'You are now signed up for Whiskey Tasting!', 'Thank you for signing up for Whiskey Tasting!', '2026-02-06-16:12', 1, 0),
-(472, 'vmsroot', 'vmsroot', 'johnDoe123 has been added as a volunteer', 'New volunteer account has been created', '2026-02-07-20:46', 1, 0);
+(472, 'vmsroot', 'vmsroot', 'johnDoe123 has been added as a volunteer', 'New volunteer account has been created', '2026-02-07-20:46', 1, 0),
+(0, 'vmsroot', 'vmsroot2', 'You are now signed up for hello!!!', 'Thank you for signing up for hello!!!', '2026-03-22-22:06', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1057,7 +1060,7 @@ CREATE TABLE `dbroleevents` (
 --
 
 INSERT INTO `dbroleevents` (`eventID`, `roleID`, `capacity`) VALUES
-(249, 1, 1);
+(1001, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1230,13 +1233,13 @@ ALTER TABLE `person_roles`
 -- AUTO_INCREMENT for table `dbeventpersons`
 --
 ALTER TABLE `dbeventpersons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `dbevents`
 --
 ALTER TABLE `dbevents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1002;
 
 --
 -- AUTO_INCREMENT for table `dbroles`

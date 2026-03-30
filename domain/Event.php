@@ -17,6 +17,7 @@ class Event {
     //private $branch;
     //private $completed;
     //private $access;
+    private $archived;
 
 
     function __construct($id, $name, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location) {
@@ -34,6 +35,7 @@ class Event {
         //$this->branch = $branch;
         //$this->access = $access;
         //$this->completed = $completed;
+        $this->archived = 0;
         
     }
 
@@ -71,6 +73,10 @@ class Event {
 
     function getCapacity() {
         return $this->capacity;
+    }
+
+    function getArchived() {
+        return $this->archived;
     }
 
     //function getCompleted() {
