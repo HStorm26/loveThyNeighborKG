@@ -41,19 +41,20 @@ function add_event($event) {
         mysqli_query($con,'INSERT INTO dbevents VALUES("' .
                 $event->getID() . '","' .
                 $event->getName() . '","' . 
-                $event->getType() . '","' . 
+                //$event->getType() . '","' . 
                 $event->getStartDate() . '","' .
                 $event->getStartTime() . "," .
                 $event->getEndTime() . "," .
-                $event->getEndDate() . "," .
+                //$event->getEndDate() . "," .
                 $event->getDescription() . '","' .
                 $event->getCapacity() . "," .
                 $event->getLocation() . "," .
-                $event->getAffiliation() . "," .
-                $event->getBranch() . '","' . 
-                $event->Access() . '","' . 
-                $event->getCompleted() . "," .
-                #$event->getID() .            
+                //$event->getAffiliation() . "," .
+                //$event->getBranch() . '","' . 
+                //$event->Access() . '","' . 
+                //$event->getCompleted() . "," .
+                //$event->getID() . "," .
+                $event->getArchived() .
                 '");');							
         mysqli_close($con);
         return true;
@@ -251,7 +252,7 @@ function is_archived($eventID) {
     $con = connect();
     $eventID = (int)$eventID;
 
-    $query = "SELECT date, endTime FROM dbevents WHERE id = $eventID";
+    $query = "SELECT archived FROM dbevents WHERE id = $eventID";
     $result = mysqli_query($con, $query);
 
     if (!$result || mysqli_num_rows($result) === 0) {
@@ -262,13 +263,22 @@ function is_archived($eventID) {
     $row = mysqli_fetch_assoc($result);
     mysqli_close($con);
 
-    if (empty($row['date']) || empty($row['endTime'])) {
-        return false;
+    $archived = (int)$row['archived'];
+
+    if($archived === 1){
+        return true;
     }
 
-    $eventEnd = strtotime($row['date'] . ' ' . $row['endTime']);
+    return false;
+}
 
-    return time() > $eventEnd;
+//archive all events that took place before this moment.
+function archive_old_events(){
+    $con = connect();
+    $query = "UPDATE dbevents SET archived = 1 WHERE date < DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND archived = 0";
+    $result = mysqli_query($con, $query);
+
+    return $result;
 }
 
 /*
@@ -276,7 +286,7 @@ function is_archived($eventID) {
  */
 function archive_event($id) {
     $con=connect();
-    $query = "UPDATE dbevents SET completed = 'yes' WHERE id = '" .$id. "'";
+    $query = "UPDATE dbevents SET archived = 1 WHERE id = '" .$id. "'";
     $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
@@ -287,7 +297,7 @@ function archive_event($id) {
  */
 function unarchive_event($id) {
     $con=connect();
-    $query = "UPDATE dbevents SET completed = 'no' WHERE id = '" .$id. "'";
+    $query = "UPDATE dbevents SET archived = 0 WHERE id = '" .$id. "'";
     $result = mysqli_query($con,$query);
     mysqli_close($con);
     return $result;
@@ -672,8 +682,8 @@ function create_event($event) {
     //";
 
     $query = "
-        INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location')
+        INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
+        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', $archived)
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
