@@ -602,8 +602,8 @@ function fetch_event_by_id($id) {
     $result = mysqli_query($connection, $query);
     $event = mysqli_fetch_assoc($result);
     if ($event) {
-        require_once('include/output.php');
-        $event = hsc($event);
+        // require_once('include/output.php');
+        // $event = hsc($event);
         mysqli_close($connection);
         return $event;
     }
@@ -728,7 +728,7 @@ function update_event($eventID, $eventDetails) {
     #    where id='$eventID'
     #";
     $query = "
-        update dbevents set id='$id', name='$name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity
+        update dbevents set id='$id', name='$name', date='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity
         where id='$eventID'
     ";
     $result = mysqli_query($connection, $query);
