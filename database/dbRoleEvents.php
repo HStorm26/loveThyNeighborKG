@@ -7,10 +7,12 @@ include_once('dbinfo.php');
 */
 
 // for now, adds given eventID & roleID with capacity to this db for future use
-function addRoleToEvent($eventID, $roleID, $capacity) {
+// Daniel modified to have a default value for notes so that it would not break any current uses,
+// but allows us to add it when we make it.
+function addRoleToEvent($eventID, $roleID, $capacity, $notes = "") {
     $con = connect();
 
-    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity) VALUES ('$eventID', '$roleID', '$capacity')";
+    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity, notes) VALUES ('$eventID', '$roleID', '$capacity', '$notes')";
 
     $result = mysqli_query($con, $query);
 
@@ -24,17 +26,55 @@ function addRoleToEvent($eventID, $roleID, $capacity) {
     return true;
 }
 
+// need function to delete 
+function removeRoleEvent($roleID,$eventID)
+{
+    $con = connect();
+    $stmt = $con->prepare("DELETE FROM `dbroleevents` WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("ii", $roleID, $eventID);
+    $stmt->execute();
+    $con->close();
+}
+
+// notes feild geters / setters
+// these will be used to update the per-event description, ususally the time info
+function getNotesForRoleEvent($roleID,$eventID)
+// returns a string
+{
+    $con = connect();
+    $stmt = $con->prepare("SELECT `notes` FROM `dbroleevents` WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("ii", $roleID, $eventID);
+    $stmt->execute();
+    $stmt->bind_result($notes);
+    $stmt->fetch();
+    $con->close();
+    return $notes;
+}
+
+function updateNotesForRoleEvent($notes,$roleID,$eventID)
+// no return
+{
+    $con = connect();
+    $stmt = $con->prepare("UPDATE `dbroleevents` SET `notes` = ? WHERE `roleID` = ? AND `eventID` = ?");
+    $stmt->bind_param("sii", $notes, $roleID, $eventID);
+    $stmt->execute();
+    $con->close();
+}
+
+
+
+
 
 // ===== might need to change to accommodate dbRoles better? =====
 //
 // for now, grabs the eventID, roleID, cap, & role description
 function getRolesForEvent($eventID) {
     $con = connect();
-
-    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role_name, r.role_description
+    // role_id is coming from dbroles.sql
+    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role, r.role_description
                 FROM dbroleevents re 
                 JOIN dbroles r 
-                ON re.roleID = r.roleID 
+                ON re.roleID = r.role_id     
                 WHERE re.eventID = '$eventID'";
 
     $result = mysqli_query($con, $query);
@@ -46,8 +86,9 @@ function getRolesForEvent($eventID) {
             "eventID" => $resultRow['eventID'],
             "roleID" => $resultRow['roleID'],
             "capacity" => $resultRow['capacity'],
-            "role_name" => $resultRow['role_name'],
+            "role_name" => $resultRow['role'],
             "role_description" => $resultRow['role_description']
+            //"currentSignups" => $resultRow['currentSignups']
         );
 
         $theRoleEvents[] = $roleEvent;
@@ -116,4 +157,23 @@ function getEventCapacity($eventID) {
     return $row['totalCap'];
 }
 
+// Save the selected roles
+function save_event_roles($eventID, $roles) {
+    $connection = connect();
+
+    foreach ($roles as $roleID => $count) {
+        $roleID = (int)$roleID;
+        $count = (int)$count;
+
+        if ($count > 0) {
+            $query = "
+                INSERT INTO dbroleevents (eventID, roleID, capacity)
+                VALUES ($eventID, $roleID, $count)
+            ";
+            mysqli_query($connection, $query);
+        }
+    }
+
+    mysqli_close($connection);
+}
 ?>

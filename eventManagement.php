@@ -108,28 +108,6 @@ require_once('header.php');
 	  <img class="button-icon left-4" src="images/new-event.svg" alt="Calendar Icon">
         </button>
 
-        <button onclick="window.location.href='editHours.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Change Event Hours</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="Calendar Icon">
-        </button>
-
-        <button onclick="window.location.href='viewPendingApps.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Pending Applications <?php 
-                        require_once('database/dbEvents.php');
-                        require_once('database/dbPersons.php');
-                        require_once('database/dbApplications.php');
-                        $pendingapps = all_pending_names();
-                        
-                        if (sizeof($pendingapps) > 0) {
-                            echo '(' . sizeof($pendingapps) . ')';
-                        }   
-                    ?></div>
-
-	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Calendar Icon">
-        </button>
-
         <button onclick="window.location.href='adminViewingEvents.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Edit Event</div>

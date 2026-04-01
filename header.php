@@ -539,7 +539,7 @@ if (date("H:i:s") > "18:19:59") {
     }
 
         /* Accessibility menu styles */
-        .accessibility-btn {
+        /* .accessibility-btn {
             position: fixed;
             bottom: 18px;
             right: 18px;
@@ -560,10 +560,10 @@ if (date("H:i:s") > "18:19:59") {
             height: 100%;
             object-fit: contain;
             filter: invert(1);
-        }
+        } */
 
         /* Modal */
-        .accessibility-modal-backdrop {
+        /* .accessibility-modal-backdrop {
             display: none;
             position: fixed;
             inset: 0;
@@ -595,7 +595,7 @@ if (date("H:i:s") > "18:19:59") {
         .accessibility-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
         .accessibility-actions button { padding:8px 12px; border-radius:8px; cursor:pointer; border:none; }
         .accessibility-actions .save { background:var(--wv-accent-color); color:var(--wv-accent-foreground); }
-        .accessibility-actions .reset { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); }
+        .accessibility-actions .reset { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); } */
 
         /* Bigger base font sizes applied by class toggles via JS */
 
@@ -712,78 +712,53 @@ if (date("H:i:s") > "18:19:59") {
         * -Evan
         */
         $permission_array['index.php'] = 0; // WVF Home page
-        $permission_array['about.php'] = 0; //WVF - Not able to directly access - Likely just need to re-route to 
-        $permission_array['apply.php'] = 0; //WVF - Not able to directly access
         $permission_array['logout.php'] = 0; //WVF - Logout page ain
         $permission_array['volunteerregister.php'] = 0; //WVF - Alter to registering for account
 	    $permission_array['leaderboard.php'] = 0; //WVF - Probably get rid of this guy
-        // $permission_array['findanimal.php'] = 0; //TODO DELETE
         //pages volunteers can view
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1; //WVF - Might be good to alter this for registered users to be able to see registered events and where they can edit user info 
         $permission_array['calendar.php'] = 0; //WVF - Everyone can see this
         $permission_array['eventsearch.php'] = 1; 
         $permission_array['changepassword.php'] = 1;
-        $permission_array['editprofile.php'] = 1; //WVF - Repurpose for SCRUM-5
+        $permission_array['editprofile.php'] = 1; 
         $permission_array['inbox.php'] = 1; //WVF - Not for registered users, since they want emails. But would be good for 'suggestions' for ADMINS to see 
         $permission_array['date.php'] = 1; 
         $permission_array['event.php'] = 0; 
-        $permission_array['viewprofile.php'] = 1;
+        $permission_array['viewprofile.php'] = 1; 
         $permission_array['viewnotification.php'] = 1;
         $permission_array['volunteerreport.php'] = 1; //WVF - Attendance Report?
         $permission_array['viewmyupcomingevents.php'] = 1;
         $permission_array['volunteerviewgroup.php'] = 1; 
 	    $permission_array['viewcheckinout.php'] = 1;
         $permission_array['viewresources.php'] = 1;
-        $permission_array['discussionmain.php'] = 1;
-        $permission_array['viewdiscussions.php'] = 1; //WVF - Edit discussions for suggestions?
-        $permission_array['discussioncontent.php'] = 1; //WVF - Edit discussions for suggestions?
-        $permission_array['milestonepoints.php'] = 1;
-        $permission_array['selectvotm.php'] = 1;
         $permission_array['volunteerviewgroupmembers.php'] = 1;
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0; //WVF - For admins to do view 
         $permission_array['personsearch.php'] = 2;
         $permission_array['personedit.php'] = 0; // changed to 0 so that applicants can apply
-        $permission_array['viewschedule.php'] = 2;
-        $permission_array['addweek.php'] = 2;
-        $permission_array['log.php'] = 2;
+        $permission_array['log.php'] = 2;    //Brooke needs to find this later
         $permission_array['reports.php'] = 2;
-        $permission_array['eventedit.php'] = 2; //WVF - TODO: Evaluated differenced between eventedit and editevent.
         $permission_array['modifyuserrole.php'] = 2;
         $permission_array['addevent.php'] = 2; //WVF - Admin Event work!
         $permission_array['editevent.php'] = 2; //WVF - Admin Event work!
-        // $permission_array['roster.php'] = 2; //TODO DELETE
         $permission_array['report.php'] = 2; // WVF TODO: Look to see how these reports can be reworked to do attendance report
         $permission_array['reportspage.php'] = 2;
         $permission_array['resetpassword.php'] = 2;
-        // $permission_array['addappointment.php'] = 2; //TODO DELETE
-        // $permission_array['addanimal.php'] = 2; //TODO DELETE
-        // $permission_array['addservice.php'] = 2; //TODO DELETE
-        // $permission_array['addlocation.php'] = 2; //TODO DELETE
-        // $permission_array['viewvece.php'] = 2; //TODO DELETE
-        // $permission_array['viewlocation.php'] = 2; //TODO DELETE
-        // $permission_array['viewarchived.php'] = 2; //TODO DELETE
-        // $permission_array['animal.php'] = 2; //TODO DELETE
-        // $permission_array['editanimal.php'] = 2; //TODO DELETE
         $permission_array['eventsuccess.php'] = 2;
         $permission_array['viewsignuplist.php'] = 2;
         $permission_array['vieweventsignups.php'] = 2;
-        $permission_array['viewpendingapps.php'] = 2;
         $permission_array['resources.php'] = 2;
         $permission_array['uploadresources.php'] = 2;        
         $permission_array['deleteresources.php'] = 2;
         $permission_array['creategroup.php'] = 2;
         $permission_array['showgroups.php'] = 2;
-        $permission_array['groupview.php'] = 2;
         $permission_array['managemembers.php'] = 2;
         $permission_array['deleteGroup.php'] = 2;
         $permission_array['volunteermanagement.php'] = 2;
         $permission_array['groupmanagement.php'] = 2;
         $permission_array['eventmanagement.php'] = 2;
-        $permission_array['creatediscussion.php'] = 2;
         $permission_array['checkedinvolunteers.php'] = 2;
-        $permission_array['deletediscussion.php'] = 2;
         $permission_array['generatereport.php'] = 2; //adding this to the generate report page
         $permission_array['generateemaillist.php'] = 2; //adding this to the generate report page
         $permission_array['clockoutbulk.php'] = 2;
@@ -795,28 +770,19 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['signupsuccess.php'] = 1;
         $permission_array['edittimes.php'] = 1;
         $permission_array['adminviewingevents.php'] = 2;
-        $permission_array['pendingApp.php'] = 1;
         $permission_array['requestfailed.php'] = 1;
         $permission_array['settimes.php'] = 1;
         $permission_array['eventfailurebaddeparturetime.php'] = 1;
-        $permission_array['viewretreatapplications.php'] = 2;
-        $permission_array['viewapplication.php'] = 2;
         $permission_array['createemail.php'] = 2;
-        $permission_array['viewallapplications.php'] = 2;
-        $permission_array['applicationsuccess.php'] = 2;
-        $permission_array['denyapplication.php'] = 2;
         $permission_array['createemail.php'] = 2;
         $permission_array['viewdrafts.php'] = 2;  // Not sure if we want normal users to be able to send emails
         $permission_array['editdrafts.php'] = 2;
-        $permission_array['logattendees.php'] = 2;
         $permission_array['processattendees.php'] = 2;
         $permission_array['viewdata.php'] = 2;
         $permission_array['deleteusersearch.php'] = 2;
         $permission_array['noshows.php'] = 2;
-        $permission_array["view_encrypted_gallery.php"] = 2;
-        $permission_array['upload_encrypted_image.php'] = 1;
-        $permission_array['createsuggestion.php'] = 1;
-        $permission_array['viewsuggestion.php'] = 2;
+        $permission_array['viewoveralluserskg.php'] = 2;
+        $permission_array['viewoveralleventskg.php'] = 2;
         // LOWERCASE
 
 
@@ -864,16 +830,16 @@ if (date("H:i:s") > "18:19:59") {
     <span>View Events</span>
   </div>
 </a>
-<a href="editHours.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Change Event Hours</span>
-  </div>
-</a>
-<a href="viewPendingApps.php" style="text-decoration: none;">
+<a href="viewOverallUsersKG.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/users-solid.svg">
-    <span>Pending Applications</span>
+    <span>View Users</span>
+  </div>
+</a>
+<a href="viewOverallEventsKG.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/list-solid.svg">
+    <span>View Overall Events</span>
   </div>
 </a>
 <a href="adminViewingEvents.php" style="text-decoration: none;">
@@ -929,6 +895,8 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
                         <div class="dropdown">
+                            <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>  
+                            <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>  
                             <a href="changePassword.php" class="dropdown-link"><div>Change Password</div></a>
                             <a href="logout.php" class="dropdown-link"><div>Log Out</div></a>
                         </div>
@@ -960,12 +928,6 @@ if (date("H:i:s") > "18:19:59") {
   <div class="in-nav">
     <img src="images/new-event.svg">
     <span>Sign-Up</span>
-  </div>
-</a>
-<a href="editHours.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Edit Hours</span>
   </div>
 </a>
                    </div>
@@ -1076,11 +1038,11 @@ document.querySelectorAll(".icon-butt").forEach(el => {
   window.addEventListener("load", updateDateAndCheckBoxes);
 </script>
 <!-- Accessibility Button + Modal -->
-<button class="accessibility-btn" id="accessibilityBtn" aria-haspopup="dialog" aria-controls="accessibilityModal" title="Accessibility settings">
+<!-- <button class="accessibility-btn" id="accessibilityBtn" aria-haspopup="dialog" aria-controls="accessibilityModal" title="Accessibility settings">
     <img src="images/accessibility-menu.png" alt="Accessibility Menu">
-</button>
+</button> -->
 
-<div class="accessibility-modal-backdrop" id="accessibilityBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+<!-- <div class="accessibility-modal-backdrop" id="accessibilityBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="accessibility-modal" id="accessibilityModal">
         <div class="modal-header">
             <h3>Accessibility Settings</h3>
@@ -1105,18 +1067,18 @@ document.querySelectorAll(".icon-butt").forEach(el => {
                 <option value="opendyslexic">OpenDyslexic</option>
                 <option value="times">Times New Roman</option>
             </select>
-        </div>
+        </div> -->
 
         <!-- Color scheme removed; keeping font controls only -->
 
-        <div class="accessibility-actions">
+        <!-- <div class="accessibility-actions">
             <button class="reset" id="accReset">Reset</button>
             <button class="save" id="accSave">Save</button>
         </div>
     </div>
-</div>
+</div> -->
 
-<script>
+<!-- <script>
     (function(){
         const KEY = 'wv_accessibility_settings';
         const defaults = { fontSize: 14, fontFamily: 'nunito' };
@@ -1212,6 +1174,6 @@ document.querySelectorAll(".icon-butt").forEach(el => {
             const s = getSettings();
             applySettings(s);
         });
-    })();
+    })(); -->
 </script>
 </header>

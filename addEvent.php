@@ -1,7 +1,13 @@
 <?php session_cache_expire(30);
     session_start();
+    // -Brooke did this for Love Thy Neighbor KG (Create Event)
     // Make session information accessible, allowing us to associate
     // data with the logged-in user.
+
+    require_once('include/input-validation.php');
+    require_once('database/dbEvents.php');
+    require_once('database/dbRoleEvents.php');
+    require_once('database/dbRoles.php');
 
     ini_set("display_errors",1);
     error_reporting(E_ALL);
@@ -22,19 +28,17 @@
         die();
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        require_once('include/input-validation.php');
-        require_once('database/dbEvents.php');
+        //require_once('include/input-validation.php');
+        //require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
             "name", "date", "start-time", "end-time", "description", "location"
         );
-        $roles = $_POST['roles'] ?? array();
-        //$startTimes = $_POST['start_times'] ?? array(); --BROOKE DELETE
-        //$endTimes = $_POST['end_times'] ?? array();  --BROOKE DELETE
+        $roles = $_POST['roles'] ?? array(); //For the total capacity
 
         /* For the total capacity */
         $totalCapacity = 0;
-        foreach ($roles as $role => $count) {
+        foreach ($roles as $roleID => $count) {
             $count = (int)$count;
 
             if($count < 0) {
@@ -47,19 +51,6 @@
         if ($totalCapacity <= 0) {
             echo "You must enter at least one volunteer role.";
             die();
-        }
-
-        
-        /*Database will skip roles with 0 volunteers, so it doesn't store
-        the unnecessary roles!*/
-        foreach ($roles as $role => $count) {
-            $count = (int)$count;
-
-            if($count > 0) {
-                $start = $startTimes[$role];
-                $end = $endTimes[$role];
-                // save this role to the database
-            }
         }
         
 
@@ -90,20 +81,68 @@
         $args['endTime']   = $endTime;
 
 
+        $errors = [];
         //1. Start of use case #8 recurring, etc
         $isRecurring = isset($_POST['recurring']) ? 1 : 0;
         $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
+        $monthlyWeek = $_POST['monthly_week'] ?? '';
+        $weeklyDay = $_POST['weekly_day'] ?? '';
         $customDays = ($isRecurring && $recurrenceType === 'custom') ? (int)($_POST['custom_days'] ?? 0) : null;
+        $recurrenceEndDate = $_POST['recurrence_end_date'] ?? '';
 
-            
+
+        // Base recurring validation
         if ($isRecurring) {
             if (!in_array($recurrenceType, ['daily','weekly','monthly','custom'], true)) {
-                echo 'invalid recurrence type';
-                die();
+                $errors['recurring'] = 'Invalid recurrence type';
             }
+            if ($recurrenceEndDate === '') {
+                $errors['recurring_end'] = 'Please select a recurrence end date';
+            } elseif (!empty($args['date']) && $recurrenceEndDate < $args['date']) {
+                $errors['recurring_end'] = 'Recurrence end date must be on or after the event date';
+            }
+
             if ($recurrenceType === 'custom' && (!$customDays || $customDays < 1)) {
-                echo 'invalid custom interval';
-                die();
+                $errors['custom'] = 'Please enter a valid custom interval';
+            }
+
+            if ($recurrenceType === 'weekly' && $weeklyDay === '') {
+                $errors['weekly'] = 'Please select a day for weekly recurrence';
+            }
+            if ($recurrenceType === 'monthly') {
+                if (!$monthlyWeek || !$monthlyDay) {
+                    $errors['monthly'] = 'Please select week and day for monthly recurrence';
+                } else {
+                    $weekNames = [
+                        '1' => 'first',
+                        '2' => 'second',
+                        '3' => 'third',
+                        '4' => 'fourth',
+                        'last' => 'last'
+                    ];
+
+                    if ($monthlyWeek === 'all') {
+                        $selectedDate = new DateTime($args['date']);
+                        if ($selectedDate->format('l') !== $monthlyDay) {
+                            $errors['monthly'] = "Date must be a $monthlyDay.";
+                        }
+                    } else {
+                        if (!isset($weekNames[$monthlyWeek])) {
+                            $errors['monthly'] = 'Invalid monthly week';
+                        } else {
+                            $weekText = $weekNames[$monthlyWeek];
+                            $month = date('F', strtotime($args['date']));
+                            $year  = date('Y', strtotime($args['date']));
+
+                            $expectedDate = new DateTime("$weekText $monthlyDay of $month $year");
+
+                            if ($expectedDate->format('Y-m-d') !== $args['date']) {
+                                $correct = $expectedDate->format('F j, Y');
+                                $errors['monthly'] = "Date must match pattern. Correct date: $correct";
+                            }
+                        }
+                    }
+                }
             }
             $args['is_recurring'] = 1;
             $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
@@ -113,63 +152,158 @@
             $args['recurrence_type'] = null;
             $args['recurrence_interval_days'] = null;
         }
-        //1. Start of use case #8 recurring, etc
 
-        // FIXED: Replaced the broken check "if (!$date > 11)"
+        // Required normal event validation
         if (!$startTime || !$endTime || !$date){
-            echo 'bad args';
-            die();
+            $errors['event'] = 'Missing required event date or time';
         }
         $args['capacity'] = $totalCapacity;
-        $args['roles'] = $roles;
-        $args['start_times'] = $startTimes;
-        $args['end_times'] = $endTimes;
-
-        //$args['series_id'] = bin2hex(random_bytes(16)); // new new /*It really disliked it, so I had to change it -Brooke */
         $args['series_id'] = random_int(100, 999999); 
 
-        $id = create_event($args);
-        if (!$id) {
-            die();
-        } else {
-    
-            $counts = [
-                'daily'   => 30,  // next 30 days
-                'weekly'  => 12,  // next 12 weeks
-                'monthly' => 6,   // next 6 months
-                'custom'  => 12,  // 12 custom intervals
-            ];
-                
-            $intervalMap = [
-                'daily'   => 'P1D',
-                'weekly'  => 'P1W',
-                'monthly' => 'P1M',
-            ];
-            if ($recurrenceType === 'custom') {
-                $customDays = max(1, $customDays);
-                $intervalSpec = 'P' . $customDays . 'D';
+        // Only create event if there are no errors
+        if (empty($errors)) {
+            $id = create_event($args);
+
+            if (!$id) {
+                die('Could not create event');
             } else {
-                $intervalSpec = $intervalMap[$recurrenceType] ?? null;
-            }
+                // Save the roles for the first event
+                save_event_roles($id, $roles);
 
-            if ($isRecurring && $intervalSpec && isset($counts[$recurrenceType])) {
-                $current = new DateTime($args['date']);  
-                $step    = new DateInterval($intervalSpec);
-                $times   = $counts[$recurrenceType];
+                if ($isRecurring) {
+                    $end = new DateTime($recurrenceEndDate);
 
-                for ($i = 0; $i < $times; $i++) {
-                    $current->add($step);
-                    $ymd = $current->format('Y-m-d');
+                    // DAILY
+                    if ($recurrenceType === 'daily') {
+                        $current = new DateTime($args['date']);
 
-                    $dup = $args;                 
-                    $dup['date']      = $ymd;    
+                        while (true) {
+                            $current->add(new DateInterval('P1D'));
 
-                    create_event($dup);
+                            if ($current > $end) {
+                                break;
+                            }
+
+                            $dup = $args;
+                            $dup['date'] = $current->format('Y-m-d');
+
+                            $newId = create_event($dup);
+                            if ($newId) {
+                                save_event_roles($newId, $roles);
+                            }
+                        }
+                    }
+
+                    // WEEKLY
+                    elseif ($recurrenceType === 'weekly') {
+                        $current = new DateTime($args['date']);
+
+                        while (true) {
+                            $current->add(new DateInterval('P1W'));
+
+                            if ($current > $end) {
+                                break;
+                            }
+
+                            $dup = $args;
+                            $dup['date'] = $current->format('Y-m-d');
+
+                            $newId = create_event($dup);
+                            if ($newId) {
+                                save_event_roles($newId, $roles);
+                            }
+                        }
+                    }
+
+                    // CUSTOM
+                    elseif ($recurrenceType === 'custom') {
+                        $current = new DateTime($args['date']);
+                        $customDays = max(1, (int)$customDays);
+
+                        while (true) {
+                            $current->add(new DateInterval('P' . $customDays . 'D'));
+
+                            if ($current > $end) {
+                                break;
+                            }
+
+                            $dup = $args;
+                            $dup['date'] = $current->format('Y-m-d');
+
+                            $newId = create_event($dup);
+                            if ($newId) {
+                                save_event_roles($newId, $roles);
+                            }
+                        }
+                    }
+
+                    // MONTHLY
+                    elseif ($recurrenceType === 'monthly') {
+                        $start = new DateTime($args['date']);
+                        $monthOffset = 1;
+
+                        $weekNames = [
+                            '1' => 'first',
+                            '2' => 'second',
+                            '3' => 'third',
+                            '4' => 'fourth',
+                            'last' => 'last'
+                        ];
+
+                        while (true) {
+                            $base = clone $start;
+                            $base->modify("+$monthOffset month");
+
+                            $year = $base->format('Y');
+                            $monthNumber = $base->format('m');
+                            $monthName = $base->format('F');
+
+                            if ($monthlyWeek === 'all') {
+                                $current = new DateTime("first day of $year-$monthNumber");
+                                $lastDayOfMonth = new DateTime("last day of $year-$monthNumber");
+
+                                while ($current <= $lastDayOfMonth) {
+                                    if ($current->format('l') === $monthlyDay) {
+                                        if ($current > $end) {
+                                            break 2;
+                                        }
+
+                                        $dup = $args;
+                                        $dup['date'] = $current->format('Y-m-d');
+
+                                        $newId = create_event($dup);
+                                        if ($newId) {
+                                            save_event_roles($newId, $roles);
+                                        }
+                                    }
+
+                                    $current->modify('+1 day');
+                                }
+                            } else {
+                                $weekText = $weekNames[$monthlyWeek];
+                                $newDate = new DateTime("$weekText $monthlyDay of $monthName $year");
+
+                                if ($newDate > $end) {
+                                    break;
+                                }
+
+                                $dup = $args;
+                                $dup['date'] = $newDate->format('Y-m-d');
+
+                                $newId = create_event($dup);
+                                if ($newId) {
+                                    save_event_roles($newId, $roles);
+                                }
+                            }
+
+                            $monthOffset++;
+                        }
+                    }
                 }
-            }        
-            
-            header('Location: eventsuccess.php');
-            exit();
+
+                header('Location: eventsuccess.php');
+                exit();
+            }
         }
     }
 
@@ -188,6 +322,7 @@
     include_once('database/dbinfo.php'); 
     $con=connect();  
 
+    $allRoles = get_roles(); // For displaying the form
 ?><!DOCTYPE html>
 <html>
     <head>
@@ -196,9 +331,9 @@
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1 style="color: var(--accent-color); font-weight: bold;">Create Event</h1>
+        <h1 style="color: var(--main-color); font-weight: bold;">Create Event</h1>
         <main class="date">
-            <h2 style="color: var(--accent-color); font-weight: bold;">New Event Form</h2>
+            <h2 style="color: var(--main-color); font-weight: bold;">New Event Form</h2>
             <form id="new-event-form" method="POST">
                 <div class="event-sect">
                 <label for="name">* Event Name </label>
@@ -248,56 +383,27 @@
                             </tr>
                         </thead> 
                         <tbody>
-                            <tr>
-                                <td>Truck Unloader</td>
-                                <td>
-                                    <input type="number" class="role-count" name="roles[truck_unloader]" value="0" min="0" 
-                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
-                                </td> 
-                                <td>
-                                    <p type="name" id="truck_unloader_desc" name="description">Show up during the time slot</p>
-                                </td>
-                            </tr>   
-                            <tr>
-                                <td>Sorting</td>
-                                <td>
-                                    <input type="number" class="role-count" name="roles[sorting]" value="0" min="0" 
-                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
-                                </td>    
-                                <td>
-                                    <p type="name" id="sorting_desc" name="description">Show up during the time slot</p>
-                                </td>
-                            </tr> 
-                            <tr>
-                                <td>Distribution</td>
-                                <td>
-                                    <input type="number" class="role-count" name="roles[distribution]" value="0" min="0" 
-                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
-                                </td>   
-                                <td>
-                                    <p type="name" id="distribution_desc" name="description">Show up during time slot</p>
-                                </td>
-                            </tr>  
-                            <tr>
-                                <td>Setup</td>
-                                <td>
-                                    <input type="number" class="role-count" name="roles[setup]" value="0" min="0"
-                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();">
-                                </td>
-                                <td>
-                                    <p type="name" id="setup_desc" name="description">Arrive 15 minutes early</p>
-                                </td>
-                            </tr> 
-                            <tr>
-                                <td>Cleanup</td>
-                                <td>
-                                    <input type="number" class="role-count" name="roles[cleanup]" value="0" min="0" 
-                                    max="100" oninput="if(this.value > 100) this.value = 100" onkeydown="if(event.key === '-') event.preventDefault();" >
-                                </td>
-                                <td>
-                                    <p type="name" id="clean_up_desc" name="description">Stay 15 minutes afterwards</p>
-                                </td>  
-                            </tr> 
+                        <tbody>
+                            <?php foreach ($allRoles as $role): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($role['role']); ?></td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            class="role-count"
+                                            name="roles[<?php echo (int)$role['role_id']; ?>]"
+                                            value="0"
+                                            min="0"
+                                            max="100"
+                                            oninput="if(this.value > 100) this.value = 100"
+                                            onkeydown="if(event.key === '-') event.preventDefault();"
+                                        >
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($role['role_description']); ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr>
@@ -308,12 +414,11 @@
                         </tfoot>
 
                     </table>   
-                    <!-- <input type="hidden" id="rolesRequired" required> -->
                 </div>
 
                 <div class="event-sect">
                     <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                        <legend style="color: var(--accent-color); font-weight:bold;">Make this a recurring event</legend>
+                        <legend style="color: var(--main-color); font-weight:bold;">Make this a recurring event</legend>
                         <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
                             <input type="checkbox" id="recurring" name="recurring" value="1">
                             Recurring
@@ -327,13 +432,55 @@
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
                             <option value="monthly">Monthly</option>
-                            <option value="custom">Custom</option>
+                            <option value="custom">Custom (Number of Weeks)</option>
                         </select>
+
+                        <div id="weekly-options" style="display:none; margin-top:8px;">
+                            <label for="weekly_day">Repeat on:</label>
+                            <select name="weekly_day" id="weekly_day">
+                                <option value="">-- Select Day --</option>
+                                <option value="Sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+
+                        <div id="monthly-options" style="display:none; margin-top:8px;">
+                            <label>Repeat on:</label>
+                            <select name="monthly_week" id="monthly_week">
+                                <option value="">-- Select Week --</option>
+                                <option value="1">First</option>
+                                <option value="2">Second</option>
+                                <option value="3">Third</option>
+                                <option value="4">Fourth</option>
+                                <option value="last">Last</option>
+                                <option value="all">All Weeks</option>
+                            </select>
+
+                            <select name="monthly_day" id="monthly_day">
+                                <option value="">-- Select Day --</option>
+                                <option value="Sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
 
                         <div id="custom-interval" style="display:none; margin-top:8px;">
                             <label for="custom_days">Repeat every:</label>
                             <input type="number" min="1" id="custom_days" name="custom_days" placeholder="e.g. 10">
-                            <span>days</span>
+                        </div>
+
+                        <div id="recurrence-end" style="margin-top:8px;">
+                            <label for="recurrence_end_date">Repeat until:</label>
+                            <input type="date" id="recurrence_end_date" name="recurrence_end_date">
                         </div>
                     </div>
                 </fieldset>
@@ -390,31 +537,63 @@
                         const recurrenceType = document.getElementById('recurrence_type');
                         const customBlock = document.getElementById('custom-interval');
                         const customDays = document.getElementById('custom_days');
+                        const weeklyBlock = document.getElementById('weekly-options');
+                        const weeklyDay = document.getElementById('weekly_day');
+                        const monthlyBlock = document.getElementById('monthly-options');
+                        const monthlyWeek = document.getElementById('monthly_week');
+                        const monthlyDay = document.getElementById('monthly_day');
+                        const recurrenceEndDate = document.getElementById('recurrence_end_date');
 
-                        function toggleOptions(){
+                        function toggleOptions() {
                             const on = recurring && recurring.checked;
                             if (options) options.style.display = on ? 'block' : 'none';
+
                             if (!on) {
                                 if (recurrenceType) recurrenceType.value = '';
                                 if (customBlock) customBlock.style.display = 'none';
+                                if (weeklyBlock) weeklyBlock.style.display = 'none';
+                                if (monthlyBlock) monthlyBlock.style.display = 'none';
+
                                 if (customDays) customDays.value = '';
+                                if (weeklyDay) weeklyDay.value = '';
+                                if (monthlyWeek) monthlyWeek.value = '';
+                                if (monthlyDay) monthlyDay.value = '';
+                                if (recurrenceEndDate) recurrenceEndDate.value = '';
                             }
                         }
-                        function toggleCustom(){
-                            if (!recurrenceType || !customBlock) return;
-                            customBlock.style.display = (recurrenceType.value === 'custom') ? 'block' : 'none';
-                            customBlock.style.display = (recurrenceType.value === 'custom') ? 'block' : 'none';
+
+                        function toggleRecurrenceFields() {
+                            if (!recurrenceType) return;
+
+                            const type = recurrenceType.value;
+
+                            if (customBlock) customBlock.style.display = type === 'custom' ? 'block' : 'none';
+                            if (weeklyBlock) weeklyBlock.style.display = type === 'weekly' ? 'block' : 'none';
+                            if (monthlyBlock) monthlyBlock.style.display = type === 'monthly' ? 'block' : 'none';
+
+                            if (type !== 'custom' && customDays) customDays.value = '';
+                            if (type !== 'weekly' && weeklyDay) weeklyDay.value = '';
+                            if (type !== 'monthly') {
+                                if (monthlyWeek) monthlyWeek.value = '';
+                                if (monthlyDay) monthlyDay.value = '';
+                            }
                         }
+
 
                         if (recurring) {
-                            recurring.addEventListener('change', toggleOptions);
-                            toggleOptions();
-                        }
-                        if (recurrenceType) {
-                            recurrenceType.addEventListener('change', toggleCustom);
-                            toggleCustom();
+                            recurring.addEventListener('change', function() {
+                                toggleOptions();
+                                toggleRecurrenceFields();
+                            });
                         }
 
+                        if (recurrenceType) {
+                            recurrenceType.addEventListener('change', toggleRecurrenceFields);
+                        }
+
+                        toggleOptions();
+                        toggleRecurrenceFields();
+                        
                         /* The capacity will add up as the roles are incremented by the admin on the form */
                         function updateTotalCapacity() {
                             const roles = document.querySelectorAll(".role-count");

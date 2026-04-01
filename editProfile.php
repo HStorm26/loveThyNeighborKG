@@ -38,9 +38,10 @@
         // }
 
         $required = array(
-            'first_name', 'last_name', 'city', 'state',
-            'email', 'phone1', 'email_consent', 
-            'affiliation', 'branch'
+            'first_name', 'last_name', 't-shirt_size',
+            'street_address', 'city', 'state', 'zip_code',
+            'email', 'phone', 'emergency_contact_first_name',
+            'emergency_contact_relation', 'emergency_contact_phone' 
         );
         $errors = false;
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -56,8 +57,10 @@
             $errors = true;
             // echo 'bad dob';
         }*/
+
+        $t_shirt_size = $args['t-shirt_size'];
         
-        //$street_address = $args['street_address'];
+        $street_address = $args['street_address'];
 
         $city = $args['city'];
 
@@ -70,11 +73,11 @@
             $errors = true;
         }
 
-        /*$zip_code = $args['zip_code'];
+        $zip_code = $args['zip_code'];
         if (!validateZipcode($zip_code)) {
             $errors = true;
             // echo 'bad zip';
-        }*/
+        }
 
         $email = validateEmail($args['email']);
         if (!$email) {
@@ -103,15 +106,15 @@
         }
         @*/
 
-        //$emergency_contact_first_name = $args['emergency_contact_first_name'];
+        $emergency_contact_first_name = $args['emergency_contact_first_name'];
         
         //$emergency_contact_last_name = $args['emergency_contact_last_name'];
         
-        /*$emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
+        $emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
         if (!$emergency_contact_phone) {
             $errors = true;
             // echo 'bad e-contact phone';
-        }*/
+        }
 
         /*$emergency_contact_phone_type = $args['emergency_contact_phone_type'];
         if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
@@ -119,7 +122,7 @@
             // echo 'bad phone type';
         } */
 
-        //$emergency_contact_relation = $args['emergency_contact_relation'];
+        $emergency_contact_relation = $args['emergency_contact_relation'];
 
         /*@
         $gender = $args['gender'];
@@ -139,22 +142,22 @@
         $person = retrieve_person($id);
 
         if(isset($args['email_prefs'])) {
-            $email_consent = $args['email_prefs']; 
+            $email_consent = 'true';    // takes true or false
         } else {
-            $email_consent = $person->get_email_prefs();
+            $email_consent = 'false';
         }
 
-        if(isset($args['branch'])) {
-            $branch = $args['branch'];
-        } else {
-            $branch = $person->get_branch();
-        }
+        // if(isset($args['branch'])) {
+        //     $branch = $args['branch'];
+        // } else {
+        //     $branch = $person->get_branch();
+        // }
 
-        if(isset($args['affiliation'])) {
-            $affiliation = $args['affiliation'];
-        } else {
-            $affiliation = $person->get_affiliation();
-        }
+        // if(isset($args['affiliation'])) {
+        //     $affiliation = $args['affiliation'];
+        // } else {
+        //     $affiliation = $person->get_affiliation();
+        // }
         
        
         // For the new fields, default to 0 if not set
@@ -164,9 +167,12 @@
             $updateSuccess = false;
         }
         
+        // ADDED THE PROPER FIELDS
         $result = update_person_required(
-            $id, $first_name, $last_name, $city, $state,
-            $email, $phone1, $email_consent, $affiliation, $branch
+            $id, $first_name, $last_name, $t_shirt_size, $street_address, $city,
+            $state, $zip_code, $email, $phone1, $email_consent, 
+            $emergency_contact_first_name, $emergency_contact_relation,
+            $emergency_contact_phone
         );
         if ($result) {
             if ($editingSelf) {

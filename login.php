@@ -28,7 +28,7 @@
             require_once('database/dbPersons.php');
             /*@require_once('database/dbMessages.php');*/
             /*@dateChecker();*/
-            $username = strtolower($args['username']);
+            $username = trim($args['username']);
             $password = $args['password'];
             $user = retrieve_person($username);
             if (!$user) {
@@ -79,25 +79,7 @@
 	<script src="https://cdn.tailwindcss.com"></script>
     	<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
 	<style>
-/* Found this on codepen :D */
-.wave {
-  animation-name: wave-animation;  /* Refers to the name of your @keyframes element below */
-  animation-duration: 2.5s;        /* Change to speed up or slow down */
-  animation-iteration-count: infinite;  /* Never stop waving :) */
-  transform-origin: 70% 70%;       /* Pivot around the bottom-left palm */
-  display: inline-block;
-}
 
-@keyframes wave-animation {
-    0% { transform: rotate( 0.0deg) }
-   10% { transform: rotate(14.0deg) }  /* The following five values can be played with to make the waving more or less extreme */
-   20% { transform: rotate(-8.0deg) }
-   30% { transform: rotate(14.0deg) }
-   40% { transform: rotate(-4.0deg) }
-   50% { transform: rotate(10.0deg) }
-   60% { transform: rotate( 0.0deg) }  /* Reset for the last half to pause */
-  100% { transform: rotate( 0.0deg) }
-}
 * { font-family: Quicksand, sans-serif; }
 	</style>
         <title>Log-In | Love Thy Neighbor Community Food Pantry</title>
@@ -108,7 +90,7 @@
       <!-- Left: Image Section (Hidden on small screens) -->
       <!-- Background Image Now -->
       <div class="absolute inset-0">
-          <img src="images/LoveThyNeighbor_wood.jpg"
+          <img src="images/LoveThyNeighbor_foodLightBlue.jpg"
                 alt="Barrels"
                 style="height: 100%;"
                 class="w-full h-full object-cover">
@@ -122,7 +104,8 @@
       <!-- now the middle form section -->
       <div class="relative h-full flex items-center justify-center px-4">
 
-        <div class="w-full max-w-xl bg-white backdrop-blur-md p-10 rounded-3xl shadow-2xl">
+        <div class="w-full max-w-xl bg-white backdrop-blur-md p-10 rounded-3xl shadow-2xl ">
+          
 
           <!-- Logo Placeholder (Now the same width as inputs and centered) -->
           <div class="w-full flex justify-center mb-6">
@@ -130,10 +113,6 @@
                 alt="Logo"
                 class="w-full max-w-xs">
           </div>
-
-          <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
-      <span class="wave">👋</span> Welcome Back!
-          </h2>
 
           <form class="w-full" method="post">
                     <?php

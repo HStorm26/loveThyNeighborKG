@@ -4,14 +4,14 @@
 <!-- Hero Section with Title -->
 <header class="hero-header"> 
     <div class="center-header">
-        <h1>Account Registration</h1>
+        <h1 style="color: #004AAD; font-weight: bold;">Account Registration</h1>
     </div>
 </header>
 
 <main>
-  <div class="main-content-box">
-    <form class="signup-form" method="post">
-	<div class="text-center spacing-bottom">
+  <div class="main-content-box" style="color: #004AAD; font-weight: bold;">
+    <form class="signup-form" method="post" style="color: #004AAD; font-weight: bold;">
+	<div class="text-center spacing-bottom" style="color: #004AAD; font-weight: bold;">
           <h2 class="mb-8">Registration Form</h2>
             <div class="info-box">
               <p class="sub-text">Please fill out each section of the following form to create your account.</p>
@@ -31,7 +31,26 @@
             <label for="last_name"><em>* </em>Last Name</label>
             <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name">
 
-            <label><em>* </em>Are you 21 or older?</label>
+
+            <div class="median-div"></div>
+
+            <label for="birthday"><em>* </em>Date of Birth</label>
+            <input type="date" id="birthday" name="birthday" required placeholder="Enter your birthday" max="<?php echo date('Y-m-d'); ?>">
+            
+
+            <label for="t_shirt_size"><em>* </em>T-Shirt Size</label> <!-- Cahnge to be a drop down -->
+            <!--<input type="text" id="t-shirt_size" name="t-shirt_size" required placeholder="Enter your t-shirt size"> -->
+            <select id="t_shirt_size" name="t_shirt_size" required>
+                <option value="x_small">X-Small</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+                <option value="x_large">X-Large</option>
+                <option value="xx_large">XX-Large</option>
+                <option value="xxx_large">XXX-Large</option>
+            </select>
+
+            <!--<label><em>* </em>Are you 21 or older?</label>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="yes" name="age" value="true" required>
@@ -42,13 +61,12 @@
                     <label for="no">No</label>
                 </div>
             </div>
-            <div class="median-div"></div>
+            <div class="median-div"></div> -->
 
-            <!--<label for="birthdate"><em>* </em>Date of Birth</label>
-            <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">-->
+            <div class="median-div"></div>
             
-            <!-- <label for="street_address"><em>* </em>Street Address</label>
-            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"> -->
+            <label for="street_address"><em>* </em>Street Address</label>
+            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address">
 
             <label for="city"><em>* </em>City</label>
             <input type="text" id="city" name="city" required placeholder="Enter your city">
@@ -109,31 +127,8 @@
                 <option value="WY">Wyoming</option>
             </select>
 
-            <!--<label for="zip"><em>* </em>Zip Code</label>
+            <label for="zip"><em>* </em>Zip Code</label>
             <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
--->
-            <div class="median-div"></div>
-            <label for="affiliation"><em>* </em>Military Affiliation</label>
-            <select id="affiliation" name="affiliation" required>
-                <option value="" disabled selected></option>
-                <option value="Active duty">Active duty</option>
-                <option value="Family">Family member (spouse, child, or parent)</option>
-                <option value="Reserve">Reservist</option>
-                <option value="Veteran">Veteran</option>
-                <option value="Civilian">Civilian</option>
-            </select>
-
-            <label for="branch"><em>* </em>Branch of Service</label>
-            <select id="branch" name="branch" required>
-                <option value="" disabled selected></option>
-                <option value="Air Force">Air Force</option>
-                <option value="Army">Army</option>
-                <option value="Coast Guard">Coast Guard</option>
-                <option value="Marine Corp">Marine Corp</option>
-                <option value="Navy">Navy</option>
-                <option value="Space Force">Space Force</option>
-            </select>
-
         </fieldset>
 
         <fieldset class="section-box mb-4">
@@ -145,110 +140,44 @@
             <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
 
             <label for="email_consent">E-mail Notifications</label>
-            <p>By checking the box below, you consent to recieve emails from the Whiskey Valor Foundation. You may change this at any time.</p>
+            <p>By checking the box below, you consent to recieve emails from the Love Thy Neighbor Community Food Pantry in King George, Virginia. You may change this at any time.</p>
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
 
             <div class="median-div"></div>
 
-            <label for="phone1">Phone Number</label>
-            <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
-
-            <!--<label><em>* </em>Phone Type</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
-            </div>-->
+            <label for="phone1"><em>* </em>Phone Number</label>
+            <input type="tel" id="phone1" class="phone" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Ex. 555-555-5555">
 
         </fieldset>
 
-        <!--<fieldset class="section-box mb-4">
+        <fieldset class="section-box mb-4">
             <h3>Emergency Contact</h3>
             <p class="mb-2">Please provide us with someone to contact on your behalf in case of an emergency.</p>
 	    <div class="blue-div"></div>
 
-            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name</label>
-            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name">
+            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name and Last Name</label>
+            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name and last name">
 
-            <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
-            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name">
+            <!--<label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
+            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name"> -->
 
             <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
             <label for="emergency_contact_phone"><em>* </em>Contact Phone Number</label>
-            <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
+            <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" required placeholder="Enter emergency contact phone number. Ex. 555-555-5555">
+        </fieldset>
 
-            <label><em>* </em>Contact Phone Type</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
-            </div>
-        </fieldset>-->
-
-        <!-- <fieldset class="section-box mb-4">
-            <h3 class="mb-2">Other Required Information</h3>
-	    <div class="blue-div"></div>
-
-           <label><em>* </em>Are you volunteering for court-ordered community service?</label>
-            <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="yes" name="is_community_service_volunteer" value="yes" required>
-                <label for="yes">Yes</label>
-	      </div>
-
-	      <div class="radio-element">
-                <input type="radio" id="no" name="is_community_service_volunteer" value="no">
-                <label for="no">No</label>
-	      </div>
-            </div>
-         
-            <label>Are there any specific skills you have that you believe could be useful for volunteering at the FredSPCA</label>
-            <input type="text" id="skills" name="skills" placeholder="">
-
-            <label>Any interests/hobbies?</label>
-            <input type="text" id="interests" name="interests" placeholder="">
-
-
-        </fieldset> -->
-
-        
-               
-
-                
         <script>
-            
-
-            
-           
-
-            
-            
-
-             // Event listeners for changes in volunteer/participant selection and the complete statuses
-            //document.querySelectorAll('input[name="is_community_service_volunteer"]').forEach(radio => {
-              //  radio.addEventListener('change', toggleTrainingSection);
-            //});
-
-
-
-            
-            // Initial check on page load
-            
+        // Initialize Cleave.js for primary phone number
+        new Cleave('#emergency_contact_phone', {
+            phone: true,
+            phoneRegionCode: 'US',
+            delimiter: '-',
+            numericOnly: true,
+        });
         </script>
+
         <script>
         // Initialize Cleave.js for primary phone number
         new Cleave('#phone1', {
@@ -281,26 +210,88 @@
         <!--<input type="hidden" name="is_new_volunteer" value="1">
         <input type="hidden" name="total_hours_volunteered" value="0"> -->
         </fieldset>
+
+        <fieldset class="section-box mb-4">
+            <h3>Volunteer Information</h3>
+            <p class="mb-2">Are you volunteering to complete required community service (school, court, etc.)?</p>
+        <div class="blue-div"></div>
+            <label><em>* </em> Community Service Requirement Confirmation</label>
+            <p>Please indicate whether your volunteer participation is to fufill a required community service obligation.</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree" name="is_community_service_volunteer" value="yes" required>
+                    <label for="agree">Yes, I am completing required community service</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="disagree" name="is_community_service_volunteer" value="no" required>
+                    <label for="disagree">No, I am volunteering by choice</label>
+                </div> 
+            </div>
+        
+        </fieldset>
         
         <fieldset class="section-box mb-4">
             <h3>Consent Notice</h3>
             <p class="mb-2">Please review the following before creating your account.</p>
         <div class="blue-div"></div>
             <label><em>* </em> Privacy Policy</label>
-            <p>I confirm that I have read the <a href="https://whiskeyvalor.org/policies/privacy-policy">Privacy Policy</a> and consent to the Whiskey Valor Foundation collecting and storing my information for the purposes outlined therein.</p>
+            <p>I confirm that I have read the <a href="https://www.kgfood.org/privacy">Privacy Policy</a> and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="privacy_consent" value="yes" required>
-                    <label for="agree">I agree.</label>
+                    <label for="agree">Yes</label>
                 </div>
-                <div class="radio-element">
+                <!--<div class="radio-element">
                     <input type="radio" id="disagree" name="privacy_consent" value="no">
                     <label for="disagree">I do not agree.</label>
-                </div>
+                </div>-->
             </div>
+            <br>
+            <label><em>* </em> Picture Policy</label>
+            <p>I consent to being photographed and authorize the Love Thy Neighbor Community Food Pantry in King George, Virginia, taking and using my image.</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree" name="photo_release" value="yes" required>
+                    <label for="agree">Yes</label>
+                </div>
+                <!--<div class="radio-element">
+                    <input type="radio" id="disagree" name="photo_release" value="no">
+                    <label for="disagree">I do not agree.</label>
+                </div>-->
+            </div>   
         </fieldset>
         <p class="text-center notice"></p>
         <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
     </form>
    </div> 
 </main>
+<script>
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("password-reenter");
+
+// Check password strength
+password.addEventListener("input", function () {
+    const value = password.value;
+
+    const isValid =
+        value.length >= 8 &&
+        /[A-Z]/.test(value) &&
+        /[a-z]/.test(value) &&
+        /[0-9]/.test(value);
+
+    if (!isValid) {
+        password.setCustomValidity("Password must be at least 8 characters, include uppercase, lowercase, and a number.");
+    } else {
+        password.setCustomValidity("");
+    }
+});
+
+// Check password match
+confirmPassword.addEventListener("input", function () {
+    if (confirmPassword.value !== password.value) {
+        confirmPassword.setCustomValidity("Passwords do not match.");
+    } else {
+        confirmPassword.setCustomValidity("");
+    }
+});
+</script>

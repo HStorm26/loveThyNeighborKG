@@ -6,12 +6,12 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Whiskey Valor Foundation | Register</title>
+    <title>Love Thy Neighbor | Register</title>
     <link href="css/base.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
-<?php
-$tailwind_mode = true;
-require_once('header.php');
+<!--<?php
+//$tailwind_mode = true;
+//require_once('header.php');
 ?>
 <style>
     .date-box {
@@ -27,7 +27,7 @@ require_once('header.php');
     .dropdown {
         padding-right: 50px;
     }
-</style>
+</style>-->
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 </head>
 <body class="relative">
@@ -41,31 +41,26 @@ require_once('header.php');
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
-        // Original array. Changed to fit WVF needs
-        /*$required = array(
-            'first_name', 'last_name', 'birthdate',
-            'street_address', 'city', 'state', 'zip', 
-            'email', 'phone', 'phone_type',
-            'emergency_contact_first_name', 'emergency_contact_last_name',
-            'emergency_contact_relation', 'emergency_contact_phone',
-            'emergency_contact_phone_type',
-            'username', 'password',
-            'is_community_service_volunteer',
-            'is_new_volunteer', 
-            'total_hours_volunteered'
-        );*/
+        //  id, first_name, last_name, phone_number, email, email_prefs,
+        //  birthday, t-shirt_size, state, city, street_address, zip_code,
+        //  emergency_contact_first_name, emergency_contact_phone,
+        //  emergency_contact_relation, archived, password, contact_num,
+        //  contact_method, type, status, photo_release, community_service,
+        //  notes
 
-        $required = array(
-            'first_name', 'last_name', 'age',
-            'city', 'state', 
-            'affiliation', 'branch',
-            'email', 'username', 'password',
-            'privacy_consent'
+        // Love Thy Neighbor KG required
+        $required = array (
+            'first_name', 'last_name', 'phone1', 'email',
+            'birthday', 't_shirt_size', 'state', 'city', 'street_address', 'zip',
+            'emergency_contact_first_name', 'emergency_contact_phone', 'emergency_contact_relation',
+            'password', 'privacy_consent', 'photo_release'
         );
 
         $optional = array(
-            'phone', 'email_prefs'
+            'email_prefs', 'notes'
         );
+
+        // contact_num, contact_method are not needed at all
 
         $errors = false;
 
@@ -75,14 +70,15 @@ require_once('header.php');
 
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
-        $age = $args['age']; // Passes either "true" or "false" 
-        /*$birthday = validateDate($args['birthdate']);
+        $t_shirt_size = $args['t_shirt_size'];
+        //$age = $args['age']; // Passes either "true" or "false" 
+        $birthday = validateDate($args['birthday']);
         if (!$birthday) {
             echo "<p>Invalid birthdate.</p>";
             $errors = true;
-        } */
+        } 
 
-        //$street_address = $args['street_address'];
+        $street_address = $args['street_address'];
         $city = $args['city'];
         $state = $args['state'];
         if (!valueConstrainedTo($state, array(
@@ -93,11 +89,11 @@ require_once('header.php');
             $errors = true;
         }
 
-        /*$zip_code = $args['zip'];
+        $zip_code = $args['zip'];
         if (!validateZipcode($zip_code)) {
             echo "<p>Invalid ZIP code.</p>";
             $errors = true;
-        }*/
+        }
 
         $email = strtolower($args['email']);
         if (!validateEmail($email)) {
@@ -105,7 +101,7 @@ require_once('header.php');
             $errors = true;
         }
 
-        if(isset($args['phone1'])) { // Make phone number optional 
+        if(isset($args['phone1'])) { 
             $phone1 = validateAndFilterPhoneNumber($args['phone1']);
             if (!$phone1) {
                 echo "<p>Invalid phone number.</p>";
@@ -126,42 +122,33 @@ require_once('header.php');
             $errors = true;
         }
 
-        $affiliation = $args['affiliation'];
-        $branch = $args['branch'];
-
-        /*$phone1type = $args['phone_type'];
-        if (!valueConstrainedTo($phone1type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid phone type.</p>";
+        if(!isset($args['photo_release']) || $args['photo_release'] == 'no') {
+            echo "<p>You must agree to being photographed to create an account.</p>";
             $errors = true;
-        }*/
+        }
 
-        /*$emergency_contact_first_name = $args['emergency_contact_first_name'];
-        $emergency_contact_last_name = $args['emergency_contact_last_name'];
+        //$affiliation = $args['affiliation']; - Brooke wants to Delete (whiskey)
+        //$branch = $args['branch'];   -Brooke wants to Delete (whiskey)
+
+        $emergency_contact_first_name = $args['emergency_contact_first_name'];   //It is actually the first and last name -Brooke
+        //$emergency_contact_last_name = $args['emergency_contact_last_name'];
         $emergency_contact_relation = $args['emergency_contact_relation'];
 
         $emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
         if (!$emergency_contact_phone) {
             echo "<p>Invalid emergency contact phone.</p>";
             $errors = true;
-        } */
+        }
 
-        /*$emergency_contact_phone_type = $args['emergency_contact_phone_type'];
-        if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid emergency phone type.</p>";
-            $errors = true;
-        }*/
-
-        /*$skills = isset($args['skills']) ? $args['skills'] : '';
-        $interests = isset($args['interests']) ? $args['interests'] : '';
-
-        $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
-        $is_new_volunteer = isset($args['is_new_volunteer']) ? (int)$args['is_new_volunteer'] : 1;
-        $total_hours_volunteered = isset($args['total_hours_volunteered']) ? (float)$args['total_hours_volunteered'] : 0.00;
-
-        $type = ($is_community_service_volunteer === 1) ? 'volunteer' : 'participant';
+        $type = "Volunteer";
         $archived = 0;
-        $status = "Inactive";
-        $training_level = "None";*/
+        $status = "Active";
+        $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
+        $photo_release = $args['photo_release'] === 'yes' ? 1 : 0;
+        $contact_num = null;
+        $contact_method = null;
+        //$notes = $args['notes'];
+        $notes = null;
 
         $id = $args['username'];
 
@@ -178,27 +165,16 @@ require_once('header.php');
             die();
         }
 
-        /*$newperson = new Person(
-            $id, $password, date("Y-m-d"),
-            $first_name, $last_name, $birthday,
-            $street_address, $city, $state, $zip_code,
-            $phone1, $phone1type, $email,
-            $emergency_contact_first_name, $emergency_contact_last_name,
-            $emergency_contact_phone, $emergency_contact_phone_type,
-            $emergency_contact_relation, $type, $status, $archived, 
-            $skills, $interests, $training_level,
-            $is_community_service_volunteer, $is_new_volunteer,
-            $total_hours_volunteered
-        ); */
-
+        // Love Thy Neighbor KG newperson
         $newperson = new Person(
-            $id, date("Y-m-d"),
-            $first_name, $last_name, null,
-            $city, $state, null, $phone1, $age, 
-            null, null, null, null, 
-            $email, $email_consent, 
-            null, null, null, null, null, null, null, 
-            $password, $affiliation, $branch, null, null
+            $id, $first_name, $last_name,
+            $phone1, $email, $email_consent,
+            $birthday, $t_shirt_size, $state,
+            $city, $street_address, $zip_code,
+            $emergency_contact_first_name, 
+            $emergency_contact_phone, $emergency_contact_relation,
+            $archived, $password, $contact_num, $contact_method,
+            $type, $status, $photo_release, $is_community_service_volunteer, $notes
         );
 
         $result = add_person($newperson);

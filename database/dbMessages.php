@@ -151,22 +151,22 @@ function mark_all_as_read($userID) {
     return true;
 }
 
-function message_all_users_of_types($from, $types, $title, $body) {
-    $types = implode(', ', $types);
-    $time = date('Y-m-d-H:i');
-    $query = "select id from dbpersons where type in ($types)";
-    $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $rows = mysqli_fetch_all($result, MYSQLI_NUM);
-    foreach ($rows as $row) {
-        $to = $row[0];
-        $query = "insert into dbmessages (senderID, recipientID, title, body, time, wasRead, prioritylevel)
-                  values ('$from', '$to', '$title', '$body', '$time', 0, 0)";
-        $result = mysqli_query($connection, $query);
-    }
-    mysqli_close($connection);    
-    return true;
-}
+// function message_all_users_of_types($from, $types, $title, $body) {
+//     $types = implode(', ', $types);
+//     $time = date('Y-m-d-H:i');
+//     $query = "select id from dbpersons where type in ($types)";
+//     $connection = connect();
+//     $result = mysqli_query($connection, $query);
+//     $rows = mysqli_fetch_all($result, MYSQLI_NUM);
+//     foreach ($rows as $row) {
+//         $to = $row[0];
+//         $query = "insert into dbmessages (senderID, recipientID, title, body, time, wasRead, prioritylevel)
+//                   values ('$from', '$to', '$title', '$body', '$time', 0, 0)";
+//         $result = mysqli_query($connection, $query);
+//     }
+//     mysqli_close($connection);    
+//     return true;
+// }
 
 function message_all_volunteers($from, $title, $body) {
     return message_all_users_of_types($from, ['"volunteer"'], $title, $body);

@@ -18,10 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `dbkxnmd1xwle9j`
+-- Database: `neighbordb`
 --
--- CREATE DATABASE IF NOT EXISTS `dbroles` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
--- USE `dbroles`;
+
+use neighbordb;
 
 
 -- --------------------------------------------------------
@@ -35,16 +35,12 @@ CREATE TABLE IF NOT EXISTS `dbroles` (
   `role_description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
+INSERT INTO `dbroles` (`role_id`, `role`, `role_description`) VALUES
+(1, 'Truck Unloader', 'Show up during the time slot'),
+(2, 'Pickup', 'Show up during the time slot'),
+(3, 'Sorting', 'Show up during the time slot'), 
+(4, 'Distribution', 'Show up during the time slot'),
+(5, 'Setup', 'Arrive 30 minutes early'), 
+(6, 'Cleanup', 'Stay 30 minutes afterwards');
 
---
--- Table structure for table `person_roles`
---
-
-CREATE TABLE IF NOT EXISTS `person_roles` (
-  `person_id` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role_id` int NOT NULL,
-  PRIMARY KEY (`person_id`, `role_id`),
-  FOREIGN KEY (`person_id`) REFERENCES dbpersons(id),
-  FOREIGN KEY (`role_id`) REFERENCES dbroles(role_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+----------------------------------------------------------

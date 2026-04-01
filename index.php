@@ -446,7 +446,7 @@
 <!--END TEST-->
 </head>
 
-<!-- ONLY SUPER ADMIN WILL SEE THIS -->
+<!-- ONLY SUPER ADMIN WILL SEE THIS -->    <!-- This is not true, admin and super admin can see it (2 = admin, 3 = super admin) ;( -Brooke -->
 <?php if ($_SESSION['access_level'] >= 2): ?>
 <body>
 <?php require 'header.php';?>
@@ -501,15 +501,7 @@
 </button>
     </div>
 
-    <div class="content-box">
-        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
-        <div class="small-text" style="color: rgb(0,74,173);">Get away from it all!</div>
-        <div class="large-text">Retreat Applications</div>
-<button class="circle-arrow-button" onclick="window.location.href='viewAllApplications.php'">
-    <span class="button-text">Go</span>
-    <div class="circle">&gt;</div>
-</button>
-    </div>
+
 
 </div>
 
@@ -522,7 +514,7 @@
     <?php
         require_once('database/dbMessages.php');
 
-        // Ensure variable is always defined
+        // Ensure variable is always defined 
         $unreadMessageCount = 0;
         $inboxIcon = 'inbox.svg';
         if (isset($person)) {
@@ -541,17 +533,6 @@
         
         <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
         <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- Manage Documents -->
-    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black; position: relative;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
-        </div>
-       
-        <div class="large-text-sub" style="color:#FFFFFF;">View Pending IDs </div>
-        <div class="graph-text" style="color:#FFFFFF;">View pending and arbitrate user submitted IDs.</div>
         <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
 
@@ -615,18 +596,6 @@
         <div class="graph-text" style="color:#FFFFFF;">Volunteer Emails</div>
         <button class="arrow-button" style="color:#FFFFFF;">→</button>
     </div>
-
-    <!-- Discussions -->
-    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">User Suggestions</div>
-        <div class="graph-text" style="color:#FFFFFF;">View user submitted suggestions.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
 </div>
 
 
@@ -762,26 +731,6 @@
                     }   
                 ?>  
 
-        <div class="content-box-test" onclick="window.location.href='upload_encrypted_image.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Calendar Icon">
-            </div>
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Documentation Upload</div>
-            <div class="graph-text" style="color:#FFFFFF;">Upload an ID for verification.</div>
-            <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
-
-        <!-- <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Report Icon">
-            </div> -->
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <!-- <div class="large-text-sub">Suggestions</div>
-            <div class="graph-text">Suggest opportunities for charity events.</div>
-            <button class="arrow-button">→</button>
-        </div> --> <!-- DELETE THIS LATER ON - BROOKE -->
-
         <div class="content-box-test" onclick="window.location.href='inbox.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
@@ -830,7 +779,6 @@
             </div>
         </div>
     </footer>
-    <p>_</p>
 
     <!-- Font Awesome for Icons -->
     <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>

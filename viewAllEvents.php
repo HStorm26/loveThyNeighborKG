@@ -42,32 +42,140 @@
                 $events = get_all_events_sorted_by_date_not_archived();
                 $archivedevents = get_all_events_sorted_by_date_and_archived();
                 $today = new DateTime(); // Current date
-                
-                // Filter out expired events
-                $upcomingEvents = array_filter($events, function($event) use ($today) {
-                    $eventDate = new DateTime($event->getStartDate());
-                    return $eventDate >= $today; // Only include events on or after today
-                });
+                $today->setTime(0, 0, 0); //sets time to 12am
 
-                $upcomingArchivedEvents = array_filter($archivedevents, function($event) use ($today) {
-                    $eventDate = new DateTime($event->getStartDate());
-                    return $eventDate >= $today; // Only include events on or after today
-                });
+                $filterStart = $_GET['start_date'] ?? '';
+                $filterEnd = $_GET['end_date'] ?? '';
 
-                if(isset($_SESSION['user_id']) && $_SESSION['user_id'] != 'guest') {
-                    $user = retrieve_person($userID);
+                //swap start and end dates if user error
+                if (!empty($filterStart) && !empty($filterEnd) && $filterStart > $filterEnd) {
+                     $temp = $filterStart;
+                     $filterStart = $filterEnd;
+                     $filterEnd = $temp;
                 }
 
-                if (sizeof($upcomingEvents) > 0): ?>
-                <div class="table-wrapper">
+                
+                
+                // Filter out expired events, apply date range
+                $upcomingEvents = array_filter($events, function($event) use ($today, $filterStart, $filterEnd) {
+                    $eventDate = new DateTime($event->getStartDate());
+                    $eventDate->setTime(0, 0, 0);
+
+                    if ($eventDate < $today) {
+                        return false;
+                    }
+
+                    if (!empty($filterStart)) {
+                        $start = new DateTime($filterStart);
+                        $start->setTime(0, 0, 0);
+
+                        if ($eventDate < $start) {
+                            return false;
+                        }
+                    }
+
+                     if (!empty($filterEnd)) {
+                        $end = new DateTime($filterEnd);
+                        $end->setTime(0, 0, 0);
+
+                        if ($eventDate > $end) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+                $upcomingArchivedEvents = array_filter($archivedevents, function($event) use ($today, $filterStart, $filterEnd) {
+                    $eventDate = new DateTime($event->getStartDate());
+                    $eventDate->setTime(0, 0, 0);
+
+                    if ($eventDate < $today) {
+                        return false;
+                    }
+
+                     if (!empty($filterStart)) {
+                        $start = new DateTime($filterStart);
+                        $start->setTime(0, 0, 0);
+
+                        if ($eventDate < $start) {
+                            return false;
+                        }
+                    }
+
+                     if (!empty($filterEnd)) {
+                        $end = new DateTime($filterEnd);
+                        $end->setTime(0, 0, 0);
+
+                        if ($eventDate > $end) {
+                            return false;
+                        }
+                    }
+
+                     return true;
+                });
+
+                usort($upcomingEvents, function($a, $b) {
+                    return strtotime($a->getStartDate()) <=> strtotime($b->getStartDate());
+                });
+
+                usort($upcomingArchivedEvents, function($a, $b) {
+                    return strtotime($a->getStartDate()) <=> strtotime($b->getStartDate());
+                });
+
+                
+
+                if(isset($_SESSION['_id']) && $_SESSION['_id'] != 'guest') { //user_id or _id??
+                    $user = retrieve_person($userID);
+                }
+                ?>
+                <form method="get" class="event-filter-form" style="margin-bottom: 20px;">
+                <label for="start_date">From:</label>
+                <input 
+                    type="date" 
+                    name="start_date" 
+                    id="start_date" 
+                    value="<?= htmlspecialchars($filterStart) ?>"
+                >
+
+                <label for="end_date">To:</label>
+                <input 
+                    type="date" 
+                    name="end_date" 
+                    id="end_date" 
+                    value="<?= htmlspecialchars($filterEnd) ?>"
+                >
+
+                <button type="submit" class="button">Apply Filter</button>
+                <a href="viewAllEvents.php" class="button cancel">Clear</a>
+            </form>
+
+            
+            <?php //Note if there is no data for table(s) listed
+            $noUpcoming = empty($upcomingEvents);
+            $noArchived = empty($upcomingArchivedEvents);
+
+            if (!($noUpcoming && $noArchived)) {
+                if ($noUpcoming) {
+                    echo "<p class='no-events'>Note: no upcoming events are listed.</p>";
+                } elseif ($noArchived) {
+                    echo "<p class='no-events'>Note: no archived events are listed.</p>";
+                }
+            } 
+            ?>
+
+
+                <?php if (!empty($upcomingEvents) || !empty($upcomingArchivedEvents)): ?>
+                    <?php if (!empty($upcomingEvents)): ?>
+                    <div class="table-wrapper">
                     <h2>Upcoming Events</h2>
                     <table class="general">
                         <thead>
                             <tr>
                                 <th style="width:1px"> Title</th>
-                                <th style="width:1px">Event Type</th>
+                                <!--<th style="width:1px">Event Type</th>-->
                                 <th style="width:1px">Date</th>
-                                <th style="width:1px"></th>
+                                <!--<th style="width:1px"></th>-->
                                 <th style="width:1px">Capacity</th>
                                 <th style="width:1px"></th>
                             </tr>
@@ -80,16 +188,16 @@
                                 foreach ($upcomingEvents as $event) {
                                     $eventID = $event->getID();
                                     $title = $event->getName();
-                                    $startDate = $event->getStartDate();
-                                    $startTime = $event->getStartTime();
+                                    $startDate = $event->getStartDate(); //Accesses the one date -Brooke
+                                    $startTime = $event->getStartTime(); //Accesses the one date -Brooke
                                     $endDate = $event->getEndDate();
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
-                                    $restricted_signup = $event->getAccess();
+                                    //$completed = $event->getCompleted();
+                                    //$restricted_signup = $event->getAccess();
                                     //$training_level_required = $event->getTrainingLevelRequired();
-                                    $type = $event->getEventType();
+                                    //$type = $event->getEventType();
                                      /*if ($training_level_required == null) {
                                          $training_level_required = "N/A";
                                      }*/
@@ -104,9 +212,7 @@
                                     echo "
                                     <tr data-event-id='$eventID'>
                                         <td><a href='event.php?id=$eventID' class='event-link'>$title</a></td>
-                                        <td>$type</td>
-                                        <td>$startDate</td>
-                                        <td>$endDate</td>";
+                                        <td>$startDate</td>";
                                  
                                     if($numSignups >= $capacity) {
                                         echo "<td class='full-capacity'>Full</td>";
@@ -130,7 +236,7 @@
                                             echo "
                                                 <td><a class='button-signup' style='background-color:#c73d06'>Sign Ups Closed!</a></td>";
                                         } else {
-                                        echo "<td><a class='button-signup' href='eventSignUp.php?event_name=" . urlencode($title) . "&restricted=" . urlencode($restricted_signup) . "&id=" . urlencode($eventID) . "'>Sign Up</a></td>";
+                                        //echo "<td><a class='button-signup' href='eventSignUp.php?event_name=" . urlencode($title) . "&restricted=" . urlencode($restricted_signup) . "&id=" . urlencode($eventID) . "'>Sign Up</a></td>";
                                         }
                                     echo "</tr>"; } else {
                                         echo "
@@ -188,7 +294,9 @@
                         </tbody>
                     </table>
                 </div>
+                <?php endif; ?>
 
+                <?php if (!empty($upcomingArchivedEvents)): ?>
                 <div class="table-wrapper">
                     <h2>Archived Events</h2>
                     <table class="general">
@@ -214,13 +322,13 @@
                                     $endTime = $event->getEndTime();
                                     $description = $event->getDescription();
                                     $capacity = $event->getCapacity();
-                                    $completed = $event->getCompleted();
-                                    $restricted_signup = $event->getRestrictedSignup();
-                                    if ($restricted_signup == 0) {
-                                        $restricted_signup = "No";
-                                    } else {
-                                        $restricted_signup = "Yes";
-                                    }
+                                    //$completed = $event->getCompleted();
+                                    //$restricted_signup = $event->getRestrictedSignup(); -Brooke
+                                    //if ($restricted_signup == 0) {
+                                        //$restricted_signup = "No";
+                                    //} else {
+                                        //$restricted_signup = "Yes";
+                                    //}
 
                                     // Fetch signups for the event
                                     $signups = fetch_event_signups($eventID);
@@ -248,6 +356,7 @@
                         </tbody>
                     </table>
                 </div>
+                <?php endif; ?>
 
                 <?php else: ?>
                 <p class="no-events standout">There are currently no events available to view.<a class="button add" href="addEvent.php">Create a New Event</a> </p>

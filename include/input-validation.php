@@ -33,8 +33,10 @@
 
             // This should be removed, with htmlspecialchars being
             // called prior to OUTPUT. I will try to change this later.
+            //      — coulda done that before pushing huh?
+
             $input = mysqli_real_escape_string($connection, $input);
-            $input = htmlspecialchars($input);
+            // $input = htmlspecialchars($input);
         }
 
         return $input;

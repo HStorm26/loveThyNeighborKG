@@ -5,7 +5,7 @@
 class Event {
     private $id;
     private $name;
-    private $type;
+    //private $type;
     private $startDate;
     private $startTime;
     private $endTime;
@@ -13,16 +13,17 @@ class Event {
     private $description;
     private $capacity;
     private $location;
-    private $affiliation;
-    private $branch;
-    private $completed;
-    private $access;
+    //private $affiliation;
+    //private $branch;
+    //private $completed;
+    //private $access;
+    private $archived;
 
 
-    function __construct($id, $name, $type, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $affiliation, $branch, $access, $completed) {
+    function __construct($id, $name, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location) {
         $this->id = $id;
         $this->name = $name;
-        $this->type = $type;
+        //$this->type = $type;
         $this->startDate = $startDate;
         $this->startTime = $startTime;
         $this->endTime = $endTime;
@@ -30,10 +31,11 @@ class Event {
         $this->description = $description;
         $this->capacity = $capacity;
         $this->location = $location;
-        $this->affiliation = $affiliation;
-        $this->branch = $branch;
-        $this->access = $access;
-        $this->completed = $completed;
+        //$this->affiliation = $affiliation;
+        //$this->branch = $branch;
+        //$this->access = $access;
+        //$this->completed = $completed;
+        $this->archived = 0;
         
     }
 
@@ -73,24 +75,28 @@ class Event {
         return $this->capacity;
     }
 
-    function getCompleted() {
-        return $this->completed;
+    function getArchived() {
+        return $this->archived;
     }
 
-    function getEventType(){
-        return $this->type;
-    }
+    //function getCompleted() {
+        //return $this->completed;
+    //}
 
-    function getBranch(){
-        return $this->branch;
-    }
+    //function getEventType(){
+        //return $this->type;
+    //}
 
-    function getAffiliation(){
-        return $this->affiliation;
-    }
+    //function getBranch(){
+        //return $this->branch;
+    //}
 
-    function getAccess(){
-        return $this->access;
-    }
+    //function getAffiliation(){
+        //return $this->affiliation;
+    //}
+
+    //function getAccess(){
+        //return $this->access;
+    //}
 
 }
