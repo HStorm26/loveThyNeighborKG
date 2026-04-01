@@ -133,27 +133,27 @@ function getPersonsForRole($roleID)
 // end Daniel's functions
 // -------------------------------
 
-function delete_role($role_id) { //no longer use this one
-    $con = connect();
+// function delete_role($role_id) { //no longer use this one
+//     $con = connect();
 
-    $stmt = $con->prepare("DELETE FROM person_roles WHERE role_id = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $role_id);
-        $stmt->execute();
-        $stmt->close();
-    }
+//     $stmt = $con->prepare("DELETE FROM person_roles WHERE role_id = ?");
+//     if ($stmt) {
+//         $stmt->bind_param("i", $role_id);
+//         $stmt->execute();
+//         $stmt->close();
+//     }
 
-    $stmt = $con->prepare("DELETE FROM dbroles WHERE role_id = ?");
-    if (!$stmt) {
-        mysqli_close($con);
-        return false;
-    }
-    $stmt->bind_param("i", $role_id);
-    $ok = $stmt->execute();
-    $stmt->close();
-    mysqli_close($con);
-    return $ok;
-}
+//     $stmt = $con->prepare("DELETE FROM dbroles WHERE role_id = ?");
+//     if (!$stmt) {
+//         mysqli_close($con);
+//         return false;
+//     }
+//     $stmt->bind_param("i", $role_id);
+//     $ok = $stmt->execute();
+//     $stmt->close();
+//     mysqli_close($con);
+//     return $ok;
+// }
 
 function get_roles() {
     $con = connect();
