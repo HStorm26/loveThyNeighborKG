@@ -220,11 +220,11 @@ nav {
 }
 
 a {
-    color: var(--main-color);
+    color: white;
 }
 
 a:visited {
-    color: rgb(226, 226, 226);
+    color: var(--main-color);
 }
 
 a:hover {
