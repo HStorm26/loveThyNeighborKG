@@ -514,7 +514,7 @@
     <?php
         require_once('database/dbMessages.php');
 
-        // Ensure variable is always defined
+        // Ensure variable is always defined 
         $unreadMessageCount = 0;
         $inboxIcon = 'inbox.svg';
         if (isset($person)) {
