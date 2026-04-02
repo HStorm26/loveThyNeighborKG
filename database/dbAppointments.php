@@ -186,8 +186,8 @@ function fetch_event_by_id($id) {
     $result = mysqli_query($connection, $query);
     $event = mysqli_fetch_assoc($result);
     if ($event) {
-        require_once('include/output.php');
-        $event = hsc($event);
+        // require_once('include/output.php');
+        // $event = hsc($event);
         mysqli_close($connection);
         return $event;
     }

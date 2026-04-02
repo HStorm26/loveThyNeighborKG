@@ -31,7 +31,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $args = sanitize($_POST, null);
         $required = array(
-            "id", "name", "date", "start-time", "description"
+            "id", "name", "date", "start-time", "description", "end-time", "capacity", "location"
         );
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -186,7 +186,7 @@
                 <input type="text" id="description" name="description" value="<?php echo $event['description'] ?>" required placeholder="Enter description">
 
                 <label for="name">Location </label>
-                <input type="text" id="location" name="location" value="<?php echo $event['location'] ?>" placeholder="Enter location">
+                <input type="text" name="location" value="<?= htmlspecialchars($event['location'], ENT_QUOTES, 'UTF-8') ?>">
 
                 <label for="name">Capacity </label>
                 <input type="number" id="capacity" name="capacity" value="<?php echo $event['capacity'] ?>" placeholder="Enter capacity (e.g. 1-99)">
