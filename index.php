@@ -479,7 +479,7 @@
         <div class="small-text">Make a difference!</div>
         <div class="large-text">User Management</div>
 
-        <button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
+        <button class="circle-arrow-button" onclick="window.location.href='viewOverallUsersKG.php'">
             <span class="button-text">Go</span>
             <div class="circle">&gt;</div>
         </button>
@@ -490,13 +490,13 @@
         <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
         <div class="small-text" style="color: rgb(0,74,173);">Let’s have some fun!</div>
         <div class="large-text">Event Management</div>
-<button class="circle-arrow-button" onclick="window.location.href='eventManagement.php'">
+<button class="circle-arrow-button" onclick="window.location.href='viewOverallEventsKG.php'">
     <span class="button-text"><?php 
                         require_once('database/dbEvents.php');
                         require_once('database/dbPersons.php');
                         
                           
-                    ?> Sign-Ups </span>
+                    ?> Go </span>
     <div class="circle">&gt;</div>
 </button>
     </div>
