@@ -683,7 +683,7 @@ function create_event($event) {
 
     $query = "
         INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', $archived)
+        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', 0)
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
