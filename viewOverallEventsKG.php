@@ -3,6 +3,7 @@ session_start();
 // Added
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
+include_once("./database/dbinfo.php");
 
 $loggedIn = false;
 $accessLevel = 0;
@@ -22,7 +23,7 @@ if ($accessLevel < 1) {
 //End of added
 
 // Create database connection HERE (so everything in this file can use it)
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
+$con = connect();
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
