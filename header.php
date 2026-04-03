@@ -783,6 +783,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['noshows.php'] = 2;
         $permission_array['viewoveralluserskg.php'] = 2;
         $permission_array['viewoveralleventskg.php'] = 2;
+        $permission_array['viewallreports.php'] = 2;
         // LOWERCASE
 
 

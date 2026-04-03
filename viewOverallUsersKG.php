@@ -1,3 +1,5 @@
+<!-- Brooke did this page -->
+<!-- It is the user hub for the admins -->
 <?php
 session_start();
 // Added
@@ -37,7 +39,7 @@ $offset = ($page - 1) * $per_page;
 
 $users = getUsersForViewPage($search, $per_page, $offset);
 
-// The number of users per page
+// The number of users per page (start)
 $per_page = 10;
 
 $page = $_GET['page'] ?? 1;
@@ -47,6 +49,7 @@ if ($page < 1) {
     $page = 1;
 }
 $offset = ($page - 1) * $per_page;
+// The number of users per page (end)
 ?>
 
 <!DOCTYPE html>
@@ -73,6 +76,7 @@ $offset = ($page - 1) * $per_page;
         <div class="page-header">
             <h1>Users</h1>
             <a href="VolunteerRegister.php" class="add-btn">+ Add User</a>
+            <a href="deleteUserSearch.php" class="add-btn">- Delete User</a>
         </div>
 
         <!-- Filters -->

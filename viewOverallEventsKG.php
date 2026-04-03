@@ -1,3 +1,5 @@
+<!-- Brooke did this page -->
+<!-- It is the event hub for the admins -->
 <?php
 session_start();
 // Added
