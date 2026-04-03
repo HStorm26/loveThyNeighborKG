@@ -51,7 +51,7 @@
                  if ($user->get_id() == 'vmsroot') {
                     $_SESSION['access_level'] = 3;
 		                $_SESSION['locked'] = false;
-                    header('Location: index.php');
+                    header('Location: kiosk.php');
                }
                //hard code kiosk privileges
                elseif($user->get_id() =='vmskiosk')
@@ -68,7 +68,7 @@
                 //    die();
                 //} 
                 else {
-                    header('Location: index.php');
+                    header('Location: kioskindex.php');
                     die();
                 }
                 die();
