@@ -5,6 +5,7 @@
     include_once('database/dbPersons.php');
 
     $person = Array();
+    $person['id'] = 'vmskiosk';
     $person['first_name'] = 'vmskiosk';
     $person['last_name'] = '';
     $person['venue'] = 'portland';
