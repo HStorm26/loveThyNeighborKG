@@ -48,7 +48,7 @@ if (!isset($currentDate)) {
                 <a href="viewOverallUsersKG.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'viewOverallUsersKG.php' ? 'active' : ''; ?>">User</a>
                 <a href="viewOverallEventsKG.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'viewAllEvents.php' ? 'active' : ''; ?>">Event</a>
                 <a href="createEmail.php">Email</a>
-                <a href="generateReport.php">Report</a>
+                <a href="viewAllReports.php">Report</a>
                 <a href="inbox.php">Notification</a>
             </div>
         </div>

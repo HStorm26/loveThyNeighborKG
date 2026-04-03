@@ -53,12 +53,14 @@
 <html>
     <head>
         <title>Volunteer Email List | Love Thy Neighbor Community Food Pantry</title>
-  	<link href="css/normal_tw.css" rel="stylesheet">
+  	    <link href="css/normal_tw.css" rel="stylesheet">
+        <link rel="stylesheet" href="header.css">
+
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
-require_once('header.php');
+require_once('newheader.php');
 ?>
 <style>
         .date-box {
