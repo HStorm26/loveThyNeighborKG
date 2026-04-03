@@ -50,9 +50,16 @@
                  //hard code root privileges
                  if ($user->get_id() == 'vmsroot') {
                     $_SESSION['access_level'] = 3;
-		    $_SESSION['locked'] = false;
+		                $_SESSION['locked'] = false;
                     header('Location: index.php');
                }
+               //hard code kiosk privileges
+               elseif($user->get_id() =='vmskiosk')
+                {
+                  $_SESSION['access_level'] = 4;
+                  $_SESSION['locked'] = false;
+                  header('Location: index.php');
+                }
             
                 //if ($changePassword) {
                 //    $_SESSION['access_level'] = 0;

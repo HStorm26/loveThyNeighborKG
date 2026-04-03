@@ -24,6 +24,7 @@
         $person = retrieve_person($_SESSION['_id']);
     }
     $notRoot = $person->get_id() != 'vmsroot';
+    $notKisok = $person->get_id() != 'vmskiosk';
 ?>
 
 <!DOCTYPE html>
@@ -446,7 +447,15 @@
 <!--END TEST-->
 </head>
 
+<?php if ($_SESSION['access_level'] >= 4): ?>
+    <style>
+        .full-width-bar {
+        background-color:rgb(0,74,173) !important; /* Dark background for admin */
+        }
+    </style>
+<?php endif ?>
 <!-- ONLY SUPER ADMIN WILL SEE THIS -->    <!-- This is not true, admin and super admin can see it (2 = admin, 3 = super admin) ;( -Brooke -->
+
 <?php if ($_SESSION['access_level'] >= 2): ?>
 <body>
 <?php require 'header.php';?>
@@ -648,7 +657,7 @@
 <?php endif ?>
 
 <!-- ONLY VOLUNTEERS WILL SEE THIS -->
-<?php if ($notRoot) : ?>
+<?php if ($notRoot || $notKiosk) : ?>
 <body>
 <?php require 'header.php';?>
 
