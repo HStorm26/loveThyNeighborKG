@@ -10,11 +10,6 @@
     ini_set("display_errors",1);
     error_reporting(E_ALL);
 
-    // redirect to index if already logged in
-    if (isset($_SESSION['_id'])) {
-        header('Location: index.php');
-        die();
-    }
     $badLogin = false;
     $archivedAccount = false;
 
