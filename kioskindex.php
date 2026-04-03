@@ -498,31 +498,33 @@
     <div class="full-width-bar-sub">
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+                <img style="border-radius: 5px;" src="images/add-person.svg" alt="Calendar Icon">
             </div>
             
-            <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
-            <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
+            <div class="large-text-sub" style="color:#FFFFFF;">Register</div>
+            <div class="graph-text" style="color:#FFFFFF;">Don't have an account? Register here.</div>
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+                <img style="border-radius: 5px;" src="images/User Icon.svg" alt="Calendar Icon">
             </div>
             
-            <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
-            <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
+            <div class="large-text-sub" style="color:#FFFFFF;">Login</div>
+            <div class="graph-text" style="color:#FFFFFF;">Already have an account with us? Login here.</div>
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+                <img style="border-radius: 5px;" src="images/list-solid.svg" alt="Calendar Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
-            <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
+            <div class="large-text-sub" style="color:#FFFFFF;">Today's events</div>
+            <div class="graph-text" style="color:#FFFFFF;">
+                See what we're doing on <?php echo date("F j, Y"); ?>.
+            </div>
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div> 
 
