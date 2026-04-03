@@ -30,11 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['bulk_action'])) {
         echo 'User ID is missing.';
         die();
     }
-
-    if (remove_user_from_event($event_id, $user_id)) {
-        $remove_success = "User $user_id was successfully removed.";
-    } else {
-        $remove_error = "Failed to remove user $user_id.";
+    if ($_POST['action'] === 'remove'){
+        if (remove_user_from_event($event_id, $user_id)) {
+            $remove_success = "User $user_id was successfully removed.";
+        } else {
+            $remove_error = "Failed to remove user $user_id.";
+        }
+    }
+    if ($_POST['action'] === 'adjust_hours'){
+        $remove_success = "hi!!!";
     }
 }
 
@@ -202,10 +206,11 @@ $access_level = $_SESSION['access_level'];
                                 
                                 <?php if ($access_level >= 2): ?>
                                     <td>
-                                        <form method="POST" style="display:inline;">
+                                        <form method="POST" style="display:flex; gap: 0.3rem;">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
-                                            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
+                                            <button type="submit" class="button danger" name="action" value="remove" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
+                                            <button type="submit" class="button danger" name="action" value="adjust_hours">Adjust Hours</button>
                                         </form>
                                     </td>
                                 <?php endif; ?>
