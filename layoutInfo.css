@@ -16,33 +16,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background: linear-gradient(180deg, rgb(0, 74, 173), rgb(0, 52, 122));
-    color: white;
-    padding: 24px 18px;
-}
-
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    transition: 0.2s;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-    background: rgba(255,255,255,0.2);
-}
 
 /* Main */
 .main {
@@ -76,6 +49,7 @@ body {
 .add-btn:hover {
     transform: translateY(-2px);
 }
+
 
 /* Filter Card */
 .filter-card {
@@ -136,13 +110,13 @@ tbody tr:hover {
     background: #f9fbff;
 }
 
-/* Status badges */
+/* Status badges (Active / Inactive) */
 .badge {
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: bold;
-}
+} 
 
 .active {
     background: #dcfce7;
@@ -200,13 +174,87 @@ tbody tr:hover {
     font-weight: bold;
 }
 
+/* REPORTS SECTION */
+
+.page {
+    display: flex;
+    min-height: 100vh;
+}
+
+.page-wrapper {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.reports-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.reports-header h1 {
+    color: rgb(0, 74, 173);
+    margin-bottom: 10px;
+    font-size: 32px;
+}
+
+.reports-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.report-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-top: 5px solid rgb(0, 74, 173);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.report-card h2 {
+    font-size: 20px;
+    color: rgb(0, 74, 173);
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.report-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.report-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: rgb(0, 74, 173);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.report-btn:hover {
+    background: rgb(0, 58, 135);
+}
+
+
+
 /* Responsive */
 @media (max-width: 900px) {
     .page {
         flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
     }
 }
