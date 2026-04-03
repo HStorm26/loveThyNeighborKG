@@ -119,7 +119,6 @@ function remove_person($id) {
  * @return a Person from dbPersons table matching a particular id.
  * if not in table, return false
  */
-
 function retrieve_person($id) { // (username! not id)
     $con=connect();
     $query = "SELECT * FROM dbpersons WHERE id = '" . $id . "'";
@@ -135,7 +134,22 @@ function retrieve_person($id) { // (username! not id)
     return $thePerson;
 }
 
-
+/*Kiosk test function*/
+/*function retrieve_person($id) { // (username or email)
+    $con = connect();
+    $escaped_id = mysqli_real_escape_string($con, $id);
+    $query = "SELECT * FROM dbpersons WHERE id = '" . $escaped_id . "' OR email = '" . $escaped_id . "' LIMIT 1";
+    $result = mysqli_query($con, $query);
+    if (mysqli_num_rows($result) !== 1) {
+        mysqli_close($con);
+        return false;
+    }
+    $result_row = mysqli_fetch_assoc($result);
+    $thePerson = make_a_person($result_row);
+    mysqli_close($con);
+    return $thePerson;
+}
+*/
 function change_password($id, $newPass) {
     $con=connect();
     $query = 'UPDATE dbpersons SET password = "' . $newPass . '" WHERE id = "' . $id . '"';
@@ -450,30 +464,30 @@ function get_group_volunteers_count($startDate, $endDate) {
 
 function make_a_person($result_row) {
     $thePerson = new Person(
-        $result_row['id'],
-        $result_row['first_name'],
-        $result_row['last_name'],
-        $result_row['phone_number'],
-        $result_row['email'],
-        $result_row['email_prefs'],
-        $result_row['birthday'],
-        $result_row['t-shirt_size'],
-        $result_row['state'],
-        $result_row['city'],
-        $result_row['street_address'],
-        $result_row['zip_code'],
-        $result_row['emergency_contact_first_name'],
-        $result_row['emergency_contact_phone'],
-        $result_row['emergency_contact_relation'],
-        $result_row['archived'],
-        $result_row['password'],
-        $result_row['contact_num'],
-        $result_row['contact_method'],
-        $result_row['type'],
-        $result_row['status'],
-        $result_row['photo_release'],
-        $result_row['community_service'],
-        $result_row['notes']
+        $result_row['id'] ?? null,
+        $result_row['first_name'] ?? null,
+        $result_row['last_name'] ?? null,
+        $result_row['phone_number'] ?? null,
+        $result_row['email'] ?? null,
+        $result_row['email_prefs'] ?? null,
+        $result_row['birthday'] ?? null,
+        $result_row['t-shirt_size'] ?? null,
+        $result_row['state'] ?? null,
+        $result_row['city'] ?? null,
+        $result_row['street_address'] ?? null,
+        $result_row['zip_code'] ?? null,
+        $result_row['emergency_contact_first_name'] ?? null,
+        $result_row['emergency_contact_phone'] ?? null,
+        $result_row['emergency_contact_relation'] ?? null,
+        $result_row['archived'] ?? null,
+        $result_row['password'] ?? null,
+        $result_row['contact_num'] ?? null,
+        $result_row['contact_method'] ?? null,
+        $result_row['type'] ?? null,
+        $result_row['status'] ?? null,
+        $result_row['photo_release'] ?? null,
+        $result_row['community_service'] ?? null,
+        $result_row['notes'] ?? null
         );
     return $thePerson;
 }
@@ -673,7 +687,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
 
     function find_users($name, $id, $phone, $zip, $type, $status) {
     $where = 'where ';
-    if (!($name || $id || $phone || $zip || $type || $status)) {  // ✅ Fixed parentheses
+    if (!($name || $id || $phone || $zip || $type || $status)) { 
         return [];
     }
         $first = true;

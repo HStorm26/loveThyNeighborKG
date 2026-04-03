@@ -10,11 +10,6 @@
     ini_set("display_errors",1);
     error_reporting(E_ALL);
 
-    // redirect to index if already logged in
-    if (isset($_SESSION['_id'])) {
-        header('Location: index.php');
-        die();
-    }
     $badLogin = false;
     $archivedAccount = false;
 
@@ -51,7 +46,7 @@
                  if ($user->get_id() == 'vmsroot') {
                     $_SESSION['access_level'] = 3;
 		                $_SESSION['locked'] = false;
-                    header('Location: index.php');
+                    header('Location: kiosk.php');
                }
                //hard code kiosk privileges
                elseif($user->get_id() =='vmskiosk')
@@ -68,7 +63,7 @@
                 //    die();
                 //} 
                 else {
-                    header('Location: index.php');
+                    header('Location: kioskindex.php');
                     die();
                 }
                 die();
