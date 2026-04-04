@@ -1,4 +1,4 @@
-<?php
+<<?php
     require_once('include/input-validation.php');
 ?>
 
@@ -69,18 +69,18 @@
 
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
-        $t_shirt_size = $args['t_shirt_size'];
+        $t_shirt_size = $args['t_shirt_size'] ?? null;
         //$age = $args['age']; // Passes either "true" or "false" 
-        $birthday = validateDate($args['birthday']);
-        if (!$birthday) {
+        $birthday = isset($args['birthday']) && $args['birthday'] !== '' ? validateDate($args['birthday']) : null;
+        if ($args['birthday'] ?? '' !== '' && !$birthday) {
             echo "<p>Invalid birthdate.</p>";
             $errors = true;
-        } 
+        }
 
-        $street_address = $args['street_address'];
-        $city = $args['city'];
-        $state = $args['state'];
-        if (!valueConstrainedTo($state, array(
+        $street_address = $args['street_address'] ?? null;
+        $city = $args['city'] ?? null;
+        $state = $args['state'] ?? null;
+        if ($state !== null && $state !== '' && !valueConstrainedTo($state, array(
             'AK','AL','AR','AZ','CA','CO','CT','DC','DE','FL','GA','HI','IA','ID','IL','IN','KS','KY','LA','MA','MD','ME',
             'MI','MN','MO','MS','MT','NC','ND','NE','NH','NJ','NM','NV','NY','OH','OK','OR','PA','RI','SC','SD','TN','TX',
             'UT','VA','VT','WA','WI','WV','WY'))) {
@@ -88,14 +88,14 @@
             $errors = true;
         }
 
-        $zip_code = $args['zip'];
-        if (!validateZipcode($zip_code)) {
+        $zip_code = $args['zip'] ?? null;
+        if (($zip_code ?? '') !== '' && !validateZipcode($zip_code)) {
             echo "<p>Invalid ZIP code.</p>";
             $errors = true;
         }
 
-        $email = strtolower($args['email']);
-        if (!validateEmail($email)) {
+        $email = isset($args['email']) && $args['email'] !== '' ? strtolower($args['email']) : null;
+        if ($email !== null && !validateEmail($email)) {
             echo "<p>Invalid email.</p>";
             $errors = true;
         }
@@ -180,13 +180,13 @@
         if (!$result) {
             $showPopup = true;
         } else {
-            echo '<script>document.location = "login.php?registerSuccess";</script>';
+            echo '<script>document.location = "kioskindex.php?registerSuccess";</script>';
             $title = $id . " has been added as a volunteer";
             $body = "New volunteer account has been created";
             system_message_all_admins($title, $body);
         }
     } else {
-        require_once('registrationForm.php');
+        require_once('QuickregistrationForm.php');
     }
 ?>
 
