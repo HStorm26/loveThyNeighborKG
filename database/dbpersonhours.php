@@ -93,6 +93,9 @@ function calcPersonHours($personid)
     
 }
 
+function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime){
+    return 0;
+}
 //calc event hours
 
 //get person event hours
@@ -113,7 +116,7 @@ function calcPersonHours($personid)
 
 //get event partisipants
 
-function getEvetnPartipants($eventid){
+function getEventParticipants($eventid){
 $con = connect();
     $querey = "SELECT DISTINCT`personID` FROM `dbpersonhours` WHERE `eventID` = ?";
     $stmt = $con->prepare($querey);

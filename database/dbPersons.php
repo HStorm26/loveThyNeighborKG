@@ -488,7 +488,7 @@ function getvolunteers_byevent($id){
     while ($result_row = mysqli_fetch_assoc($result)) {
        $thePerson = make_a_person($result_row);
        $thePersons[] = $thePerson;
-   }
+    }
    mysqli_close($con);
    return $thePersons;
 }
