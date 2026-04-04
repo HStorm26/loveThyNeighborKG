@@ -93,6 +93,43 @@ function calcPersonHours($personid)
     
 }
 
+function calcTop10()
+{
+     $con = connect();
+    $querey = "SELECT p.first_name,p.last_name, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` FROM `dbpersonhours` as `h` left join `dbpersons` as `p` on h.personID = p.id GROUP BY p.id, p.first_name, p.last_name order by m desc limit 10";
+    $stmt = $con->prepare($querey);
+    $stmt->execute();
+    $stmt->bind_result($f,$l,$tm);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $h = intdiv((int)$tm, 60);
+            $m = (int)$tm % 60;
+            $rows[] = [$f,$l,$h,$m];
+        }
+    $con->close();
+    return $rows;
+}
+
+function roleHoursForDateRange($sd,$ed)
+{
+    $con = connect();
+    $querey = "SELECT r.role, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` FROM `dbpersonhours` as `h` left join `dbroles` as `r` on h.roleID = r.role_id WHERE h.start_time >= ? AND h.start_time <  ? GROUP BY r.role order by m desc";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('ss',$sd,$ed);
+    $stmt->execute();
+    $stmt->bind_result($r,$tm);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $h = intdiv((int)$tm,60);
+            $m = ((int)$tm % 60);
+            $rows[] = [$r,$h,$m];
+        }
+    $con->close();
+    return $rows;
+}
+
 //calc event hours
 
 //get person event hours
