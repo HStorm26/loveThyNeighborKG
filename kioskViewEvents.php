@@ -47,46 +47,57 @@ $todaysEvents = array_filter($events, function($event) use ($today) {
 <!DOCTYPE html>
 <html>
     <head>
-        <title>kioskViewEvents.php</title>
+        <?php require_once('universal.inc') ?>
+        <link rel="stylesheet" href="css/event.css">
+        <title>kKiosk View Events | Love Thy Neighbor</title>
     </head>
     <body>
-        <h1>Kiosk View Events</h1>
-        <p>New user: <?= htmlspecialchars($newUser) ?></p>
+        <?php require_once('header.php') ?>
+        <h1>Today's Events</h1>
+        <main class="general">
+            <p>New user: <?= htmlspecialchars($newUser) ?></p>
 
-        <?php if (empty($todaysEvents)): ?>
-            <p>No events are happening today.</p>
-        <?php else: ?>
-            <table border="1" cellpadding="8">
-        <tr>
-            <th>Event</th>
-            <th>Time</th>
-            <th>Role</th>
-            <th></th>
-         </tr>
-        <?php foreach ($todaysEvents as $event): ?>
-            <tr>
-                <td><?= htmlspecialchars($event->getName()) ?></td>
-                <td>
-                    <?= htmlspecialchars($event->getStartTime()) ?>
-                    -
-                    <?= htmlspecialchars($event->getEndTime()) ?>
-                </td>
-                <td>
-                    <form method="post" style="margin:0;">
-                        <input type="hidden" name="event_id" value="<?= $event->getID() ?>">
-                        <select name="role_id">
-                            <option value="">No specific role</option>
-                            <option value="1">Cleanup</option>
-                            <option value="2">Table</option>
-                        </select>
-                </td>
-                <td>
-                        <button type="submit" name="go">Go</button>
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
+            <?php if (empty($todaysEvents)): ?>
+                <p>No events are happening today.</p>
+            <?php else: ?>
+                <div class="table-wrapper">
+                    <table class="general">
+                        <thread>
+                            <tr>
+                                <th style="width:1px">Title</th>
+                                <th style="width:1px">Time</th>
+                                <th style="width:1px">Role</th>
+                                <th style="width:1px"></th>
+                            </tr>
+                        </thread>
+                        <tbody>
+                    <?php foreach ($todaysEvents as $event): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($event->getName()) ?></td>
+                            <td>
+                                <?= htmlspecialchars($event->getStartTime()) ?>
+                                -
+                                <?= htmlspecialchars($event->getEndTime()) ?>
+                            </td>
+                            <td>
+                                <form method="post" style="margin:0;">
+                                    <input type="hidden" name="event_id" value="<?= $event->getID() ?>">
+                                    <select name="role_id">
+                                        <option value="">No specific role</option>
+                                        <option value="1">Cleanup</option>
+                                        <option value="2">Table</option>
+                                    </select>
+                            </td>
+                            <td>
+                                    <button type="submit" name="go">Go</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </main>
     </body>
 </html>
