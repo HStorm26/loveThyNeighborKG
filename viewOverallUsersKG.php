@@ -24,7 +24,8 @@ if ($accessLevel < 1) {
 //End of added
 
 // Create database connection HERE (so everything in this file can use it)
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
+include_once('database/dbinfo.php'); 
+$con=connect(); 
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
@@ -59,7 +60,6 @@ $offset = ($page - 1) * $per_page;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
     <title>Love Thy Neighbor | View Users</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="layoutInfo.css">
 
 
@@ -67,7 +67,7 @@ $offset = ($page - 1) * $per_page;
 </head>
 
 <body>
-<?php include('newheader.php'); ?>
+<?php include('header.php'); ?>
 <div class="page">
 
     <!-- Main -->
@@ -85,9 +85,9 @@ $offset = ($page - 1) * $per_page;
                 <input type="text" name="search" placeholder="Search users...">
                 
                 <select name="status">
-                    <option>Active</option>
-                    <option>Archived</option>
                     <option>All</option>
+                    <option>Active</option>
+                    <option>Archvied</option>
                 </select>
 
                 <button type="submit">Filter</button>
