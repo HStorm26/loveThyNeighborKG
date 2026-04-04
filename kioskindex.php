@@ -456,10 +456,10 @@
 </div>
     <!-- Dummy content to enable scrolling -->
     <div style="margin-top: 0px; padding: 30px 20px;">
-        <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
+        <h2><b>Welcome to the Kiosk Check In!</b> </h2>
     </div>
 
-    <div class="full-width-bar">
+    <!-- <div class="full-width-bar">
     <div class="content-box">
     <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/>  
         <div class="small-text">Make a difference.</div>
@@ -471,54 +471,77 @@
             </button>
         </div>
     </div>
-
+    
     <div class="content-box">
         <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/> <!-- wooden container (Brooke) -->
-        <div class="large-text">Create an Account</div>
-        <div class="nav-buttons">
-            <button class="nav-button" onclick="window.location.href='QuickVolunteerRegister.php'">
+        <div class="small-text">Let’s have some fun!</div>
+        <div class="large-text">My Events</div>
+        <!-- <div class="nav-buttons">
+            <button class="nav-button" onclick="window.location.href='viewAllEvents.php'">
                 <span class="arrow"><img src="images/new-event.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
                 <span class="text">Sign-Up</span>
             </button>
+            <button class="nav-button" onclick="window.location.href='viewMyUpcomingEvents.php'">
+                <span class="arrow"><img src="images/list-solid.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
+                <span class="text">Upcoming</span>
+            </button>
             
-        </div>
+        </div> -->
     </div>
 
     
     </div>
 
     <div style="margin-top: 50px; padding: 0px 80px;">
-        <h2><b>Your Dashboard</h2>
+        <h2><b>Options:</h2>
     </div>
     <div class="full-width-bar-sub">
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+                <img style="border-radius: 5px;" src="images/add-person.svg" alt="Calendar Icon">
+            </div>
+            
+            <div class="large-text-sub" style="color:#FFFFFF;">Register</div>
+            <div class="graph-text" style="color:#FFFFFF;">Don't have an account? Register here.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div>
+
+        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/User Icon.svg" alt="Calendar Icon">
+            </div>
+            
+            <div class="large-text-sub" style="color:#FFFFFF;">Login</div>
+            <div class="graph-text" style="color:#FFFFFF;">Already have an account with us? Login here.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div>
+
+        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/list-solid.svg" alt="Calendar Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
+            <div class="large-text-sub" style="color:#FFFFFF;">Today's events</div>
+            <div class="graph-text" style="color:#FFFFFF;">
+                See what we're doing on <?php echo date("F j, Y"); ?>.
+            </div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div> 
+
+        <!-- <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+            </div>
+            
             <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
             <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
+        </div> -->
+        
+        
 
-               <?php
-                    require_once('database/dbMessages.php');
-                    $unreadMessageCount = get_user_unread_count($person->get_id());
-                    $inboxIcon = 'inbox.svg';
-                    if ($unreadMessageCount) {
-                        $inboxIcon = 'inbox-unread.svg';
-                    }   
-                ?>  
 
-        <div class="content-box-test" onclick="window.location.href='inbox.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
-            </div>
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Notifications</div>
-            <div class="graph-text" style="color:#FFFFFF;">Stay up to date.</div>
-            <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
+        
 
     </div>
 
