@@ -37,9 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['bulk_action'])) {
             $remove_error = "Failed to remove user $user_id.";
         }
     }
-    if ($_POST['action'] === 'adjust_hours'){
-        $remove_success = "hi!!!";
-    }
 }
 
 $event_info = fetch_event_by_id($id);
@@ -206,12 +203,17 @@ $access_level = $_SESSION['access_level'];
                                 
                                 <?php if ($access_level >= 2): ?>
                                     <td>
-                                        <form method="POST" style="display:flex; gap: 0.3rem;">
+                                        <form method="POST" style="display:flex;" action="./adjustEventHours.php">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
-                                            <button type="submit" class="button danger" name="action" value="remove" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
-                                            <button type="submit" class="button danger" name="action" value="adjust_hours">Adjust Hours</button>
+                                            <button type="submit" class="button">Adjust Hours</button>
                                         </form>
+                                        <form method="POST" style="display:flex;">
+                                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
+                                            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
+                                        </form>
+
                                     </td>
                                 <?php endif; ?>
                             </tr>
