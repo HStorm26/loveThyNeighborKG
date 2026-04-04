@@ -45,10 +45,46 @@
             die();
         }
         $event = retrieve_event($args['event_id']);
-        if($_POST['nav'] === 'viewEventSignUps'){
+        if($_POST['nav'] === 'adjustEventHours'){
+            $date = $event->getStartDate();
+            $startTime = $_POST['start_time'];
+            $pmTime = FALSE;
+            if(preg_match('/p|P/', $startTime)){
+                $pmTime = TRUE;
+            }
+            $startTime = preg_replace('/ [a|p]m|[a|p]m/i', '', $startTime);
+            if(preg_match('/^[0-9]:/', $startTime)){
+                $startTime = '0' . $startTime;
+            }
+            if($pmTime){
+                $newTime = (int) substr($startTime, 0, 2);
+                $newTime += 12;
+                $startTime = $newTime . substr($startTime, 2, 3);
+            }
 
+            $endTime = $_POST['end_time'];
+            $pmTime = FALSE;
+            if(preg_match('/p|P/', $endTime)){
+                $pmTime = TRUE;
+            }
+            $endTime = preg_replace('/ [a|p]m|[a|p]m/i', '', $endTime);
+            if(preg_match('/^[0-9]:/', $endTime)){
+                $endTime = '0' . $endTime;
+            }
+            if($pmTime){
+                $newTime = (int) substr($endTime, 0, 2);
+                $newTime += 12;
+                $endTime = $newTime . substr($endTime, 2, 3);
+            }
+            $startTime = $date . ' ' . $startTime . ':00';
+            $endTime = $date . ' ' . $endTime . ':00';
+            if(!adjustVolunteerHours($_POST['event_id'], $_POST['user_id'], $_POST['role_id'], $startTime, $endTime)){
+                echo "Failed to update hours.";
+            }
+            else{
+                echo "Hours successfully updated";
+            }
         }
-
     }
 
     
@@ -120,32 +156,38 @@
                                 $result = mysqli_query($con, $query);
                                 $rolesPerformed = array();
                                 foreach($result as $row){
-                                    $rolesPerformed[$row['roleID']] = TRUE;
+                                    $startTime = substr($row['start_time'], 11, 5);
+                                    $endTime = substr($row['end_time'], 11, 5);
+                                    $rolesPerformed[$row['roleID']] = $startTime . ' ' . $endTime;
                                 }
                             ?>
                             <?php foreach ($allRoles as $role): ?>
                                 <form method=POST>
                                 <tr>
                                     <td><?php echo htmlspecialchars($role['role_name']); ?></td>
-                                    <td>
                                         <?php if(isset($rolesPerformed[$role['roleID']])): ?>
-                                            <input type="text" id="start-time" name="start-time" value="<?php echo 'echo their start time';?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                                            <td>
+                                                <input type="text" id="start-time" name="start_time" value="<?php echo time24hto12h(substr($rolesPerformed[$role['roleID']],0,5));?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                                            </td>
+                                            <td>
+                                                <input type="text" id="end-time" name="end_time" value="<?php echo time24hto12h(substr($rolesPerformed[$role['roleID']],6,5));?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                                            </td>
                                         <?php else: ?>
-                                            <input type="text" id="start-time" name="start-time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                                            <td>
+                                                <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                                            </td>
+                                            <td>
+                                                <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
+                                            </td>
                                         <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if(isset($rolesPerformed[$role['roleID']])): ?>
-                                            <input type="text" id="end-time" name="end-time" value="<?php echo 'echo their end time';?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
-                                        <?php else: ?>
-                                            <input type="text" id="end-time" name="end-time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
-                                        <?php endif; ?>
-                                    </td>
                                     <td>
                                         <button type="submit" class="button">Adjust Hours</button>
                                     </td>
                                 </tr>
                                 <input type="hidden" name="nav" value="adjustEventHours"/>
+                                <input type="hidden" name="user_id" value="<?php echo $_POST['user_id'];?>"/>
+                                <input type="hidden" name="role_id" value="<?php echo $role['roleID'];?>"/>
+                                <input type="hidden" name="event_id" value="<?php echo $role['eventID'];?>"/>
                                 </form>
                             <?php endforeach; ?>
                         </tbody>
@@ -154,31 +196,6 @@
                 </div>
                 </fieldset>
 
-                <script>
-                    // Debug: log submit attempts and list invalid fields
-                    (function(){
-                        const form = document.getElementById('new-event-form');
-                        if(!form) return;
-                        form.addEventListener('submit', function(e){
-                            try{
-                                console.log('addEvent form submit event', e);
-                                const ok = form.checkValidity();
-                                console.log('form.checkValidity()', ok);
-                                if(!ok){
-                                    e.preventDefault();
-                                    const invalids = [];
-                                    form.querySelectorAll(':invalid').forEach(function(el){ invalids.push({name: el.name, type: el.type, value: el.value}); });
-                                    console.error('Form invalid fields:', invalids);
-                                    alert('Form validation failed for: ' + invalids.map(i=>i.name).join(', '));
-                                } else {
-                                    console.log('Form appears valid; letting submit proceed');
-                                }
-                            }catch(err){
-                                console.error('Error in submit debug handler', err);
-                            }
-                        }, false);
-                    })();
-                </script>
                     <a class="button cancel" href="index.php" style="margin-top: -.5rem; font-weight:bold;">Return to Dashboard</a>
 
  
