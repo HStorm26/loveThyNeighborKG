@@ -206,6 +206,7 @@ $access_level = $_SESSION['access_level'];
                                         <form method="POST" style="display:flex;" action="./adjustEventHours.php">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
+                                            <input type="hidden" name="nav" value="viewEventSignUps"/>
                                             <button type="submit" class="button">Adjust Hours</button>
                                         </form>
                                         <form method="POST" style="display:flex;">
