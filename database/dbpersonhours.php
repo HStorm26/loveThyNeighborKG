@@ -94,6 +94,11 @@ function calcPersonHours($personid)
 }
 
 function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime){
+    $con = connect();
+    
+    //very intelligent code goes here
+
+    mysqli_close($con);
     return 0;
 }
 //calc event hours
