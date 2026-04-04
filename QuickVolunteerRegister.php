@@ -180,7 +180,7 @@
         if (!$result) {
             $showPopup = true;
         } else {
-            echo '<script>document.location = "kioskindex.php?registerSuccess";</script>';
+            echo '<script>document.location = "kioskViewEvents.php?new_user=' . urlencode($id) . '";</script>';
             $title = $id . " has been added as a volunteer";
             $body = "New volunteer account has been created";
             system_message_all_admins($title, $body);
