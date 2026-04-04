@@ -107,6 +107,7 @@ $offset = ($page - 1) * $per_page;
                 <tbody>
                 <?php if (!empty($users)): ?>
                     <?php foreach ($users as $user): ?>
+                        <?php if ($user['id'] !== 'vmsroot' && $user['id'] !== 'vmsroot2'): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></td>
                             <td><?php echo htmlspecialchars($user['id']); ?></td>
@@ -126,6 +127,7 @@ $offset = ($page - 1) * $per_page;
                                 <a href="#" class="archive-btn">Archive</a>
                             </td>
                         </tr>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
