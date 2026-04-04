@@ -57,7 +57,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --info-toast-background-color: #2f2f2f;
     --info-toast-font-color: white;
 
-    --error-toast-background-color: #701a1a;
+    --error-toast-background-color: rgb(203, 37, 26);;
     --error-toast-font-color: white;
 
     --shadow-and-border-color: #e8e8e8;
@@ -77,7 +77,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --light-border: 1px solid var(--shadow-and-border-color);
     --text-field-border: 2px solid #3a3a3a;
 
-    --error-color: red;
+    --error-color: rgb(203, 37, 26);
 
     /* Global rules */
     font-size: 18px;
@@ -921,7 +921,7 @@ table.general th, table.general td {
 }
 
 .styled-form .button.cancel {
-    background-color: #f44336;
+    background-color: rgb(203, 37, 26);
     color: #fff;
     border: none;
 }
@@ -1021,7 +1021,7 @@ table.general th, table.general td {
 /* end Thomas */
 
 .error-message {
-    color: red;
+    color: var(--error-color);
     font-weight: bold;
     text-align: center;
 }
