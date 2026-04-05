@@ -97,7 +97,7 @@ $total_pages = max(1, ceil($total_users / $per_page));
                     <option value="phone" <?php echo ($search_by === 'phone' ? 'selected' : ''); ?>>Phone</option>
                 </select>
 
-                <input type="text" name="search" placeholder="Search users...">
+                <input type="text" name="search" placeholder="Search users..." value="<?php echo htmlspecialchars($search); ?>">
 
                 <select name="status">
                     <option value="all" <?php echo ($status === 'all' ? 'selected' : ''); ?>>All</option>
@@ -173,39 +173,59 @@ $total_pages = max(1, ceil($total_users / $per_page));
 
         <div class="pagination-container">
             <div class="pagination">
+                <!-- previous button -->
                 <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>
-                            &search=<?php echo urlencode($search); ?>
-                            &search_by=<?php echo $search_by; ?>
-                            &status=<?php echo $status; ?>" 
-                            class="page-btn">Previous
-                    </a>
+                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>" class="page-btn">Previous</a>
                 <?php endif; ?>
 
-                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>
-                            &search=<?php echo urlencode($search); ?>
-                            &search_by=<?php echo $search_by; ?>
-                            &status=<?php echo $status; ?>"
-                            class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
-                            <?php echo $i; ?>
+                <?php
+                $window = 2;
+                // ALWAYS show first page
+                ?>
+                <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
+                class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
+
+                <?php
+                // LEFT ELLIPSIS RAH
+                if ($page > $window + 2): ?>
+                    <span class="page-btn">...</span>
+                <?php endif; ?>
+
+                <?php
+                // middle pages
+                $start = max(2, $page - $window);
+                $end = min($total_pages - 1, $page + $window);
+
+                for ($i = $start; $i <= $end; $i++): ?>
+                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
+                    class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
+                    <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
+                <?php
+                // RIGHT ELLIPSIS RAH
+                if ($page < $total_pages - ($window + 1)): ?>
+                    <span class="page-btn">...</span>
+                <?php endif; ?>
+
+                <?php
+                // ALWAYS show last page (if more than 1 page)
+                if ($total_pages > 1): ?>
+                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
+                    class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
+                    <?php echo $total_pages; ?>
+                    </a>
+                <?php endif; ?>
+
+                <!-- next button -->
                 <?php if ($page < $total_pages): ?>
-                    <a href="?page=<?php echo $page + 1; ?>
-                            &search=<?php echo urlencode($search); ?>
-                            &search_by=<?php echo $search_by; ?>
-                            &status=<?php echo $status; ?>" 
-                            class="page-btn">Next
-                    </a>         
+                    <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>" class="page-btn">Next</a>
                 <?php endif; ?>   
             </div>
         </div>
     </div>
 </div>
-
-   
 
 </body>
 </html>
