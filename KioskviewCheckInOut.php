@@ -4,13 +4,13 @@ session_start();
 
 include 'database/dbPersons.php';
 include 'database/dbpersonhours.php';
+include 'database/dbRoles.php';
 
 $loggedIn = false;
 $accessLevel = 0;
 $userID = null;
 
 $eventid = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$roleid  = isset($_GET['roleid']) ? (int)$_GET['roleid'] : 1;
 
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
@@ -27,32 +27,128 @@ if ($eventid <= 0) {
     die("Error: Missing event id.");
 }
 
-function hasOpenCheckInStatus($eventid, $personid, $roleid) {
+$roles = get_roles();
+$rolesById = array();
+
+foreach ($roles as $role) {
+    $rolesById[(int)$role['role_id']] = $role;
+}
+
+$defaultRoleId = 0;
+if (!empty($roles)) {
+    $defaultRoleId = (int)$roles[0]['role_id'];
+}
+
+$selectedWalkInRoleId = isset($_GET['roleid']) ? (int)$_GET['roleid'] : $defaultRoleId;
+
+if ($selectedWalkInRoleId <= 0 || !isset($rolesById[$selectedWalkInRoleId])) {
+    $selectedWalkInRoleId = $defaultRoleId;
+}
+
+function findOpenCheckInRoleId($eventid, $personid)
+{
     $con = connect();
 
-    $query = "SELECT 1
+    $query = "SELECT roleID
               FROM dbpersonhours
               WHERE eventID = ?
                 AND personID = ?
-                AND roleID = ?
                 AND start_time IS NOT NULL
                 AND end_time IS NULL
+              ORDER BY start_time DESC
               LIMIT 1";
 
     $stmt = $con->prepare($query);
     if (!$stmt) {
         mysqli_close($con);
-        return false;
+        return 0;
     }
 
-    $stmt->bind_param("isi", $eventid, $personid, $roleid);
+    $stmt->bind_param("is", $eventid, $personid);
     $stmt->execute();
     $result = $stmt->get_result();
-    $isOpen = $result && $result->num_rows > 0;
+
+    $roleId = 0;
+    if ($result && $row = $result->fetch_assoc()) {
+        $roleId = (int)$row['roleID'];
+    }
 
     $stmt->close();
     mysqli_close($con);
-    return $isOpen;
+
+    return $roleId;
+}
+
+function hasAnyOpenCheckInStatus($eventid, $personid)
+{
+    return findOpenCheckInRoleId($eventid, $personid) > 0;
+}
+
+function normalizeAssignedRoleIds($personid, $eventid)
+{
+    $assignedRoleIds = getRolesForPersonEvent($personid, $eventid);
+    $normalized = array();
+
+    if (!is_array($assignedRoleIds)) {
+        return $normalized;
+    }
+
+    foreach ($assignedRoleIds as $role) {
+        if (is_array($role)) {
+            if (isset($role['roleID'])) {
+                $normalized[] = (int)$role['roleID'];
+            } elseif (isset($role['role_id'])) {
+                $normalized[] = (int)$role['role_id'];
+            } elseif (isset($role['id'])) {
+                $normalized[] = (int)$role['id'];
+            }
+        } else {
+            $normalized[] = (int)$role;
+        }
+    }
+
+    $normalized = array_values(array_filter($normalized));
+
+    return $normalized;
+}
+
+function getRoleNameFromMap($roleId, $rolesById)
+{
+    if ($roleId > 0 && isset($rolesById[$roleId])) {
+        return $rolesById[$roleId]['role'];
+    }
+
+    if ($roleId > 0) {
+        return 'Role #' . $roleId;
+    }
+
+    return '';
+}
+
+function getEffectiveRoleData($personid, $eventid, $walkInRoleId, $rolesById)
+{
+    $openRoleId = findOpenCheckInRoleId($eventid, $personid);
+    if ($openRoleId > 0) {
+        return array(
+            'role_id' => $openRoleId,
+            'role_name' => getRoleNameFromMap($openRoleId, $rolesById),
+            'checked_in' => true
+        );
+    }
+
+    $assignedRoleIds = normalizeAssignedRoleIds($personid, $eventid);
+
+    if (!empty($assignedRoleIds)) {
+        $roleId = (int)$assignedRoleIds[0];
+    } else {
+        $roleId = (int)$walkInRoleId;
+    }
+
+    return array(
+        'role_id' => $roleId,
+        'role_name' => getRoleNameFromMap($roleId, $rolesById),
+        'checked_in' => false
+    );
 }
 
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'search') {
@@ -60,21 +156,29 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'search') {
 
     $query = trim($_GET['query'] ?? '');
     $ajaxEventId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-    $ajaxRoleId  = isset($_GET['roleid']) ? (int)$_GET['roleid'] : 1;
+    $ajaxWalkInRoleId = isset($_GET['roleid']) ? (int)$_GET['roleid'] : $defaultRoleId;
 
     if ($query === '' || $ajaxEventId <= 0) {
-        echo json_encode([]);
+        echo json_encode(array());
         exit;
     }
 
+    if ($ajaxWalkInRoleId <= 0 || !isset($rolesById[$ajaxWalkInRoleId])) {
+        $ajaxWalkInRoleId = $defaultRoleId;
+    }
+
     $usernames = searchUsers($query);
-    $payload = [];
+    $payload = array();
 
     foreach ($usernames as $username) {
-        $payload[] = [
+        $effectiveRoleData = getEffectiveRoleData($username, $ajaxEventId, $ajaxWalkInRoleId, $rolesById);
+
+        $payload[] = array(
             'username' => $username,
-            'open_checkin' => hasOpenCheckInStatus($ajaxEventId, $username, $ajaxRoleId)
-        ];
+            'checked_in' => $effectiveRoleData['checked_in'],
+            'role_id' => $effectiveRoleData['role_id'],
+            'role_name' => $effectiveRoleData['role_name']
+        );
     }
 
     echo json_encode($payload);
@@ -104,7 +208,7 @@ include 'infoBox.php';
     <div class="main-content-box w-[80%] p-8">
         <div class="text-center mb-8">
             <h2>Find Your Account to Check In/Out</h2>
-            <p class="sub-text">Start typing your username below.</p>
+            <p class="sub-text">If you already have a role for this event, it will be filled in automatically.</p>
         </div>
 
         <?php if ($flashMessage !== ''): ?>
@@ -114,6 +218,23 @@ include 'infoBox.php';
         <?php endif; ?>
 
         <div class="space-y-6">
+            <div>
+                <label for="role-select" style="display:block; margin-bottom:8px; font-weight:600;">
+                    Pick a If You Have Not Already Role
+                </label>
+                <select id="role-select" class="form-input w-full">
+                    <?php if (!empty($roles)): ?>
+                        <?php foreach ($roles as $role): ?>
+                            <option value="<?php echo (int)$role['role_id']; ?>" <?php echo ((int)$role['role_id'] === $selectedWalkInRoleId) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($role['role']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <option value="0">No roles available</option>
+                    <?php endif; ?>
+                </select>
+            </div>
+
             <input
                 type="text"
                 id="search-box"
@@ -127,6 +248,7 @@ include 'infoBox.php';
                     <thead class="bg-[#C9AB81] text-black">
                         <tr>
                             <th class="text-left p-2">Username</th>
+                            <th class="text-left p-2">Role</th>
                             <th class="text-left p-2">Status</th>
                             <th class="text-left p-2">Action</th>
                         </tr>
@@ -147,25 +269,19 @@ include 'infoBox.php';
     <div class="info-section">
         <p class="text-center text-gray-700">
             Don’t have an account?
-            <a id="create-account-link" href="QuickVolunteerRegister.php" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
+            <a href="QuickVolunteerRegister.php" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
         </p>
     </div>
 </main>
 
 <script>
 document.addEventListener('click', function (e) {
-    const link = e.target.closest('a');
-    if (!link) return;
-
-    // Let the create-account link work normally
-    if (link.id === 'create-account-link') {
-        return;
-    }
-
-    e.preventDefault();
-    const userConfirmed = confirm('Only an admin should perform this action. Are you sure you want to continue?');
-    if (userConfirmed) {
-        window.location.href = 'logoutForm.php';
+    if (e.target.tagName === 'A') {
+        e.preventDefault();
+        const userConfirmed = confirm('Only an admin should perform this action. Are you sure you want to continue?');
+        if (userConfirmed) {
+            window.location.href = 'logoutForm.php';
+        }
     }
 });
 
@@ -182,20 +298,24 @@ window.history.pushState(null, '', window.location.href);
 
 function runSearch(query) {
     const resultsList = document.getElementById("search-results");
+    const roleSelect = document.getElementById("role-select");
+    const selectedWalkInRoleId = roleSelect ? roleSelect.value : "0";
 
     if (query.length < 1) {
         resultsList.innerHTML = "";
         return;
     }
 
-    fetch(`KioskviewCheckInOut.php?ajax=search&query=${encodeURIComponent(query)}&id=<?php echo $eventid; ?>&roleid=<?php echo $roleid; ?>`)
+    fetch(`KioskviewCheckInOut.php?ajax=search&query=${encodeURIComponent(query)}&id=<?php echo $eventid; ?>&roleid=${encodeURIComponent(selectedWalkInRoleId)}`)
         .then(response => response.json())
         .then(data => {
             resultsList.innerHTML = "";
 
             data.forEach(item => {
                 const username = item.username;
-                const openCheckin = !!item.open_checkin;
+                const checkedIn = !!item.checked_in;
+                const roleId = parseInt(item.role_id, 10) || 0;
+                const roleName = item.role_name && item.role_name.length > 0 ? item.role_name : "No Role";
 
                 const row = document.createElement("tr");
 
@@ -203,9 +323,13 @@ function runSearch(query) {
                 usernameCell.className = "p-2";
                 usernameCell.textContent = username;
 
+                const roleCell = document.createElement("td");
+                roleCell.className = "p-2";
+                roleCell.textContent = roleName;
+
                 const statusCell = document.createElement("td");
                 statusCell.className = "p-2";
-                statusCell.textContent = openCheckin ? "Checked In" : "Not Checked In";
+                statusCell.textContent = checkedIn ? "Checked In" : "Not Checked In";
 
                 const actionCell = document.createElement("td");
                 actionCell.className = "p-2";
@@ -227,12 +351,18 @@ function runSearch(query) {
                 const roleInput = document.createElement("input");
                 roleInput.type = "hidden";
                 roleInput.name = "roleid";
-                roleInput.value = "<?php echo $roleid; ?>";
+                roleInput.value = roleId;
 
                 const button = document.createElement("button");
                 button.type = "submit";
                 button.className = "blue-button";
-                button.textContent = openCheckin ? "Check Out" : "Check In";
+
+                if (roleId > 0) {
+                    button.textContent = checkedIn ? "Check Out" : "Check In";
+                } else {
+                    button.textContent = "No Role";
+                    button.disabled = true;
+                }
 
                 form.appendChild(userInput);
                 form.appendChild(eventInput);
@@ -240,7 +370,9 @@ function runSearch(query) {
                 form.appendChild(button);
 
                 actionCell.appendChild(form);
+
                 row.appendChild(usernameCell);
+                row.appendChild(roleCell);
                 row.appendChild(statusCell);
                 row.appendChild(actionCell);
 
@@ -252,6 +384,10 @@ function runSearch(query) {
 
 document.getElementById("search-box").addEventListener("input", function () {
     runSearch(this.value.trim());
+});
+
+document.getElementById("role-select").addEventListener("change", function () {
+    runSearch(document.getElementById("search-box").value.trim());
 });
 
 window.addEventListener("load", function () {

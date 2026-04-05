@@ -30,11 +30,6 @@ if (!isset($currentDate)) {
 
         <!-- LEFT -->
         <div class="header-left">
-            <div class="calendar-icon">
-                <a href="calendar.php">
-                    <img src="images/view-calendar.svg" class="logo">
-                </a>
-            </div>
             <div class="date"><?php echo $currentDate; ?></div>
         </div>
 
@@ -44,14 +39,6 @@ if (!isset($currentDate)) {
             <h1 class="main-title"><?php echo $pageTitle; ?></h1>
             </div>
         </div>
-
-        <!-- RIGHT -->
-        <div class="header-right">
-            <img src="images/user_icon.png" class="profile-icon">
-
-            <div class="profile-name">
-                <?php echo htmlspecialchars($userName); ?>
-            </div>
 
         </div>
 
