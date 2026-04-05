@@ -93,6 +93,16 @@ function calcPersonHours($personid)
     
 }
 
+function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime){
+    $con = connect();
+    $query = "UPDATE dbpersonhours SET start_time = '" . $startTime . "', end_time = '" . $endTime . "' WHERE personID = '" . $personid . "' AND eventID = '" . $eventid . "' AND roleID = '" . $roleid . "'";
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
+    if(!isset($result)){
+        return FALSE;
+    }
+    return TRUE;
+}
 //calc event hours
 
 //get person event hours
@@ -113,7 +123,7 @@ function calcPersonHours($personid)
 
 //get event partisipants
 
-function getEvetnPartipants($eventid){
+function getEventParticipants($eventid){
 $con = connect();
     $querey = "SELECT DISTINCT`personID` FROM `dbpersonhours` WHERE `eventID` = ?";
     $stmt = $con->prepare($querey);
