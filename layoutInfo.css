@@ -53,17 +53,45 @@ body {
 
 /* Filter Card */
 .filter-card {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
     background: white;
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    justify-content: flex-end;
 }
 
 .filter-form {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.event-filter-form {
+    width: 400px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.event-filter-inner {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.no-events-msg {
+    font-style: italic;
+    color: #888;
+    padding: 10px;
+    display: inline-block;
+}
+
+.event-filter-form select,
+.no-events-msg {
+    width: 160px;
 }
 
 .filter-form input,

@@ -185,6 +185,12 @@
     color: rgba(203, 37, 26, 1);
 }
 
+/* Active page */
+.dropdown a.active {
+    color: #8B0000;
+    background: transparent;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .header-container {

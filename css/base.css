@@ -63,7 +63,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --info-toast-background-color: #e6e6e6;
     --info-toast-font-color: #111111;
 
-    --error-toast-background-color: #c97b67;
+    --error-toast-background-color: rgb(203, 37, 26);
     --error-toast-font-color: #ffffff;
 
     /* Borders / shadows */
@@ -98,7 +98,7 @@ table, td, tr, th, form, fieldset, em, button, a {
 
     /* Errors / destructive */
     --cancel-button-background-color: var(--main-color); /* Love Thy Neighbor */
-    --error-color: #c97b67;
+    --error-color: rgb(203, 37, 26);
 
     /* Global rules */
     font-size: 18px;
@@ -933,9 +933,9 @@ form.signup-form a {
     color: white;
 }
 
-form.signup-form a:hover {
+/* form.signup-form a:hover {
     color: var(--error-toast-background-color);
-}
+} */
 /* end normal_tw conversion ~Blue*/
 
 .sidebar-wrapper {

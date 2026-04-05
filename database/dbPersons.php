@@ -1114,40 +1114,94 @@ function get_total_vol_hours($dateFrom, $dateTo) {
 
         return array_unique($emails);
     }
-    /* Love Thy Neighbor Users Page */
-    function getUsersForViewPage($search = '', $limit = 10, $offset = 0) {
-        global $con;
 
+    /* Love Thy Neighbor Users Page */
+    function getUsersForViewPage($search = '', $limit = 10, $offset = 0, $search_by = 'all', $status = 'all', $event_id = '') {
+        global $con;
         $search = trim($search);
-        $limit = (int)$limit;
+        $limit  = (int)$limit;
         $offset = (int)$offset;
-        $users = [];
+        $users  = [];
+
+        // Whitelist search_by
+        $allowed_search_by = ['all', 'name', 'username', 'email', 'phone'];
+        if (!in_array($search_by, $allowed_search_by)) $search_by = 'all';
+
+        // Build archive condition
+        if ($status === 'active') {
+            $archive_condition = "(archived = 0 OR archived IS NULL)";
+        } elseif ($status === 'archived') {
+            $archive_condition = "archived = 1";
+        } else {
+            $archive_condition = null;
+        }
+
+        // Build WHERE clause + collect bind params
+        $params      = [];
+        $param_types = '';
 
         if ($search === '') {
-            $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
-                    FROM dbpersons
-                    ORDER BY last_name ASC, first_name ASC
-                    LIMIT $limit OFFSET $offset";
+            $where = $archive_condition ? "WHERE $archive_condition" : '';
         } else {
-            $safeSearch = mysqli_real_escape_string($con, $search);
+            $like = "%$search%";
 
-            $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
-                    FROM dbpersons
-                    WHERE first_name LIKE '%$safeSearch%'
-                    OR last_name LIKE '%$safeSearch%'
-                    OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'
-                    ORDER BY last_name ASC, first_name ASC
-                    LIMIT $limit OFFSET $offset";
-        }
-
-        $result = mysqli_query($con, $sql);
-
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $users[] = $row;
+            if ($search_by === 'name') {
+                $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?)";
+                $params       = [$like, $like, $like];
+                $param_types  = 'sss';
+            } elseif ($search_by === 'email') {
+                $search_condition = "email LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } elseif ($search_by === 'phone') {
+                $search_condition = "phone_number LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } elseif ($search_by === 'username') {
+                $search_condition = "dbpersons.id LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } else {
+                $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?
+                                    OR email LIKE ? OR phone_number LIKE ? OR dbpersons.id LIKE ?)";
+                $params       = [$like, $like, $like, $like, $like, $like];
+                $param_types  = 'ssssss';
             }
+
+            $where = $archive_condition
+                ? "WHERE $search_condition AND $archive_condition"
+                : "WHERE $search_condition";
         }
 
+        $join = '';
+        if (!empty($event_id)) {
+            $join = "JOIN dbeventpersons ep ON ep.userID = dbpersons.id AND ep.eventID = ?";
+            array_unshift($params, $event_id);
+            $param_types = 's' . $param_types;
+        }
+
+        $sql = "SELECT dbpersons.id, first_name, last_name, email, phone_number, `type`, archived
+                FROM dbpersons
+                $join
+                $where
+                ORDER BY last_name ASC, first_name ASC
+                LIMIT $limit OFFSET $offset";
+
+        $stmt = mysqli_prepare($con, $sql);
+        if (!$stmt) return $users;
+
+        if (!empty($params)) {
+            mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+        }
+
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $users[] = $row;
+        }
+
+        mysqli_stmt_close($stmt);
         return $users;
     }
     /* Love Thy Neighbor Users Page */
@@ -1174,6 +1228,92 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         mysqli_close($con);
 
         return $user;
+    }
+
+
+    // count query for matching filters to results in Users Page
+    function getUserCount($search = '', $search_by = 'all', $status = 'all', $event_id = '') {
+        global $con;
+        $search = trim($search);
+
+        // Whitelist search_by
+        $allowed_search_by = ['all', 'name', 'username', 'email', 'phone'];
+        if (!in_array($search_by, $allowed_search_by)) $search_by = 'all';
+
+        // Build archive condition
+        if ($status === 'active') {
+            $archive_condition = "(archived = 0 OR archived IS NULL)";
+        } elseif ($status === 'archived') {
+            $archive_condition = "archived = 1";
+        } else {
+            $archive_condition = null;
+        }
+
+        $params      = [];
+        $param_types = '';
+
+        if ($search === '') {
+            $where = $archive_condition ? "WHERE $archive_condition" : '';
+        } else {
+            $like = "%$search%";
+
+            if ($search_by === 'name') {
+                $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?)";
+                $params       = [$like, $like, $like];
+                $param_types  = 'sss';
+            } elseif ($search_by === 'email') {
+                $search_condition = "email LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } elseif ($search_by === 'phone') {
+                $search_condition = "phone_number LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } elseif ($search_by === 'username') {
+                $search_condition = "dbpersons.id LIKE ?";
+                $params       = [$like];
+                $param_types  = 's';
+            } else {
+                $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?
+                                    OR email LIKE ? OR phone_number LIKE ? OR dbpersons.id LIKE ?)";
+                $params       = [$like, $like, $like, $like, $like, $like];
+                $param_types  = 'ssssss';
+            }
+
+            $where = $archive_condition
+                ? "WHERE $search_condition AND $archive_condition"
+                : "WHERE $search_condition";
+        }
+
+        $join = '';
+        if (!empty($event_id)) {
+            $join = "JOIN dbeventpersons ep ON ep.userID = dbpersons.id AND ep.eventID = ?";
+            array_unshift($params, $event_id);
+            $param_types = 's' . $param_types;
+        }
+
+        $stmt = mysqli_prepare($con, "SELECT COUNT(*) as total FROM dbpersons $join $where");
+        
+        if (!$stmt) return 0;
+
+        if (!empty($params)) {
+            mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+        }
+
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row    = mysqli_fetch_assoc($result);
+
+        mysqli_stmt_close($stmt);
+        return (int)$row['total'];
+    }
+
+    function getEventsByDate($con, $date) {
+            $stmt = $con->prepare("SELECT id, name FROM dbevents WHERE DATE(`date`) = ?");
+            $stmt->bind_param("s", $date);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
     }
      /**
      * Retrieves a list of verified IDs for a specific user.
