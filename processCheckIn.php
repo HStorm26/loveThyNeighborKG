@@ -1,18 +1,119 @@
 <?php
 session_start();
-include 'database/dbShifts.php';
+include 'database/dbpersonhours.php';
 
 if (!isset($_SESSION['_id'])) {
     die("Error: User not logged in.");
 }
 
-$person_id = $_POST['user_id'];
-$today = date("Y-m-d");
-$currentTime = date("H:i:s");
+$person_id = $_POST['user_id'] ?? $_POST['userid'] ?? $_SESSION['_id'] ?? null;
+$eventid   = isset($_POST['eventid']) ? (int)$_POST['eventid'] : 0;
+$roleid    = isset($_POST['roleid']) ? (int)$_POST['roleid'] : 0;
 
-// Function to display the success message with an animated checkmark
-function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
-    $content = isset($shift_id) ? get_shift_hours($shift_id) : "✔";
+if (!$person_id) {
+    die("Error: Missing userid.");
+}
+if (!$eventid) {
+    die("Error: Missing eventid.");
+}
+if (!$roleid) {
+    die("Error: Missing roleid.");
+}
+
+function hasOpenCheckIn($eventid, $person_id, $roleid) {
+    $con = connect();
+
+    $query = "SELECT 1
+              FROM dbpersonhours
+              WHERE eventID = ?
+                AND personID = ?
+                AND roleID = ?
+                AND start_time IS NOT NULL
+                AND end_time IS NULL
+              LIMIT 1";
+
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("isi", $eventid, $person_id, $roleid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $open = $result && $result->num_rows > 0;
+
+    $stmt->close();
+    mysqli_close($con);
+    return $open;
+}
+
+function forceCheckIn($eventid, $person_id, $roleid) {
+    $con = connect();
+
+    $query = "UPDATE dbpersonhours
+              SET start_time = NOW(), end_time = NULL
+              WHERE eventID = ? AND personID = ? AND roleID = ?";
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("isi", $eventid, $person_id, $roleid);
+    $stmt->execute();
+    $updated = $stmt->affected_rows;
+    $stmt->close();
+
+    if ($updated === 0) {
+        $insert = "INSERT INTO dbpersonhours (personID, eventID, roleID, start_time, end_time)
+                   VALUES (?, ?, ?, NOW(), NULL)";
+        $stmt2 = $con->prepare($insert);
+        if (!$stmt2) {
+            mysqli_close($con);
+            return false;
+        }
+
+        $stmt2->bind_param("sii", $person_id, $eventid, $roleid);
+        $ok = $stmt2->execute();
+        $stmt2->close();
+        mysqli_close($con);
+        return $ok;
+    }
+
+    mysqli_close($con);
+    return true;
+}
+
+function forceCheckOut($eventid, $person_id, $roleid) {
+    $con = connect();
+
+    $query = "UPDATE dbpersonhours
+              SET end_time = NOW()
+              WHERE eventID = ?
+                AND personID = ?
+                AND roleID = ?
+                AND start_time IS NOT NULL
+                AND end_time IS NULL
+              ORDER BY start_time DESC
+              LIMIT 1";
+
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("isi", $eventid, $person_id, $roleid);
+    $stmt->execute();
+    $ok = $stmt->affected_rows > 0;
+
+    $stmt->close();
+    mysqli_close($con);
+    return $ok;
+}
+
+function showSuccessMessage($message, $redirectUrl = null) {
     echo '<html><head><style>
         body {
             display: flex;
@@ -22,9 +123,7 @@ function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
             background-color: #f4f4f4;
             font-family: Quicksand, sans-serif;
         }
-        .success-container {
-            text-align: center;
-        }
+        .success-container { text-align: center; }
         .checkmark {
             width: 80px;
             height: 80px;
@@ -36,7 +135,7 @@ function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
             animation: popIn 0.5s ease-in-out;
         }
         .checkmark:after {
-	    content: "' . htmlspecialchars($content) . '";
+            content: "✔";
             color: white;
             font-size: 40px;
             font-weight: bold;
@@ -45,7 +144,6 @@ function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
             font-size: 20px;
             font-weight: bold;
             margin-top: 15px;
-	    justify-content: center;
             opacity: 0;
             animation: fadeIn 0.8s forwards 0.5s;
         }
@@ -61,14 +159,14 @@ function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
 
     echo '<div class="success-container">
             <div class="checkmark"></div>
-            <div class="message">' . $message . '</div>
+            <div class="message">' . htmlspecialchars($message) . '</div>
           </div>';
 
     if ($redirectUrl) {
         echo '<script>
             setTimeout(function() {
                 window.location.href = "' . $redirectUrl . '";
-            }, 3000); // 3 seconds
+            }, 1500);
         </script>';
     }
 
@@ -76,101 +174,20 @@ function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
     exit;
 }
 
-// Check if the user has an active shift (checked in but not checked out)
-$existingShift = get_open_shift($person_id, $today);
+$existingOpenCheckIn = hasOpenCheckIn($eventid, $person_id, $roleid);
 
-if ($existingShift) {
-    // If no description is submitted, show the prompt
-    if (!isset($_POST['desc'])) {
-        ?>
-        <html>
-        <head>
-            <style>
-                body {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    background-color: #f4f4f4;
-                    font-family: Quicksand, sans-serif;
-                }
-                .checkout-container {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                    width: 350px;
-                }
-                label {
-                    font-weight: bold;
-                    display: block;
-                    margin-bottom: 10px;
-                }
-                textarea {
-                    width: 100%;
-                    height: 80px;
-                    padding: 10px;
-                    border: 2px solid #ccc;
-                    border-radius: 5px;
-                    font-size: 16px;
-                    resize: none;
-                    transition: border-color 0.3s ease-in-out;
-                }
-                textarea:focus {
-                    border-color: #294877;
-                    outline: none;
-                }
-                button {
-                    background-color: #C9AB81;
-                    color: white;
-                    border: none;
-                    padding: 10px 15px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    border-radius: 5px;
-                    margin-top: 10px;
-                    transition: background 0.3s;
-                }
-                button:hover {
-                    background-color: #0056b3;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="checkout-container">
-                <form method="POST">
-                    <input type="hidden" name="user_id" value="<?php echo $person_id; ?>">
-                    <label for="desc">Enter a description before checking out:</label>
-                    <textarea name="desc"></textarea>
-                    <button type="submit">Check Out</button>
-                </form>
-            </div>
-        </body>
-        </html>
-        <?php
-        exit;
-    }
-
-    // User submitted description → proceed to check out
-    $desc = $_POST['desc'];
-
-    if (update_shift_end_time($existingShift, $currentTime, $desc)) {
-        showSuccessMessage("Hours Logged!","viewCheckInOut.php",$existingShift);
-    } else {
-        echo "Error: Could not check out.";
-    }
+if ($existingOpenCheckIn) {
+    $ok = forceCheckOut($eventid, $person_id, $roleid);
+    $message = $ok ? "Checked out successfully!" : "Check-out failed.";
 } else {
-    // User is not checked in → Proceed to check in
-    //if (check_existing_shift($person_id, $today)) {
-    //    die("You have already checked in and out today.");
-    //}
-
-    if (insert_shift($person_id, $today, $currentTime)) {
-        showSuccessMessage("Checked in successfully!", "viewCheckInOut.php");
-    } else {
-        echo "Error: Could not check in.";
-    }
+    $ok = forceCheckIn($eventid, $person_id, $roleid);
+    $message = $ok ? "Checked in successfully!" : "Check-in failed.";
 }
-?>
 
+$redirectUrl = "KioskviewOverallEventsKG.php?id=" . urlencode((string)$eventid) .
+               "&roleid=" . urlencode((string)$roleid) .
+               "&q=" . urlencode($person_id) .
+               "&msg=" . urlencode($message);
+
+showSuccessMessage($message, $redirectUrl);
+?>

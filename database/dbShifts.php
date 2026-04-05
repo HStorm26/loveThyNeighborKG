@@ -1,6 +1,7 @@
 <?php
 include_once('dbinfo.php');
 include_once('dbMessages.php');
+include_once('dbpersonhours.php');
 include_once(dirname(__FILE__).'/../domain/Shift.php');
 
 //function get_shift_today($person_id,$today) {
@@ -135,7 +136,8 @@ function update_shift_end_time($shift_id, $endTime, $desc) {
         $stmt2->fetch();
         $stmt2->close();
         include_once 'dbPersons.php';
-        add_hours_to_person($person_id, $workedHours);
+        
+        //add_hours_to_person($person_id, $workedHours);
     }
 
     $con->close();
