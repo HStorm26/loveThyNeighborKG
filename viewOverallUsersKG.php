@@ -97,7 +97,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
             </form>
 
             <!-- Date Filtering -->
-            <form class="filter-form" method="GET" action="viewOverallUsersKG.php">
+            <!-- <form class="filter-form" method="GET" action="viewOverallUsersKG.php">
                 <input type="text" name="search" placeholder="Search users...">
                 
                 <select name="status">
@@ -107,7 +107,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
                 </select>
 
                 <button type="submit">Filter</button>
-            </form>
+            </form> -->
         </div>
 
         <!-- Table -->
@@ -144,7 +144,10 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
                             <td class="actions">
                                 <a href="viewProfile.php?id=<?php echo urlencode($user['id']); ?>" class="view-btn">View</a>
                                 <a href="editProfile.php?id=<?php echo urlencode($user['id']); ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="archive-btn">Archive</a>
+                                <a href="#" class="archive-btn">Archive</a> <!-- When you wire this up, make sure it goes through 
+                                                                            a POST request with a CSRF token, not a simple GET ?archive=id. 
+                                                                            Otherwise anyone can trick an admin into archiving users 
+                                                                            via a crafted link.-->
                             </td>
                         </tr>
                         <?php endif; ?>
