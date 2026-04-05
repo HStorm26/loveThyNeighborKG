@@ -1,3 +1,5 @@
+<!-- Brooke did this page -->
+<!-- It is the event hub for the admins -->
 <?php
 session_start();
 // Added
@@ -56,13 +58,12 @@ if(isset($_GET['archive'])){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbEvents.php'); ?>
     <title>Love Thy Neighbor | View Events</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="layoutInfo.css">
 
 </head>
 
 <body>
-<?php include('newheader.php'); ?>
+<?php include('header.php'); ?>
 <div class="page">
 
     <!-- Main -->
@@ -81,9 +82,9 @@ if(isset($_GET['archive'])){
                 <input type="text" name="search" placeholder="Search events..">
                 
                 <select name="status">
+                    <option>All</option>
                     <option>Active</option>
                     <option>Archived</option>
-                    <option>All</option>
                 </select>
 
                 <button type="submit">Filter</button>

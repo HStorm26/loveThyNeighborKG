@@ -37,7 +37,7 @@ require_once('header.php');
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            color: var(--main-color);
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -51,7 +51,7 @@ require_once('header.php');
     }
 
     .info-text {
-        color: #C9AB81 !important;
+        color: var(--main-color) !important;
     }
 
     .blue-div {
@@ -65,7 +65,7 @@ require_once('header.php');
         }
 
     .main-content-box label {
-            color: #000000 !important;
+            color: var(--main-color) !important;
     }
     
     .sub-text {

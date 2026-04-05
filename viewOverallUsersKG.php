@@ -1,3 +1,5 @@
+<!-- Brooke did this page -->
+<!-- It is the user hub for the admins -->
 <?php
 session_start();
 // Added
@@ -22,7 +24,8 @@ if ($accessLevel < 1) {
 //End of added
 
 // Create database connection HERE (so everything in this file can use it)
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
+include_once('database/dbinfo.php'); 
+$con=connect(); 
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
@@ -37,7 +40,7 @@ $offset = ($page - 1) * $per_page;
 
 $users = getUsersForViewPage($search, $per_page, $offset);
 
-// The number of users per page
+// The number of users per page (start)
 $per_page = 10;
 
 $page = $_GET['page'] ?? 1;
@@ -47,6 +50,7 @@ if ($page < 1) {
     $page = 1;
 }
 $offset = ($page - 1) * $per_page;
+// The number of users per page (end)
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +60,6 @@ $offset = ($page - 1) * $per_page;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
     <title>Love Thy Neighbor | View Users</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="layoutInfo.css">
 
 
@@ -64,7 +67,7 @@ $offset = ($page - 1) * $per_page;
 </head>
 
 <body>
-<?php include('newheader.php'); ?>
+<?php include('header.php'); ?>
 <div class="page">
 
     <!-- Main -->
@@ -73,6 +76,7 @@ $offset = ($page - 1) * $per_page;
         <div class="page-header">
             <h1>Users</h1>
             <a href="VolunteerRegister.php" class="add-btn">+ Add User</a>
+            <a href="deleteUserSearch.php" class="add-btn">- Delete User</a>
         </div>
 
         <!-- Filters -->
@@ -81,9 +85,9 @@ $offset = ($page - 1) * $per_page;
                 <input type="text" name="search" placeholder="Search users...">
                 
                 <select name="status">
-                    <option>Active</option>
-                    <option>Archived</option>
                     <option>All</option>
+                    <option>Active</option>
+                    <option>Archvied</option>
                 </select>
 
                 <button type="submit">Filter</button>

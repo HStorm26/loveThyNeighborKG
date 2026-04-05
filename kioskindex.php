@@ -8,23 +8,24 @@
 
     date_default_timezone_set("America/New_York");
     
-    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
-        if (isset($_SESSION['change-password'])) {
-            header('Location: changePassword.php');
-        } else {
-            header('Location: login.php');
-        }
-        die();
-    }
-        
     include_once('database/dbPersons.php');
     include_once('domain/Person.php');
     // Get date?
     if (isset($_SESSION['_id'])) {
         $person = retrieve_person($_SESSION['_id']);
+
+        if (!$person || !($person instanceof Person)) {
+            // Handle invalid session user or missing DB record safely.
+            header('Location: login.php');
+            die();
+        }
+
+        $notRoot = $person->get_id() != 'vmsroot';
+        $notKisok = $person->get_id() != 'vmskiosk';
+    } else {
+        header('Location: login.php');
+        die();
     }
-    $notRoot = $person->get_id() != 'vmsroot';
-    $notKisok = $person->get_id() != 'vmskiosk';
 ?>
 
 <!DOCTYPE html>
@@ -446,262 +447,36 @@
     </script>
 <!--END TEST-->
 </head>
-
-<?php if ($_SESSION['access_level'] >= 4): ?>
-    <style>
-        .full-width-bar {
-        background-color:rgb(0,74,173) !important; /* Dark background for admin */
-        }
-    </style>
-<?php endif ?>
-<!-- ONLY SUPER ADMIN WILL SEE THIS -->    <!-- This is not true, admin and super admin can see it (2 = admin, 3 = super admin) ;( -Brooke -->
-
-<?php if ($_SESSION['access_level'] >= 2): ?>
-<body>
-<?php require 'header.php';?>
-
-    <!-- Dummy content to enable scrolling -->
-    <div style="margin-top: 0px; padding: 30px 20px;">
-        <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
-    </div>
-
-            <?php if (isset($_GET['pcSuccess'])): ?>
-                <div class="happy-toast">Password changed successfully!</div>
-            <?php elseif (isset($_GET['deleteService'])): ?>
-                <div class="happy-toast">Service successfully removed!</div>
-            <?php elseif (isset($_GET['serviceAdded'])): ?>
-                <div class="happy-toast">Service successfully added!</div>
-            <?php elseif (isset($_GET['animalRemoved'])): ?>
-                <div class="happy-toast">Animal successfully removed!</div>
-            <?php elseif (isset($_GET['locationAdded'])): ?>
-                <div class="happy-toast">Location successfully added!</div>
-            <?php elseif (isset($_GET['deleteLocation'])): ?>
-                <div class="happy-toast">Location successfully removed!</div>
-            <?php elseif (isset($_GET['registerSuccess'])): ?>
-                <div class="happy-toast">Volunteer registered successfully!</div>
-            <?php endif ?>
-
-    <div class="full-width-bar">
-
-    <div class="content-box">
-        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
-        <div class="small-text">Make a difference!</div>
-        <div class="large-text">User Management</div>
-
-        <button class="circle-arrow-button" onclick="window.location.href='viewOverallUsersKG.php'">
-            <span class="button-text">Go</span>
-            <div class="circle">&gt;</div>
-        </button>
-    </div>
-
-
-    <div class="content-box">
-        <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"> <!-- wooden container (Brooke) -->
-        <div class="small-text" style="color: rgb(0,74,173);">Let’s have some fun!</div>
-        <div class="large-text">Event Management</div>
-<button class="circle-arrow-button" onclick="window.location.href='viewOverallEventsKG.php'">
-    <span class="button-text"><?php 
-                        require_once('database/dbEvents.php');
-                        require_once('database/dbPersons.php');
-                        
-                          
-                    ?> Go </span>
-    <div class="circle">&gt;</div>
-</button>
-    </div>
-
-
-
-</div>
-
-<div style="margin-top: 50px; padding: 0px 80px;">
-    <h2><b>Admin Dashboard</b></h2>
-</div>
-
-<div class="full-width-bar-sub">
-
-    <?php
-        require_once('database/dbMessages.php');
-
-        // Ensure variable is always defined 
-        $unreadMessageCount = 0;
-        $inboxIcon = 'inbox.svg';
-        if (isset($person)) {
-            $unreadMessageCount = get_user_unread_count($person->get_id());
-            if ($unreadMessageCount > 0) {
-                $inboxIcon = 'inbox-unread.svg';
-            }
-        }
-    ?>
-
-    <!-- Calendar -->
-    <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
-        <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- System Notifications -->
-    <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">
-            System Notifications<?php 
-                if ($unreadMessageCount > 0) {
-                    echo ' (' . $unreadMessageCount . ')';
-                }
-            ?>
-        </div>
-        <div class="graph-text" style="color:#FFFFFF;">Stay up to date.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- Generate Report -->
-    <div class="content-box-test" onclick="window.location.href='generateReport.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
-        </div>
-        
-        <div class="large-text-sub"style="color:#FFFFFF;">Generate Report</div>
-        <div class="graph-text"style="color:#FFFFFF;">From this quarter or annual.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- Create Email -->
-    <div class="content-box-test" onclick="window.location.href='createEmail.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">Create Email</div>
-        <div class="graph-text" style="color:#FFFFFF;">Send new messages to volunteers.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- View Drafts -->
-    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
-        </div>
-        
-        <div class="large-text-sub" style="color:#FFFFFF;">View Drafts</div>
-        <div class="graph-text" style="color:#FFFFFF;">Check saved email drafts.</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-
-    <!-- Generate Email List -->
-    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'" style="background-color: #004AAD; border-radius: 12px; padding: 20px; color: black;">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
-        </div>
-         
-        <div class="large-text-sub" style="color:#FFFFFF;">Generate Email List</div>
-        <div class="graph-text" style="color:#FFFFFF;">Volunteer Emails</div>
-        <button class="arrow-button" style="color:#FFFFFF;">→</button>
-    </div>
-</div>
-
-
-
-    
-
-<div style="width: 90%; /* Stops before page ends */
-            height: 100%;
-            outline: 1px #828282 solid;
-            outline-offset: -0.5px;
-            margin: 70px auto; /* Adds vertical space and centers */
-            padding: 1px 0;"> <!-- Adds spacing inside the div -->
-</div>
-
-
-    <footer class="footer" style="margin-top: 100px;">
-        <!-- Left Side: Logo & Socials -->
-        <div class="footer-left">
-            <img src="images/LoveThyNeighbor_logo1.jpeg" alt="Logo" class="footer-logo">
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-            </div>
-        </div>
-
-        <!-- Right Side: Page Links -->
-        <div class="footer-right">
-            <div class="footer-section">
-                <div class="footer-topic">Connect</div>
-                <a href="https://www.facebook.com/kglovethyneighbor/">Facebook</a>
-                <a href="https://www.instagram.com/love_thy_neighbor_kg/">Instagram</a>
-                <a href="https://www.kgfood.org/">Main Website</a>
-            </div>
-            <div class="footer-section">
-                <div class="footer-topic">Contact Us</div>
-                <a href="https://www.kgfood.org/contact">Email: kgc.ltn@gmail.com</a>
-                <a href="https://www.kgfood.org/contact">Phone: (540) 709–1130</a>
-                <!-- <a href="tel:5408981500">540-898-1500 (ext 117)</a> -->
-            </div>
-        </div>
-    </footer>
-
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
-
-
-</body>
-<?php endif ?>
-
-<!-- ONLY VOLUNTEERS WILL SEE THIS -->
-<?php if ($notRoot || $notKiosk) : ?>
-<body>
 <?php require 'header.php';?>
 
   
 
   <!-- Icon Container -->
 <div style="position: absolute; top: 110px; right: 30px; z-index: 999; display: flex; flex-direction: row; gap: 30px; align-items: center; text-align: center;">
-
-
-
-
-
 </div>
-
-
-
     <!-- Dummy content to enable scrolling -->
     <div style="margin-top: 0px; padding: 30px 20px;">
-        <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
+        <h2><b>Welcome to the Kiosk Check In!</b> </h2>
     </div>
 
-    <div class="full-width-bar">
+    <!-- <div class="full-width-bar">
     <div class="content-box">
-    <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/>   <!-- wooden container (Brooke) -->
+    <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/>  
         <div class="small-text">Make a difference.</div>
-        <div class="large-text">My Profile</div>
+        <div class="large-text">Login</div>
         <div class="nav-buttons">
-            <button class="nav-button" onclick="window.location.href='viewProfile.php'">
+            <button class="nav-button" onclick="window.location.href='kiosklogin.php'">
                 <span class="arrow"><img src="images/view-profile.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 20px;"></span>
-                <span class="text">View</span>
+                <span class="text">Login</span>
             </button>
-            <button class="nav-button" onclick="window.location.href='editProfile.php'">
-                <span class="arrow"><img src="images/manage-account.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 20px;"></span>
-                <span class="text">Edit</span>
-            </button>
-            
         </div>
     </div>
-
+    
     <div class="content-box">
         <img src="images/LoveThyNeighbor_wood.jpg" style="filter: drop-shadow(8px 8px 12px rgba(0,0,0,0.5));"/> <!-- wooden container (Brooke) -->
         <div class="small-text">Let’s have some fun!</div>
         <div class="large-text">My Events</div>
-        <div class="nav-buttons">
+        <!-- <div class="nav-buttons">
             <button class="nav-button" onclick="window.location.href='viewAllEvents.php'">
                 <span class="arrow"><img src="images/new-event.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
                 <span class="text">Sign-Up</span>
@@ -711,44 +486,62 @@
                 <span class="text">Upcoming</span>
             </button>
             
-        </div>
+        </div> -->
     </div>
 
     
     </div>
 
     <div style="margin-top: 50px; padding: 0px 80px;">
-        <h2><b>Your Dashboard</h2>
+        <h2><b>Options:</h2>
     </div>
     <div class="full-width-bar-sub">
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+                <img style="border-radius: 5px;" src="images/add-person.svg" alt="Calendar Icon">
+            </div>
+            
+            <div class="large-text-sub" style="color:#FFFFFF;">Register</div>
+            <div class="graph-text" style="color:#FFFFFF;">Don't have an account? Register here.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div>
+
+        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/User Icon.svg" alt="Calendar Icon">
+            </div>
+            
+            <div class="large-text-sub" style="color:#FFFFFF;">Login</div>
+            <div class="graph-text" style="color:#FFFFFF;">Already have an account with us? Login here.</div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div>
+
+        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/list-solid.svg" alt="Calendar Icon">
             </div>
             <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
+            <div class="large-text-sub" style="color:#FFFFFF;">Today's events</div>
+            <div class="graph-text" style="color:#FFFFFF;">
+                See what we're doing on <?php echo date("F j, Y"); ?>.
+            </div>
+            <button class="arrow-button" style="color:#FFFFFF;">→</button>
+        </div> 
+
+        <!-- <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
+            </div>
+            
             <div class="large-text-sub" style="color:#FFFFFF;">Calendar</div>
             <div class="graph-text" style="color:#FFFFFF;">See upcoming events/trainings.</div>
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
+        </div> -->
+        
+        
 
-               <?php
-                    require_once('database/dbMessages.php');
-                    $unreadMessageCount = get_user_unread_count($person->get_id());
-                    $inboxIcon = 'inbox.svg';
-                    if ($unreadMessageCount) {
-                        $inboxIcon = 'inbox-unread.svg';
-                    }   
-                ?>  
 
-        <div class="content-box-test" onclick="window.location.href='inbox.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
-            </div>
-            <!-- <img class="background-image" src="images/blank-white-background.jpg" /> -->
-            <div class="large-text-sub" style="color:#FFFFFF;">Notifications</div>
-            <div class="graph-text" style="color:#FFFFFF;">Stay up to date.</div>
-            <button class="arrow-button" style="color:#FFFFFF;">→</button>
-        </div>
+        
 
     </div>
 
@@ -793,5 +586,4 @@
     <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
 
 </body>
-<?php endif ?>
 </html>
