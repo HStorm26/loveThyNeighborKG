@@ -105,33 +105,35 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 
             <!-- Date/Event Filtering -->
             <form class="filter-form event-filter-form" method="GET" action="viewOverallUsersKG.php" id="date-event-form">
-                <input 
-                    type="date" 
-                    name="event_date" 
-                    id="event_date"
-                    value="<?php echo htmlspecialchars($_GET['event_date'] ?? ''); ?>"
-                    onchange="this.form.submit()"
-                >
+                <div class="event-filter-inner">
+                    <input 
+                        type="date" 
+                        name="event_date" 
+                        id="event_date"
+                        value="<?php echo htmlspecialchars($_GET['event_date'] ?? ''); ?>"
+                        onchange="this.form.submit()"
+                    >
 
-                <?php
-                if (!empty($_GET['event_date'])) {
-                    $event_date = $_GET['event_date'];
-                    $events_on_date = getEventsByDate($con, $event_date);
-                    if (!empty($events_on_date)): ?>
-                        <select name="event_id" onchange="this.form.submit()">
-                            <option value="">— Select an Event —</option>
-                            <?php foreach ($events_on_date as $event): ?>
-                                <option value="<?php echo htmlspecialchars($event['id']); ?>"
-                                    <?php echo (($_GET['event_id'] ?? '') == $event['id']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($event['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    <?php else: ?>
-                        <span class="no-events-msg">No events found.</span>
-                    <?php endif;
-                }
-                ?>
+                    <?php
+                    if (!empty($_GET['event_date'])) {
+                        $event_date = $_GET['event_date'];
+                        $events_on_date = getEventsByDate($con, $event_date);
+                        if (!empty($events_on_date)): ?>
+                            <select name="event_id" onchange="this.form.submit()">
+                                <option value="">— Select an Event —</option>
+                                <?php foreach ($events_on_date as $event): ?>
+                                    <option value="<?php echo htmlspecialchars($event['id']); ?>"
+                                        <?php echo (($_GET['event_id'] ?? '') == $event['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($event['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <span class="no-events-msg">No events found.</span>
+                        <?php endif;
+                    }
+                    ?>
+                </div>
                 <?php if (!empty($_GET['event_date'])): ?>
                     <a href="viewOverallUsersKG.php" class="add-btn" style="margin-left:8px;">Clear</a>
                 <?php endif; ?>
