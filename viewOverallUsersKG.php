@@ -104,7 +104,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
             </form>
 
             <!-- Date/Event Filtering -->
-            <form class="filter-form" method="GET" action="viewOverallUsersKG.php" id="date-event-form">
+            <form class="filter-form event-filter-form" method="GET" action="viewOverallUsersKG.php" id="date-event-form">
                 <input 
                     type="date" 
                     name="event_date" 
