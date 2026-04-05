@@ -34,11 +34,14 @@ require_once('database/dbPersons.php');
 
 // To be able to search and also to navigate through the pages
 $search = $_GET['search'] ?? '';
+// for attribute grouping
+$search_by = $_GET['search_by'] ?? 'all';
+$status = $_GET['status'] ?? 'all';
 $per_page = 10;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $per_page;
 
-$users = getUsersForViewPage($search, $per_page, $offset);
+$users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
 
 // The number of users per page (start)
 $per_page = 10;
@@ -51,6 +54,10 @@ if ($page < 1) {
 }
 $offset = ($page - 1) * $per_page;
 // The number of users per page (end)
+
+// Get the number of users that fit the query for pagination
+$total_users = getUserCount($search, $search_by, $status);
+$total_pages = max(1, ceil($total_users / $per_page));
 ?>
 
 <!DOCTYPE html>
@@ -79,15 +86,36 @@ $offset = ($page - 1) * $per_page;
             <a href="deleteUserSearch.php" class="add-btn">- Delete User</a>
         </div>
 
-        <!-- Filters -->
+        <!-- Status Filters + Attribute Selection -->
         <div class="filter-card">
+            <form class="filter-form" method="GET" action="viewOverallUsersKG.php">                
+                <select name="search_by">
+                    <option value="all" <?php echo ($search_by === 'all' ? 'selected' : ''); ?>>All</option>
+                    <option value="name" <?php echo ($search_by === 'name' ? 'selected' : ''); ?>>Name</option>
+                    <option value="username" <?php echo ($search_by === 'username' ? 'selected' : ''); ?>>Username</option>
+                    <option value="email" <?php echo ($search_by === 'email' ? 'selected' : ''); ?>>Email</option>
+                    <option value="phone" <?php echo ($search_by === 'phone' ? 'selected' : ''); ?>>Phone</option>
+                </select>
+
+                <input type="text" name="search" placeholder="Search users...">
+
+                <select name="status">
+                    <option value="all" <?php echo ($status === 'all' ? 'selected' : ''); ?>>All</option>
+                    <option value="active" <?php echo ($status === 'active' ? 'selected' : ''); ?>>Active</option>
+                    <option value="archived" <?php echo ($status === 'archived' ? 'selected' : ''); ?>>Archived</option>
+                </select>
+
+                <button type="submit">Filter</button>
+            </form>
+
+            <!-- Date Filtering -->
             <form class="filter-form" method="GET" action="viewOverallUsersKG.php">
                 <input type="text" name="search" placeholder="Search users...">
                 
                 <select name="status">
                     <option>All</option>
                     <option>Active</option>
-                    <option>Archvied</option>
+                    <option>Archived</option>
                 </select>
 
                 <button type="submit">Filter</button>
@@ -146,17 +174,31 @@ $offset = ($page - 1) * $per_page;
         <div class="pagination-container">
             <div class="pagination">
                 <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>" class="page-btn">Previous</a>
+                    <a href="?page=<?php echo $page - 1; ?>
+                            &search=<?php echo urlencode($search); ?>
+                            &search_by=<?php echo $search_by; ?>" 
+                            class="page-btn">
+                            Previous
+                    </a>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>"
-                    class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
-                    <?php echo $i; ?>
+                    <a href="?page=<?php echo $i; ?>
+                            &search=<?php echo urlencode($search); ?>
+                            &search_by=<?php echo $search_by; ?>"
+                            class="page-btn">
+                            <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
-                <a href="?page=<?php echo $page + 1; ?>" class="page-btn">Next</a>
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?php echo $page + 1; ?>
+                            &search=<?php echo urlencode($search); ?>
+                            &search_by=<?php echo $search_by; ?>
+                            &status=<?php echo $status; ?>" 
+                            class="page-btn">Next
+                    </a>         
+                <?php endif; ?>   
             </div>
         </div>
     </div>

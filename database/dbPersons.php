@@ -1115,7 +1115,7 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return array_unique($emails);
     }
     /* Love Thy Neighbor Users Page */
-    function getUsersForViewPage($search = '', $limit = 10, $offset = 0) {
+    function getUsersForViewPage($search = '', $limit = 10, $offset = 0, $search_by = 'all', $status = 'all') {
         global $con;
 
         $search = trim($search);
@@ -1123,6 +1123,13 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         $offset = (int)$offset;
         $users = [];
 
+        if ($status === 'active') {
+            $archive_condition = "archived = 0";
+        } else if ($status === 'archived') {
+            $archive_condition = "archived = 1";
+        } else {
+            $archive_condition = null;
+        }
         if ($search === '') {
             $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
                     FROM dbpersons
@@ -1131,17 +1138,40 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         } else {
             $safeSearch = mysqli_real_escape_string($con, $search);
 
+            // now also checks if searching by a specific attribute
+            if ($search_by === 'name') {
+                $search_condition = "first_name LIKE '%$safeSearch%'
+                          OR last_name LIKE '%$safeSearch%'
+                          OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'email') {
+                $search_condition = "email LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'phone') {
+                $search_condition = "phone_number LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'username') {
+                $search_condition = "id LIKE '%$safeSearch%'";
+            } else {
+                $search_condition = "first_name LIKE '%$safeSearch%'
+                          OR last_name LIKE '%$safeSearch%'
+                          OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'
+                          OR email LIKE '%$safeSearch%'
+                          OR phone_number LIKE '%$safeSearch%'
+                          OR id LIKE '%$safeSearch%'";
+            }
+
+            if ($archive_condition) {
+                $where = "WHERE ($search_condition) AND $archive_condition";
+            } else {
+                $where = "WHERE $search_condition";
+            }
+
             $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
-                    FROM dbpersons
-                    WHERE first_name LIKE '%$safeSearch%'
-                    OR last_name LIKE '%$safeSearch%'
-                    OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'
-                    ORDER BY last_name ASC, first_name ASC
-                    LIMIT $limit OFFSET $offset";
+                FROM dbpersons
+                $where
+                ORDER BY last_name ASC, first_name ASC
+                LIMIT $limit OFFSET $offset";
         }
 
         $result = mysqli_query($con, $sql);
-
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
                 $users[] = $row;
@@ -1174,6 +1204,55 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         mysqli_close($con);
 
         return $user;
+    }
+
+
+    // count query for matching filters to results in Users Page
+    function getUserCount($search = '', $search_by = 'all', $status = 'all') {
+
+        global $con;
+        $search = trim($search);
+
+        if ($status === 'active') {
+            $archive_condition = "archived = 0";
+        } elseif ($status === 'archived') {
+            $archive_condition = "archived = 1";
+        } else {
+            $archive_condition = null;
+        }
+
+        if ($search === '') {
+            $where = $archive_condition ? "WHERE $archive_condition" : '';
+        } else {
+            $safeSearch = mysqli_real_escape_string($con, $search);
+
+            if ($search_by === 'name') {
+                $search_condition = "first_name LIKE '%$safeSearch%'
+                                    OR last_name LIKE '%$safeSearch%'
+                                    OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'email') {
+                $search_condition = "email LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'phone') {
+                $search_condition = "phone_number LIKE '%$safeSearch%'";
+            } elseif ($search_by === 'username') {
+                $search_condition = "id LIKE '%$safeSearch%'";
+            } else {
+                $search_condition = "first_name LIKE '%$safeSearch%'
+                                    OR last_name LIKE '%$safeSearch%'
+                                    OR CONCAT(first_name, ' ', last_name) LIKE '%$safeSearch%'
+                                    OR email LIKE '%$safeSearch%'
+                                    OR phone_number LIKE '%$safeSearch%'
+                                    OR id LIKE '%$safeSearch%'";
+            }
+
+            $where = $archive_condition
+                ? "WHERE ($search_condition) AND $archive_condition"
+                : "WHERE $search_condition";
+        }
+
+        $result = mysqli_query($con, "SELECT COUNT(*) as total FROM dbpersons $where");
+        $row = mysqli_fetch_assoc($result);
+        return (int)$row['total'];
     }
      /**
      * Retrieves a list of verified IDs for a specific user.
