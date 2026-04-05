@@ -179,13 +179,19 @@ if (date("H:i:s") > "18:19:59") {
             <div class="header-container">
 
                 <div class="header-left">
-                    <img src="images/view-calendar.svg" class="logo">
+                     <div class="calendar-icon">
+                        <a href="calendar.php">
+                            <img src="images/view-calendar.svg" class="logo">
+                        </a>
+                    </div>
                     <div class="date"><?php echo $currentDate; ?></div>
                 </div>
 
                 <div class="header-center">
                     <div class="header-top">
-                        <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
+                        <a href="index.php">
+                            <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
+                        </a>
 
                         <div class="text-group">
                             <h1 class="main-title">King George County Community Food Pantry</h1>
@@ -235,10 +241,26 @@ if (date("H:i:s") > "18:19:59") {
                     </div>
 
                     <div class="dropdown">
-                        <a href="viewProfile.php">View Profile</a>  
-                        <a href="editProfile.php">Edit Profile</a>  
-                        <a href="changePassword.php">Change Password</a>
-                        <a href="logout.php">Log Out</a>
+                        <a href="viewProfile.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewProfile.php' ? 'active' : '' ?>">
+                        View Profile
+                        </a>
+
+                        <a href="editProfile.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'editProfile.php' ? 'active' : '' ?>">
+                        Edit Profile
+                        </a>
+
+                        <a href="changePassword.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'changePassword.php' ? 'active' : '' ?>">
+                        Change Password
+                        </a>
+                        
+                        <a href="logout.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'active' : '' ?>">
+                        Log Out
+                        </a>
+
                     </div>
                 </div>
 
@@ -248,14 +270,20 @@ if (date("H:i:s") > "18:19:59") {
             <div class="header-container">
 
                 <div class="header-left">
-                    <img src="images/view-calendar.svg" class="logo">
+                     <div class="calendar-icon">
+                        <a href="calendar.php">
+                            <img src="images/view-calendar.svg" class="logo">
+                        </a>
+                    </div>
                     <div class="date"><?php echo $currentDate; ?></div>
                 </div>
 
                 <div class="header-center">
                     <div class="header-top">
-                        <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
-
+                        <a href="index.php">
+                            <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
+                        </a>
+                        
                         <div class="text-group">
                             <h1 class="main-title">King George County Community Food Pantry</h1>
                             <p class="sub-title">LOVE THY NEIGHBOR</p>
@@ -293,10 +321,25 @@ if (date("H:i:s") > "18:19:59") {
                     </div>
 
                     <div class="dropdown">
-                        <a href="viewProfile.php">View Profile</a>  
-                        <a href="editProfile.php">Edit Profile</a>  
-                        <a href="changePassword.php">Change Password</a>
-                        <a href="logout.php">Log Out</a>
+                        <a href="viewProfile.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewProfile.php' ? 'active' : '' ?>">
+                        View Profile
+                        </a>
+
+                        <a href="editProfile.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'editProfile.php' ? 'active' : '' ?>">
+                        Edit Profile
+                        </a>
+
+                        <a href="changePassword.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'changePassword.php' ? 'active' : '' ?>">
+                        Change Password
+                        </a>
+                        
+                        <a href="logout.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'active' : '' ?>">
+                        Log Out
+                        </a>
                     </div>
                 </div>
 
