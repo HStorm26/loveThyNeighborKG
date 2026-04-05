@@ -3,7 +3,6 @@
 <!-- It is the event hub for the admins -->
 <?php
 session_start();
-
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
 
@@ -23,7 +22,7 @@ if ($accessLevel < 1) {
     die();
 }
 
-// Create database connection
+// Create database connection here so everything in this file can use it
 $con = mysqli_connect("localhost", "root", "", "neighbordb");
 
 if (!$con) {
@@ -32,20 +31,14 @@ if (!$con) {
 
 require_once('database/dbEvents.php');
 
-// Get the events
-$theEvents = get_all_events();
-
-/*
- * Count how many unique volunteers are CURRENTLY checked in
- * for a given event. A volunteer counts against capacity only
- * while they have an open dbpersonhours row.
- */
-function get_checked_in_count($con, $eventID) {
-    $query = "SELECT COUNT(DISTINCT personID) AS checked_in_count
-              FROM dbpersonhours
-              WHERE eventID = ?
-                AND start_time IS NOT NULL
-                AND end_time IS NULL";
+function countCurrentCheckedInForEvent($con, $eventID) {
+    $query = "
+        SELECT COUNT(DISTINCT personID) AS checked_in_count
+        FROM dbpersonhours
+        WHERE eventID = ?
+          AND start_time IS NOT NULL
+          AND end_time IS NULL
+    ";
 
     $stmt = mysqli_prepare($con, $query);
     if (!$stmt) {
@@ -57,21 +50,33 @@ function get_checked_in_count($con, $eventID) {
     $result = mysqli_stmt_get_result($stmt);
 
     $count = 0;
-    if ($result && $row = mysqli_fetch_assoc($result)) {
-        $count = (int)$row['checked_in_count'];
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        if ($row && isset($row['checked_in_count'])) {
+            $count = (int)$row['checked_in_count'];
+        }
     }
 
     mysqli_stmt_close($stmt);
     return $count;
 }
 
-/*
- * Remaining capacity = total event capacity - current open check-ins
- */
-function get_remaining_capacity($con, $eventID, $totalCapacity) {
-    $checkedIn = get_checked_in_count($con, $eventID);
-    $remaining = (int)$totalCapacity - $checkedIn;
-    return max(0, $remaining);
+// Get only today's events
+$today = date('Y-n-j');
+$allEvents = get_all_events();
+$theEvents = array();
+
+foreach ($allEvents as $theEvent) {
+    $rawEventDate = $theEvent->getStartDate();
+    $eventTimestamp = strtotime($rawEventDate);
+
+    if ($eventTimestamp !== false) {
+        $normalizedEventDate = date('Y-n-j', $eventTimestamp);
+
+        if ($normalizedEventDate === $today) {
+            $theEvents[] = $theEvent;
+        }
+    }
 }
 ?>
 
@@ -111,10 +116,15 @@ function get_remaining_capacity($con, $eventID, $totalCapacity) {
                 <?php if (!empty($theEvents)): ?>
                     <?php foreach ($theEvents as $theEvent): ?>
                         <?php
-                            $eventID = $theEvent->getID();
+                            $checkedInCount = countCurrentCheckedInForEvent($con, (int)$theEvent->getID());
                             $totalCapacity = (int)$theEvent->getCapacity();
-                            $checkedInCount = get_checked_in_count($con, $eventID);
-                            $remainingCapacity = get_remaining_capacity($con, $eventID, $totalCapacity);
+                            $remainingCapacity = $totalCapacity - $checkedInCount;
+
+                            if ($remainingCapacity < 0) {
+                                $remainingCapacity = 0;
+                            }
+
+                            $capacityDisplay = $remainingCapacity . '/' . $totalCapacity;
                         ?>
                         <tr>
                             <td><?php echo htmlspecialchars($theEvent->getName()); ?></td>
@@ -122,22 +132,15 @@ function get_remaining_capacity($con, $eventID, $totalCapacity) {
                             <td><?php echo htmlspecialchars($theEvent->getStartTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getEndTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getLocation()); ?></td>
-                            <td>
-                                <?php echo htmlspecialchars((string)$remainingCapacity); ?>
-                                / <?php echo htmlspecialchars((string)$totalCapacity); ?>
-                                <br>
-                                <small><?php echo htmlspecialchars((string)$checkedInCount); ?> currently checked in</small>
-                            </td>
+                            <td><?php echo htmlspecialchars($capacityDisplay); ?></td>
                             <td class="actions">
-                                <a href="KioskViewCheckinOut.php?id=<?php echo urlencode($eventID); ?>" class="view-btn">
-                                    Sign up
-                                </a>
+                                <a href="KioskViewCheckinOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="7">No events found.</td>
+                        <td colspan="7">No events found for today.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
@@ -148,5 +151,3 @@ function get_remaining_capacity($con, $eventID, $totalCapacity) {
 </div>
 </body>
 </html>
-
-<?php mysqli_close($con); ?>
