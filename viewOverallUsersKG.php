@@ -176,17 +176,18 @@ $total_pages = max(1, ceil($total_users / $per_page));
                 <?php if ($page > 1): ?>
                     <a href="?page=<?php echo $page - 1; ?>
                             &search=<?php echo urlencode($search); ?>
-                            &search_by=<?php echo $search_by; ?>" 
-                            class="page-btn">
-                            Previous
+                            &search_by=<?php echo $search_by; ?>
+                            &status=<?php echo $status; ?>" 
+                            class="page-btn">Previous
                     </a>
                 <?php endif; ?>
 
-                <?php for ($i = 1; $i <= 5; $i++): ?>
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                     <a href="?page=<?php echo $i; ?>
                             &search=<?php echo urlencode($search); ?>
-                            &search_by=<?php echo $search_by; ?>"
-                            class="page-btn">
+                            &search_by=<?php echo $search_by; ?>
+                            &status=<?php echo $status; ?>"
+                            class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
                             <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
