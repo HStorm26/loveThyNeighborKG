@@ -1116,7 +1116,7 @@ function get_total_vol_hours($dateFrom, $dateTo) {
     }
 
     /* Love Thy Neighbor Users Page */
-    function getUsersForViewPage($search = '', $limit = 10, $offset = 0, $search_by = 'all', $status = 'all') {
+    function getUsersForViewPage($search = '', $limit = 10, $offset = 0, $search_by = 'all', $status = 'all', $event_id = '') {
         global $con;
         $search = trim($search);
         $limit  = (int)$limit;
@@ -1158,12 +1158,12 @@ function get_total_vol_hours($dateFrom, $dateTo) {
                 $params       = [$like];
                 $param_types  = 's';
             } elseif ($search_by === 'username') {
-                $search_condition = "id LIKE ?";
+                $search_condition = "dbpersons.id LIKE ?";
                 $params       = [$like];
                 $param_types  = 's';
             } else {
                 $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?
-                                    OR email LIKE ? OR phone_number LIKE ? OR id LIKE ?)";
+                                    OR email LIKE ? OR phone_number LIKE ? OR dbpersons.id LIKE ?)";
                 $params       = [$like, $like, $like, $like, $like, $like];
                 $param_types  = 'ssssss';
             }
@@ -1173,8 +1173,16 @@ function get_total_vol_hours($dateFrom, $dateTo) {
                 : "WHERE $search_condition";
         }
 
-        $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
+        $join = '';
+        if (!empty($event_id)) {
+            $join = "JOIN dbeventpersons ep ON ep.userID = dbpersons.id AND ep.eventID = ?";
+            array_unshift($params, $event_id);
+            $param_types = 's' . $param_types;
+        }
+
+        $sql = "SELECT dbpersons.id, first_name, last_name, email, phone_number, `type`, archived
                 FROM dbpersons
+                $join
                 $where
                 ORDER BY last_name ASC, first_name ASC
                 LIMIT $limit OFFSET $offset";
@@ -1224,7 +1232,7 @@ function get_total_vol_hours($dateFrom, $dateTo) {
 
 
     // count query for matching filters to results in Users Page
-    function getUserCount($search = '', $search_by = 'all', $status = 'all') {
+    function getUserCount($search = '', $search_by = 'all', $status = 'all', $event_id = '') {
         global $con;
         $search = trim($search);
 
@@ -1262,12 +1270,12 @@ function get_total_vol_hours($dateFrom, $dateTo) {
                 $params       = [$like];
                 $param_types  = 's';
             } elseif ($search_by === 'username') {
-                $search_condition = "id LIKE ?";
+                $search_condition = "dbpersons.id LIKE ?";
                 $params       = [$like];
                 $param_types  = 's';
             } else {
                 $search_condition = "(first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?
-                                    OR email LIKE ? OR phone_number LIKE ? OR id LIKE ?)";
+                                    OR email LIKE ? OR phone_number LIKE ? OR dbpersons.id LIKE ?)";
                 $params       = [$like, $like, $like, $like, $like, $like];
                 $param_types  = 'ssssss';
             }
@@ -1277,7 +1285,15 @@ function get_total_vol_hours($dateFrom, $dateTo) {
                 : "WHERE $search_condition";
         }
 
-        $stmt = mysqli_prepare($con, "SELECT COUNT(*) as total FROM dbpersons $where");
+        $join = '';
+        if (!empty($event_id)) {
+            $join = "JOIN dbeventpersons ep ON ep.userID = dbpersons.id AND ep.eventID = ?";
+            array_unshift($params, $event_id);
+            $param_types = 's' . $param_types;
+        }
+
+        $stmt = mysqli_prepare($con, "SELECT COUNT(*) as total FROM dbpersons $join $where");
+        
         if (!$stmt) return 0;
 
         if (!empty($params)) {
@@ -1290,6 +1306,14 @@ function get_total_vol_hours($dateFrom, $dateTo) {
 
         mysqli_stmt_close($stmt);
         return (int)$row['total'];
+    }
+
+    function getEventsByDate($con, $date) {
+            $stmt = $con->prepare("SELECT id, name FROM dbevents WHERE DATE(`date`) = ?");
+            $stmt->bind_param("s", $date);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
     }
      /**
      * Retrieves a list of verified IDs for a specific user.
