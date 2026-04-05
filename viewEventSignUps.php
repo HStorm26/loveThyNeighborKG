@@ -30,11 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['bulk_action'])) {
         echo 'User ID is missing.';
         die();
     }
-
-    if (remove_user_from_event($event_id, $user_id)) {
-        $remove_success = "User $user_id was successfully removed.";
-    } else {
-        $remove_error = "Failed to remove user $user_id.";
+    if ($_POST['action'] === 'remove'){
+        if (remove_user_from_event($event_id, $user_id)) {
+            $remove_success = "User $user_id was successfully removed.";
+        } else {
+            $remove_error = "Failed to remove user $user_id.";
+        }
     }
 }
 
@@ -202,11 +203,18 @@ $access_level = $_SESSION['access_level'];
                                 
                                 <?php if ($access_level >= 2): ?>
                                     <td>
-                                        <form method="POST" style="display:inline;">
+                                        <form method="POST" style="display:flex;" action="./adjustEventHours.php">
+                                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
+                                            <input type="hidden" name="nav" value="viewEventSignUps"/>
+                                            <button type="submit" class="button">Adjust Hours</button>
+                                        </form>
+                                        <form method="POST" style="display:flex;">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
                                             <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
                                         </form>
+
                                     </td>
                                 <?php endif; ?>
                             </tr>

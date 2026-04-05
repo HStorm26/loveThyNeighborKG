@@ -58,7 +58,7 @@
                 {
                   $_SESSION['access_level'] = 4;
                   $_SESSION['locked'] = false;
-                  header('Location: kioskindex.php');
+                  header('Location: kioskviewoveralleventskg.php');
                 }
             
                 //if ($changePassword) {
