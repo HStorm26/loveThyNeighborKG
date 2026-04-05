@@ -5,6 +5,7 @@ session_start();
 // Added
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
+include_once("./database/dbinfo.php");
 
 $loggedIn = false;
 $accessLevel = 0;
@@ -24,7 +25,7 @@ if ($accessLevel < 1) {
 //End of added
 
 // Create database connection HERE (so everything in this file can use it)
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
+$con = connect();
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
@@ -33,6 +34,21 @@ require_once('database/dbEvents.php');
 
 // Get the events
 $theEvents = get_all_events();
+
+
+if(isset($_GET['archive'])){
+    //using <a> kinda requires this funky lil redirect thing so if you reload the page a million times it doesnt spam the db
+    $id = (int) $_GET['archive'];
+    if(is_archived($id)){
+        unarchive_event($id);
+    }
+    else{
+        archive_event($id);
+    }
+    header("Location: ./viewOverallEventsKG.php");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -42,13 +58,12 @@ $theEvents = get_all_events();
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbEvents.php'); ?>
     <title>Love Thy Neighbor | View Events</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="layoutInfo.css">
 
 </head>
 
 <body>
-<?php include('newheader.php'); ?>
+<?php include('header.php'); ?>
 <div class="page">
 
     <!-- Main -->
@@ -57,6 +72,7 @@ $theEvents = get_all_events();
         <div class="page-header">
             <h1>View Events</h1>
             <a href="addEvent.php" class="add-btn">+ Create Event</a>
+            <?php if(isset($_SESSION['toggleArchive'])){ echo '<p> hi!!! </p>';} ?>
             <a href="calendar.php" class="add-btn">View Calendar</a>
         </div>
 
@@ -66,9 +82,9 @@ $theEvents = get_all_events();
                 <input type="text" name="search" placeholder="Search events..">
                 
                 <select name="status">
+                    <option>All</option>
                     <option>Active</option>
                     <option>Archived</option>
-                    <option>All</option>
                 </select>
 
                 <button type="submit">Filter</button>
@@ -105,7 +121,11 @@ $theEvents = get_all_events();
                                 <a href="event.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">View</a>
                                 <a href="viewEventSignUps.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="edit-btn">Attendance</a>
                                 <a href="editEvent.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="archive-btn">Archive</a>
+                                <?php if (is_archived($theEvent->getID())): ?>
+                                    <a href="./viewOverallEventsKG.php?archive=<?php echo $theEvent->getID(); ?>" class="archive-btn">Unarchive</a>
+                                <?php else: ?>
+                                    <a href="./viewOverallEventsKG.php?archive=<?php echo $theEvent->getID(); ?>" class="archive-btn">Archive</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

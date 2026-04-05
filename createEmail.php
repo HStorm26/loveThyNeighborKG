@@ -287,11 +287,10 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <?php require_once('universal.inc'); ?>
     <title>Send Email | Love Thy Neighbor Community Food Pantry</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
-<?php require_once('newheader.php'); ?>
+<?php require_once('header.php'); ?>
 
 <?php if (!$isAdmin): ?>
     <div class='error-toast'>You do not have permission to view this page.</div>

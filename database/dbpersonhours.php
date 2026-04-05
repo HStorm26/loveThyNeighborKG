@@ -150,7 +150,7 @@ function roleHoursForDateRange($sd,$ed)
 
 //get event partisipants
 
-function getEvetnPartipants($eventid){
+function getEventParticipants($eventid){
 $con = connect();
     $querey = "SELECT DISTINCT`personID` FROM `dbpersonhours` WHERE `eventID` = ?";
     $stmt = $con->prepare($querey);

@@ -252,7 +252,7 @@ function is_archived($eventID) {
     $con = connect();
     $eventID = (int)$eventID;
 
-    $query = "SELECT archived FROM dbevents WHERE id = $eventID";
+    $query = "SELECT archived FROM dbevents WHERE id = '" . $eventID . "'";
     $result = mysqli_query($con, $query);
 
     if (!$result || mysqli_num_rows($result) === 0) {
@@ -282,22 +282,22 @@ function archive_old_events(){
 }
 
 /*
- * Mark an event as archived in the DB by setting the 'completed' column to 'yes'.
+ * Mark an event as archived in the DB by setting the 'archived' column to 'yes'.
  */
 function archive_event($id) {
     $con=connect();
-    $query = "UPDATE dbevents SET archived = 1 WHERE id = '" .$id. "'";
+    $query = "UPDATE dbevents SET archived = 1 WHERE id = '" . $id . "'";
     $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
 }
 
 /*
- * Mark an event as not archived in the DB by setting the 'completed' column to 'no'.
+ * Mark an event as not archived in the DB by setting the 'archived' column to 'no'.
  */
 function unarchive_event($id) {
     $con=connect();
-    $query = "UPDATE dbevents SET archived = 0 WHERE id = '" .$id. "'";
+    $query = "UPDATE dbevents SET archived = 0 WHERE id = '" . $id . "'";
     $result = mysqli_query($con,$query);
     mysqli_close($con);
     return $result;
@@ -683,7 +683,7 @@ function create_event($event) {
 
     $query = "
         INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', $archived)
+        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', 0)
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
