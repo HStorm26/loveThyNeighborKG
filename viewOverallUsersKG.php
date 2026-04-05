@@ -128,7 +128,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                             <?php endforeach; ?>
                         </select>
                     <?php else: ?>
-                        <span style="font-style: italic; color: #888;">No events found for this date.</span>
+                        <span class="no-events-msg">No events found.</span>
                     <?php endif;
                 }
                 ?>
