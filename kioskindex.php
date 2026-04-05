@@ -496,7 +496,7 @@
         <h2><b>Options:</h2>
     </div>
     <div class="full-width-bar-sub">
-        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+        <div class="content-box-test" onclick="window.location.href='QuickVolunteerRegister.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/add-person.svg" alt="Calendar Icon">
             </div>
@@ -506,7 +506,7 @@
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
-        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+        <div class="content-box-test" onclick="window.location.href='kiosklogin.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/User Icon.svg" alt="Calendar Icon">
             </div>
@@ -516,6 +516,7 @@
             <button class="arrow-button" style="color:#FFFFFF;">→</button>
         </div>
 
+        <!--change onclick once a kioskViewEvents exists: onclick="window.location.href='viewAllEvents.php?start_date='<'?= date('Y-m-d') ?>&end_date='<'?= date('Y-m-d') ?>&hide_filter=1'"-->
         <div class="content-box-test" onclick="window.location.href='calendar.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/list-solid.svg" alt="Calendar Icon">

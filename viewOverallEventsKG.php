@@ -34,6 +34,21 @@ require_once('database/dbEvents.php');
 
 // Get the events
 $theEvents = get_all_events();
+
+
+if(isset($_GET['archive'])){
+    //using <a> kinda requires this funky lil redirect thing so if you reload the page a million times it doesnt spam the db
+    $id = (int) $_GET['archive'];
+    if(is_archived($id)){
+        unarchive_event($id);
+    }
+    else{
+        archive_event($id);
+    }
+    header("Location: ./viewOverallEventsKG.php");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -57,6 +72,7 @@ $theEvents = get_all_events();
         <div class="page-header">
             <h1>View Events</h1>
             <a href="addEvent.php" class="add-btn">+ Create Event</a>
+            <?php if(isset($_SESSION['toggleArchive'])){ echo '<p> hi!!! </p>';} ?>
             <a href="calendar.php" class="add-btn">View Calendar</a>
         </div>
 
@@ -105,7 +121,11 @@ $theEvents = get_all_events();
                                 <a href="event.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">View</a>
                                 <a href="viewEventSignUps.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="edit-btn">Attendance</a>
                                 <a href="editEvent.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="archive-btn">Archive</a>
+                                <?php if (is_archived($theEvent->getID())): ?>
+                                    <a href="./viewOverallEventsKG.php?archive=<?php echo $theEvent->getID(); ?>" class="archive-btn">Unarchive</a>
+                                <?php else: ?>
+                                    <a href="./viewOverallEventsKG.php?archive=<?php echo $theEvent->getID(); ?>" class="archive-btn">Archive</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
