@@ -41,11 +41,15 @@ $per_page = 10;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $per_page;
 
+// Event date filter params
+$event_date = $_GET['event_date'] ?? '';
+$event_id   = $_GET['event_id']   ?? '';
+
 // Get the number of users that fit the query for pagination
-$total_users = getUserCount($search, $search_by, $status);
+$total_users = getUserCount($search, $search_by, $status, $event_id);
 $total_pages = max(1, ceil($total_users / $per_page));
 
-$users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
+$users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $event_id);
 ?>
 
 <!DOCTYPE html>
@@ -93,21 +97,45 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
                     <option value="archived" <?php echo ($status === 'archived' ? 'selected' : ''); ?>>Archived</option>
                 </select>
 
+                <input type="hidden" name="event_date" value="<?php echo htmlspecialchars($event_date); ?>">
+                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_id); ?>">
+
                 <button type="submit">Filter</button>
             </form>
 
-            <!-- Date Filtering -->
-            <!-- <form class="filter-form" method="GET" action="viewOverallUsersKG.php">
-                <input type="text" name="search" placeholder="Search users...">
-                
-                <select name="status">
-                    <option>All</option>
-                    <option>Active</option>
-                    <option>Archived</option>
-                </select>
+            <!-- Date/Event Filtering -->
+            <form class="filter-form" method="GET" action="viewOverallUsersKG.php" id="date-event-form">
+                <input 
+                    type="date" 
+                    name="event_date" 
+                    id="event_date"
+                    value="<?php echo htmlspecialchars($_GET['event_date'] ?? ''); ?>"
+                    onchange="this.form.submit()"
+                >
 
-                <button type="submit">Filter</button>
-            </form> -->
+                <?php
+                if (!empty($_GET['event_date'])) {
+                    $event_date = $_GET['event_date'];
+                    $events_on_date = getEventsByDate($con, $event_date);
+                    if (!empty($events_on_date)): ?>
+                        <select name="event_id" onchange="this.form.submit()">
+                            <option value="">— Select an Event —</option>
+                            <?php foreach ($events_on_date as $event): ?>
+                                <option value="<?php echo htmlspecialchars($event['id']); ?>"
+                                    <?php echo (($_GET['event_id'] ?? '') == $event['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($event['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else: ?>
+                        <span style="font-style: italic; color: #888;">No events found for this date.</span>
+                    <?php endif;
+                }
+                ?>
+                <?php if (!empty($_GET['event_date'])): ?>
+                    <a href="viewOverallUsersKG.php" class="add-btn" style="margin-left:8px;">Clear</a>
+                <?php endif; ?>
+            </form>
         </div>
 
         <!-- Table -->
@@ -166,44 +194,40 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
             <div class="pagination">
                 <!-- previous button -->
                 <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>" class="page-btn">Previous</a>
+                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" 
+                    class="page-btn">Previous</a>
                 <?php endif; ?>
 
-                <?php
-                $window = 2;
-                // ALWAYS show first page
-                ?>
-                <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
-                class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
+                <!-- ALWAYS show first page -->
+                <?php $window = 2; ?>
+                    <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
+                    class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
 
-                <?php
-                // LEFT ELLIPSIS RAH
-                if ($page > $window + 2): ?>
+                <!-- LEFT ELLIPSIS RAH -->
+                <?php if ($page > $window + 2): ?>
                     <span class="page-btn">...</span>
                 <?php endif; ?>
 
-                <?php
-                // middle pages
+                <!-- middle pages -->
+                <?php 
                 $start = max(2, $page - $window);
                 $end = min($total_pages - 1, $page + $window);
 
                 for ($i = $start; $i <= $end; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
+                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
                     class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
                     <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
-                <?php
-                // RIGHT ELLIPSIS RAH
-                if ($page < $total_pages - ($window + 1)): ?>
+                <!-- RIGHT ELLIPSIS RAH -->
+                <?php if ($page < $total_pages - ($window + 1)): ?>
                     <span class="page-btn">...</span>
                 <?php endif; ?>
 
-                <?php
-                // ALWAYS show last page [ assuming if more than 1 page]
-                if ($total_pages > 1): ?>
-                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
+                <!-- ALWAYS show last page [ assuming if more than 1 page] -->
+                <?php if ($total_pages > 1): ?>
+                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
                     class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
                     <?php echo $total_pages; ?>
                     </a>
@@ -211,7 +235,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
 
                 <!-- next button -->
                 <?php if ($page < $total_pages): ?>
-                    <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>" class="page-btn">Next</a>
+                            <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" class="page-btn">Next</a>
                 <?php endif; ?>   
             </div>
         </div>
