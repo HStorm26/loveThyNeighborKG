@@ -1,4 +1,0 @@
--- username: test_volunteer 
--- password: vmsroot
-INSERT INTO `dbpersons` (`id`, `first_name`, `last_name`, `phone_number`, `email`, `email_prefs`, `birthday`, `t-shirt_size`, `state`, `city`, `street_address`, `zip_code`, `emergency_contact_first_name`, `emergency_contact_phone`, `emergency_contact_relation`, `archived`, `password`, `contact_num`, `contact_method`, `type`, `status`, `photo_release`, `community_service`, `notes`) 
-VALUES ('temp_volunteer', 'Test_Name', NULL, '555555555', 'email@fake.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, password_hash('vmsroot', PASSWORD_BCRYPT), 'n/a', NULL, 'Volunteer', 'Active', '0', '0', NULL)
