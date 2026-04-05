@@ -41,23 +41,11 @@ $per_page = 10;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $per_page;
 
-$users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
-
-// The number of users per page (start)
-$per_page = 10;
-
-$page = $_GET['page'] ?? 1;
-$page = (int)$page;
-
-if ($page < 1) {
-    $page = 1;
-}
-$offset = ($page - 1) * $per_page;
-// The number of users per page (end)
-
 // Get the number of users that fit the query for pagination
 $total_users = getUserCount($search, $search_by, $status);
 $total_pages = max(1, ceil($total_users / $per_page));
+
+$users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status);
 ?>
 
 <!DOCTYPE html>
@@ -210,7 +198,7 @@ $total_pages = max(1, ceil($total_users / $per_page));
                 <?php endif; ?>
 
                 <?php
-                // ALWAYS show last page (if more than 1 page)
+                // ALWAYS show last page [ assuming if more than 1 page]
                 if ($total_pages > 1): ?>
                     <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>"
                     class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">

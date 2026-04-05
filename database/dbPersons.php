@@ -1124,15 +1124,17 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         $users = [];
 
         if ($status === 'active') {
-            $archive_condition = "archived = 0";
+            $archive_condition = "(archived = 0 OR archived IS NULL)";
         } else if ($status === 'archived') {
             $archive_condition = "archived = 1";
         } else {
             $archive_condition = null;
         }
         if ($search === '') {
+            $where = $archive_condition ? "WHERE $archive_condition" : '';
             $sql = "SELECT id, first_name, last_name, email, phone_number, type, archived
                     FROM dbpersons
+                    $where
                     ORDER BY last_name ASC, first_name ASC
                     LIMIT $limit OFFSET $offset";
         } else {
@@ -1223,6 +1225,7 @@ function get_total_vol_hours($dateFrom, $dateTo) {
 
         if ($search === '') {
             $where = $archive_condition ? "WHERE $archive_condition" : '';
+            $sql = "SELECT COUNT(*) as total FROM dbpersons $where";
         } else {
             $safeSearch = mysqli_real_escape_string($con, $search);
 
