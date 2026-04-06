@@ -233,8 +233,8 @@
         </div>
 
         <div class="date-box">
-            <?php echo date("F j, Y"); ?>
-        </div>
+          <i class="fa-solid fa-calendar-days"></i> <?php echo $currentDate; ?>
+      </div>
     </section>
 
     <section class="wide-card-grid volunteer-top-grid">

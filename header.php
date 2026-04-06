@@ -270,12 +270,10 @@ if (date("H:i:s") > "18:19:59") {
             <div class="header-container">
 
                 <div class="header-left">
-                     <div class="calendar-icon">
-                        <a href="calendar.php">
-                            <img src="images/view-calendar.svg" class="logo">
-                        </a>
-                    </div>
-                    <div class="date"><?php echo $currentDate; ?></div>
+                    <a href="calendar.php" class="calendar-icon">
+                        <i class="fas fa-calendar-alt calendar-icon"></i> 
+                    </a>
+                        <div class="date"><?php echo $currentDate; ?></div>
                 </div>
 
                 <div class="header-center">
@@ -315,7 +313,7 @@ if (date("H:i:s") > "18:19:59") {
                 </div>
 
                 <div class="header-right">
-                    <img src="images/user_icon.png" class="profile-icon">
+                    <i class="fas fa-user-circle profile-icon"></i> 
                     <div class="profile-name">
                         <?php echo htmlspecialchars($firstName); ?>
                     </div>
