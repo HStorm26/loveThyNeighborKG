@@ -16,6 +16,14 @@
         }
         die();
     }
+
+    // Create database connection HERE (so everything in this file can use it)
+    include_once('database/dbinfo.php'); 
+    $con=connect(); 
+
+    if (!$con) {
+      die("Database connection failed: " . mysqli_connect_error());
+    }
         
     include_once('database/dbPersons.php');
     include_once('database/dbpersonhours.php');
@@ -25,6 +33,11 @@
         $person = retrieve_person($_SESSION['_id']);
     }
     $notRoot = $person->get_id() != 'vmsroot';
+
+    // For the counts for total volunteers and total admins and total people
+    $volunteers = getVolunteerCount($con);
+    $admins = getAdminCount($con);
+    $total = getTotalUsers($con);
 
 ?>
 
@@ -103,13 +116,13 @@
       <div class="card soft-orange">
         <i class="fa-solid fa-users icon-orange"></i>
         <h3>Volunteer Count</h3>
-        <p>148</p>
+        <p><?= $volunteers ?></p>
       </div>
 
       <div class="card soft-maroon">
         <i class="fa-solid fa-user-shield icon-maroon"></i>
         <h3>Admin Count</h3>
-        <p>6</p>
+        <p><?= $admins ?></p>
       </div>
     </section>
   
