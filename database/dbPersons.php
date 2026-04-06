@@ -1315,6 +1315,27 @@ function get_total_vol_hours($dateFrom, $dateTo) {
             $result = $stmt->get_result();
             return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+    function getVolunteerCount($con) {
+        $sql = "SELECT COUNT(*) AS total FROM dbpersons WHERE type = 'volunteer'";
+        $result = mysqli_query($con, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row['total'];
+    }
+
+    function getAdminCount($con) {
+        $sql = "SELECT COUNT(*) AS total FROM dbpersons WHERE type = 'admin'";
+        $result = mysqli_query($con, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row['total'];
+    }
+
+    function getTotalUsers($con) {
+        $sql = "SELECT COUNT(*) AS total FROM dbpersons";
+        $result = mysqli_query($con, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row['total'];
+    }
      /**
      * Retrieves a list of verified IDs for a specific user.
      * @param string $user_id The user's ID (username)

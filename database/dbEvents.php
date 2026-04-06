@@ -258,8 +258,7 @@ function is_archived($eventID) {
     if (!$result || mysqli_num_rows($result) === 0) {
         mysqli_close($con);
         return false;
-    }
-
+    } 
     $row = mysqli_fetch_assoc($result);
     mysqli_close($con);
 
@@ -397,7 +396,8 @@ function make_an_event($result_row) {
                     endDate: $result_row['date'],
                     description: $result_row['description'],
                     capacity: $result_row['capacity'],
-                    location: $result_row['location']
+                    location: $result_row['location'],
+                    archived: $result_row['archived'] ?? 0
                 
                     //affiliation: $result_row['affiliation'],
                     //branch: $result_row['branch'],
@@ -680,11 +680,12 @@ function create_event($event) {
         //insert into dbevents (name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
         //values ('$name', '$date', '$startTime', '$endTime', '$date', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
     //";
-
+    $archived = 0;
     $query = "
         INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', 0)
+        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', '$archived')
     ";
+    
     $result = mysqli_query($connection, $query);
     if (!$result) {
         echo mysqli_error($connection);
@@ -1160,3 +1161,184 @@ function update_animal2($animal) {
     return $userIDs;
 }
 
+function getEventCount($search = '', $search_by = 'all', $status = 'all', $date_from = '', $date_to = '') {
+    global $con;
+
+    $search = trim($search);
+
+    $allowed_search_by = ['all', 'name', 'date', 'location'];
+    if (!in_array($search_by, $allowed_search_by, true)) {
+        $search_by = 'all';
+    }
+
+    $allowed_statuses = ['all', 'active', 'archived'];
+    if (!in_array($status, $allowed_statuses, true)) {
+        $status = 'all';
+    }
+
+    $sql = "SELECT COUNT(*) AS total FROM dbevents WHERE 1";
+    $params = [];
+    $types = '';
+
+    // status filter
+    if ($status === 'active') {
+        $sql .= " AND archived = 0";
+    } elseif ($status === 'archived') {
+        $sql .= " AND archived = 1";
+    }
+
+    // search filter
+    if ($search !== '') {
+        $like = "%{$search}%";
+
+        if ($search_by === 'name') {
+            $sql .= " AND name LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'date') {
+            $sql .= " AND date LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'location') {
+            $sql .= " AND location LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } else {
+            $sql .= " AND (name LIKE ? OR date LIKE ? OR location LIKE ?)";
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $types .= 'sss';
+        }
+    }
+
+    // date range filter
+    if ($date_from !== '') {
+        $sql .= " AND date >= ?";
+        $params[] = $date_from;
+        $types .= 's';
+    }
+
+    if ($date_to !== '') {
+        $sql .= " AND date <= ?";
+        $params[] = $date_to;
+        $types .= 's';
+    }
+
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) {
+        return 0;
+    }
+
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+    return (int)($row['total'] ?? 0);
+}
+
+
+function getEventsForViewPage($search = '', $search_by = 'all', $status = 'all', $date_from = '', $date_to = '', $limit = 10, $offset = 0) {
+    global $con;
+
+    $search = trim($search);
+    $limit = max(1, (int)$limit);
+    $offset = max(0, (int)$offset);
+
+    $allowed_search_by = ['all', 'name', 'date', 'location'];
+    if (!in_array($search_by, $allowed_search_by, true)) {
+        $search_by = 'all';
+    }
+
+    $allowed_statuses = ['all', 'active', 'archived'];
+    if (!in_array($status, $allowed_statuses, true)) {
+        $status = 'all';
+    }
+
+    $sql = "SELECT * FROM dbevents WHERE 1";
+    $params = [];
+    $types = '';
+
+    // status filter
+    if ($status === 'active') {
+        $sql .= " AND archived = 0";
+    } elseif ($status === 'archived') {
+        $sql .= " AND archived = 1";
+    } 
+
+    // search filter
+    if ($search !== '') {
+        $like = "%{$search}%";
+
+        if ($search_by === 'name') {
+            $sql .= " AND name LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'date') {
+            $sql .= " AND date LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'location') {
+            $sql .= " AND location LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } else {
+            $sql .= " AND (name LIKE ? OR date LIKE ? OR location LIKE ?)";
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $types .= 'sss';
+        }
+    }
+
+    // date range filter
+    if ($date_from !== '') {
+        $sql .= " AND date >= ?";
+        $params[] = $date_from;
+        $types .= 's';
+    }
+
+    if ($date_to !== '') {
+        $sql .= " AND date <= ?";
+        $params[] = $date_to;
+        $types .= 's';
+    }
+
+    $sql .= " ORDER BY date ASC, startTime ASC LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    $types .= 'ii';
+
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) {
+        return [];
+    }
+
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $events = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $events[] = new Event(
+            $row['id'],
+            $row['name'],
+            $row['date'],
+            $row['startTime'],
+            $row['endTime'],
+            $row['date'],
+            $row['description'],
+            $row['capacity'],
+            $row['location'],
+            $row['archived'] ?? 0
+        );
+    }
+
+    mysqli_stmt_close($stmt);
+    return $events;
+}
