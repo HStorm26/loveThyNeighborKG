@@ -23,6 +23,7 @@ if (date("H:i:s") > "18:19:59") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="header.css">
 </head>
     <?php
@@ -81,11 +82,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['index.php'] = 0; // WVF Home page
         $permission_array['logout.php'] = 0; //WVF - Logout page ain
         $permission_array['volunteerregister.php'] = 0; //WVF - Alter to registering for account
-	    $permission_array['leaderboard.php'] = 0; //WVF - Probably get rid of this guy
-        //pages volunteers can view
-        $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1; //WVF - Might be good to alter this for registered users to be able to see registered events and where they can edit user info 
-        $permission_array['calendar.php'] = 0; //WVF - Everyone can see this
+        $permission_array['calendar.php'] = 1; // - Brooke made sure calendar is visible to volunteers and up
         $permission_array['eventsearch.php'] = 1; 
         $permission_array['changepassword.php'] = 1;
         $permission_array['editprofile.php'] = 1; 
@@ -144,7 +142,11 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['deleteusersearch.php'] = 2;
         $permission_array['viewoveralluserskg.php'] = 2;
         $permission_array['viewoveralleventskg.php'] = 2;
-        $permission_array['adjusteventhours.php'] = 2; //changed from 'viewallreports.php'
+        $permission_array['adjusteventhours.php'] = 2;
+        $permission_array['viewallreports.php'] = 2;
+        $permission_array['kioskviewOverallEventsKG.php'] = 4;
+        $permission_array['totalhoursreport.php'] = 2;
+        $permission_array['topvolunteersreport.php'] = 2;
         // LOWERCASE
 
 
@@ -179,14 +181,11 @@ if (date("H:i:s") > "18:19:59") {
             <div class="header-container">
 
                 <div class="header-left">
-                     <div class="calendar-icon">
-                        <a href="calendar.php">
-                            <img src="images/view-calendar.svg" class="logo">
-                        </a>
-                    </div>
-                    <div class="date"><?php echo $currentDate; ?></div>
+                    <a href="calendar.php" class="calendar-icon">
+                        <i class="fas fa-calendar-alt calendar-icon"></i> 
+                    </a>
+                        <div class="date"><?php echo $currentDate; ?></div>
                 </div>
-
                 <div class="header-center">
                     <div class="header-top">
                         <a href="index.php">
@@ -226,8 +225,8 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'inbox.php' ? 'active' : '' ?>">
                         Notification
                         </a>
-                        <a href="kiosk.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'kioskindex.php' ? 'active' : '' ?>">
+                        <a href="kioskviewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'kioskviewOverallEventsKG.php' ? 'active' : '' ?>">
                         Kiosk
                         </a>
                         
@@ -235,10 +234,11 @@ if (date("H:i:s") > "18:19:59") {
                 </div>
 
                 <div class="header-right">
-                    <img src="images/user_icon.png" class="profile-icon">
+                    <i class="fas fa-user-circle profile-icon"></i> 
                     <div class="profile-name">
                         <?php echo htmlspecialchars($firstName); ?>
                     </div>
+                
 
                     <div class="dropdown">
                         <a href="viewProfile.php"
@@ -283,7 +283,7 @@ if (date("H:i:s") > "18:19:59") {
                         <a href="index.php">
                             <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
                         </a>
-                        
+
                         <div class="text-group">
                             <h1 class="main-title">King George County Community Food Pantry</h1>
                             <p class="sub-title">LOVE THY NEIGHBOR</p>

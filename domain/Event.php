@@ -20,7 +20,7 @@ class Event {
     private $archived;
 
 
-    function __construct($id, $name, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location) {
+    function __construct($id, $name, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $archived) {
         $this->id = $id;
         $this->name = $name;
         //$this->type = $type;
@@ -35,7 +35,7 @@ class Event {
         //$this->branch = $branch;
         //$this->access = $access;
         //$this->completed = $completed;
-        $this->archived = 0;
+        $this->archived = $archived;
         
     }
 

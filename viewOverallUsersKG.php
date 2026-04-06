@@ -243,6 +243,6 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
         </div>
     </div>
 </div>
-
+<?php include 'footer.php'; ?>
 </body>
 </html>

@@ -206,14 +206,15 @@ tbody tr:hover {
 
 .page {
     display: flex;
-    min-height: 100vh;
+    min-height: auto;
 }
 
 .page-wrapper {
     max-width: 1100px;
-    margin: 50px auto;
+    margin: 20px auto 0 auto;
     padding: 20px;
 }
+
 
 .reports-header {
     text-align: center;

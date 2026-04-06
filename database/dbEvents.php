@@ -258,8 +258,7 @@ function is_archived($eventID) {
     if (!$result || mysqli_num_rows($result) === 0) {
         mysqli_close($con);
         return false;
-    }
-
+    } 
     $row = mysqli_fetch_assoc($result);
     mysqli_close($con);
 
@@ -397,7 +396,8 @@ function make_an_event($result_row) {
                     endDate: $result_row['date'],
                     description: $result_row['description'],
                     capacity: $result_row['capacity'],
-                    location: $result_row['location']
+                    location: $result_row['location'],
+                    archived: $result_row['archived'] ?? 0
                 
                     //affiliation: $result_row['affiliation'],
                     //branch: $result_row['branch'],
@@ -680,11 +680,12 @@ function create_event($event) {
         //insert into dbevents (name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
         //values ('$name', '$date', '$startTime', '$endTime', '$date', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
     //";
-
+    $archived = 0;
     $query = "
         INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', 0)
+        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', '$archived')
     ";
+    
     $result = mysqli_query($connection, $query);
     if (!$result) {
         echo mysqli_error($connection);
@@ -1160,3 +1161,95 @@ function update_animal2($animal) {
     return $userIDs;
 }
 
+function getEventCount($search = '') {
+    global $con;
+    $search = trim($search);
+
+    $sql = "SELECT COUNT(*) AS total FROM dbevents";
+    $params = [];
+    $param_types = '';
+
+    if ($search !== '') {
+        $like = "%$search%";
+        $sql .= " WHERE (name LIKE ? OR description LIKE ? OR location LIKE ? OR date LIKE ?)";
+        $params = [$like, $like, $like, $like];
+        $param_types = 'ssss';
+    }
+
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) return 0;
+
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+    return (int)$row['total'];
+}
+
+function getEventsForViewPage($search = '', $limit = 10, $offset = 0) {
+    global $con;
+    $search = trim($search);
+    $limit = (int)$limit;
+    $offset = (int)$offset;
+
+    $sql = "SELECT * FROM dbevents";
+    $params = [];
+    $param_types = '';
+
+    if ($search !== '') {
+        $like = "%$search%";
+        $sql .= " WHERE (name LIKE ? OR description LIKE ? OR location LIKE ? OR date LIKE ?)";
+        $params = [$like, $like, $like, $like];
+        $param_types = 'ssss';
+    }
+
+    $sql .= " ORDER BY date ASC, startTime ASC LIMIT $limit OFFSET $offset";
+
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) {
+        return [];
+    }
+
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $events = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $events[] = new Event(
+            $row['id'],
+            $row['name'],
+            $row['date'],
+            $row['startTime'],
+            $row['endTime'],
+            $row['date'],  
+            $row['description'],
+            $row['capacity'],
+            $row['location'],
+            $row['archived'] ?? 0
+        );
+    }
+
+    mysqli_stmt_close($stmt);
+    return $events;
+}
+$event_date = $_GET['event_date'] ?? '';
+$event_id = $_GET['event_id'] ?? '';
+$status = $_GET['status'] ?? 'all';
+
+$allowed_statuses = ['all', 'active', 'archived'];
+if (!in_array($status, $allowed_statuses, true)) {
+    $status = 'all';
+}
+
+if ($event_id !== '' && !ctype_digit($event_id)) {
+    $event_id = '';
+}
