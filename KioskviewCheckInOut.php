@@ -278,17 +278,17 @@ include 'infoBox.php';
 document.addEventListener('click', function (e) {
     if (e.target.tagName === 'A') {
         e.preventDefault();
-        const userConfirmed = confirm('Only an admin should perform this action. Are you sure you want to continue?');
+        const userConfirmed = confirm('Are you sure you want to sign up for an account?');
         if (userConfirmed) {
-            window.location.href = 'logoutForm.php';
+            window.location.href = 'QuickVolunteerRegister.php';
         }
     }
 });
 
 window.addEventListener('popstate', function () {
-    const userConfirmed = confirm('Only an admin should perform this action. Are you sure you want to continue?');
+    const userConfirmed = confirm('Are you sure you want to sign up for an account?');
     if (userConfirmed) {
-        window.location.href = 'logoutForm.php';
+        window.location.href = 'QuickVolunteerRegister.php';
     } else {
         history.pushState(null, '', location.href);
     }
