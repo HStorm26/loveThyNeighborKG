@@ -1161,26 +1161,77 @@ function update_animal2($animal) {
     return $userIDs;
 }
 
-function getEventCount($search = '') {
+function getEventCount($search = '', $search_by = 'all', $status = 'all', $date_from = '', $date_to = '') {
     global $con;
+
     $search = trim($search);
 
-    $sql = "SELECT COUNT(*) AS total FROM dbevents";
-    $params = [];
-    $param_types = '';
+    $allowed_search_by = ['all', 'name', 'date', 'location'];
+    if (!in_array($search_by, $allowed_search_by, true)) {
+        $search_by = 'all';
+    }
 
+    $allowed_statuses = ['all', 'active', 'archived'];
+    if (!in_array($status, $allowed_statuses, true)) {
+        $status = 'all';
+    }
+
+    $sql = "SELECT COUNT(*) AS total FROM dbevents WHERE 1";
+    $params = [];
+    $types = '';
+
+    // status filter
+    if ($status === 'active') {
+        $sql .= " AND archived = 0";
+    } elseif ($status === 'archived') {
+        $sql .= " AND archived = 1";
+    }
+
+    // search filter
     if ($search !== '') {
-        $like = "%$search%";
-        $sql .= " WHERE (name LIKE ? OR description LIKE ? OR location LIKE ? OR date LIKE ?)";
-        $params = [$like, $like, $like, $like];
-        $param_types = 'ssss';
+        $like = "%{$search}%";
+
+        if ($search_by === 'name') {
+            $sql .= " AND name LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'date') {
+            $sql .= " AND date LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'location') {
+            $sql .= " AND location LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } else {
+            $sql .= " AND (name LIKE ? OR date LIKE ? OR location LIKE ?)";
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $types .= 'sss';
+        }
+    }
+
+    // date range filter
+    if ($date_from !== '') {
+        $sql .= " AND date >= ?";
+        $params[] = $date_from;
+        $types .= 's';
+    }
+
+    if ($date_to !== '') {
+        $sql .= " AND date <= ?";
+        $params[] = $date_to;
+        $types .= 's';
     }
 
     $stmt = mysqli_prepare($con, $sql);
-    if (!$stmt) return 0;
+    if (!$stmt) {
+        return 0;
+    }
 
     if (!empty($params)) {
-        mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
     }
 
     mysqli_stmt_execute($stmt);
@@ -1188,37 +1239,87 @@ function getEventCount($search = '') {
     $row = mysqli_fetch_assoc($result);
 
     mysqli_stmt_close($stmt);
-    return (int)$row['total'];
+    return (int)($row['total'] ?? 0);
 }
 
-function getEventsForViewPage($search = '', $limit = 10, $offset = 0) {
+
+function getEventsForViewPage($search = '', $search_by = 'all', $status = 'all', $date_from = '', $date_to = '', $limit = 10, $offset = 0) {
     global $con;
+
     $search = trim($search);
-    $limit = (int)$limit;
-    $offset = (int)$offset;
+    $limit = max(1, (int)$limit);
+    $offset = max(0, (int)$offset);
 
-    $sql = "SELECT * FROM dbevents";
-    $params = [];
-    $param_types = '';
-
-    if ($search !== '') {
-        $like = "%$search%";
-        $sql .= " WHERE (name LIKE ? OR description LIKE ? OR location LIKE ? OR date LIKE ?)";
-        $params = [$like, $like, $like, $like];
-        $param_types = 'ssss';
+    $allowed_search_by = ['all', 'name', 'date', 'location'];
+    if (!in_array($search_by, $allowed_search_by, true)) {
+        $search_by = 'all';
     }
 
-    $sql .= " ORDER BY date ASC, startTime ASC LIMIT $limit OFFSET $offset";
+    $allowed_statuses = ['all', 'active', 'archived'];
+    if (!in_array($status, $allowed_statuses, true)) {
+        $status = 'all';
+    }
+
+    $sql = "SELECT * FROM dbevents WHERE 1";
+    $params = [];
+    $types = '';
+
+    // status filter
+    if ($status === 'active') {
+        $sql .= " AND archived = 0";
+    } elseif ($status === 'archived') {
+        $sql .= " AND archived = 1";
+    } 
+
+    // search filter
+    if ($search !== '') {
+        $like = "%{$search}%";
+
+        if ($search_by === 'name') {
+            $sql .= " AND name LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'date') {
+            $sql .= " AND date LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } elseif ($search_by === 'location') {
+            $sql .= " AND location LIKE ?";
+            $params[] = $like;
+            $types .= 's';
+        } else {
+            $sql .= " AND (name LIKE ? OR date LIKE ? OR location LIKE ?)";
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $types .= 'sss';
+        }
+    }
+
+    // date range filter
+    if ($date_from !== '') {
+        $sql .= " AND date >= ?";
+        $params[] = $date_from;
+        $types .= 's';
+    }
+
+    if ($date_to !== '') {
+        $sql .= " AND date <= ?";
+        $params[] = $date_to;
+        $types .= 's';
+    }
+
+    $sql .= " ORDER BY date ASC, startTime ASC LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    $types .= 'ii';
 
     $stmt = mysqli_prepare($con, $sql);
     if (!$stmt) {
         return [];
     }
 
-    if (!empty($params)) {
-        mysqli_stmt_bind_param($stmt, $param_types, ...$params);
-    }
-
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
@@ -1230,7 +1331,7 @@ function getEventsForViewPage($search = '', $limit = 10, $offset = 0) {
             $row['date'],
             $row['startTime'],
             $row['endTime'],
-            $row['date'],  
+            $row['date'],
             $row['description'],
             $row['capacity'],
             $row['location'],
@@ -1240,16 +1341,4 @@ function getEventsForViewPage($search = '', $limit = 10, $offset = 0) {
 
     mysqli_stmt_close($stmt);
     return $events;
-}
-$event_date = $_GET['event_date'] ?? '';
-$event_id = $_GET['event_id'] ?? '';
-$status = $_GET['status'] ?? 'all';
-
-$allowed_statuses = ['all', 'active', 'archived'];
-if (!in_array($status, $allowed_statuses, true)) {
-    $status = 'all';
-}
-
-if ($event_id !== '' && !ctype_digit($event_id)) {
-    $event_id = '';
 }

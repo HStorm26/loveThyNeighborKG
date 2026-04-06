@@ -59,6 +59,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
     <title>Love Thy Neighbor | View Users</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="layoutInfo.css">
 
 
@@ -139,12 +140,37 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                 <?php endif; ?>
             </form>
         </div>
+        <div id="hidden-selected-users"></div>
 
+        <form action="composeEmail.php" method="POST">
+            <div class="selection-bar">
+    <div class="selection-info" id="selection-count">
+        0 users selected
+    </div>
+    <div class="selection-actions">
+        <button type="submit" name="email_mode" value="all" class="email-btn">
+        <i class="fas fa-users"></i>
+        Select All Users
+        </button>
+    </div>
+
+    <div class="selection-actions">
+        <button type="submit" class="email-btn">
+            <i class="fas fa-envelope"></i>
+            Email Selected
+        </button>
+    </div>
+
+    <button type="button" onclick="clearSelections()" class="clear-btn">
+        Clear Selection
+    </button>
+</div>
         <!-- Table -->
         <div class="table-card">
             <table>
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all"></th>
                         <th>Name</th>
                         <th>Username</th>
                         <th>Email</th>
@@ -159,6 +185,9 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     <?php foreach ($users as $user): ?>
                         <?php if ($user['id'] !== 'vmsroot' && $user['id'] !== 'vmsroot2'): ?>
                         <tr>
+                            <td>
+                                <input type="checkbox" name="selected_users[]" value="<?php echo htmlspecialchars($user['id']); ?>">
+                            </td>
                             <td><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></td>
                             <td><?php echo htmlspecialchars($user['id']); ?></td>
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
@@ -178,6 +207,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                                                                             a POST request with a CSRF token, not a simple GET ?archive=id. 
                                                                             Otherwise anyone can trick an admin into archiving users 
                                                                             via a crafted link.-->
+                                                                            
                             </td>
                         </tr>
                         <?php endif; ?>
@@ -190,6 +220,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                 </tbody>
                 
             </table>
+            </form>
         </div>
 
         <div class="pagination-container">
@@ -244,5 +275,128 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
     </div>
 </div>
 <?php include 'footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const STORAGE_KEY = 'selectedUserIds';
+
+    const userCheckboxes = document.querySelectorAll('input[name="selected_users[]"]');
+    const selectAll = document.getElementById('select-all');
+    const selectionCount = document.getElementById('selection-count');
+    const emailForm = document.querySelector('form[action="composeEmail.php"]');
+    const hiddenContainer = document.getElementById('hidden-selected-users');
+
+    function getStoredSelections() {
+        try {
+            return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveStoredSelections(ids) {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
+
+    function updateSelectionCount() {
+        const selectedIds = getStoredSelections();
+        const count = selectedIds.length;
+
+        if (!selectionCount) return;
+
+        if (count === 0) {
+            selectionCount.textContent = '0 users selected';
+        } else if (count === 1) {
+            selectionCount.textContent = '1 user selected';
+        } else {
+            selectionCount.textContent = count + ' users selected';
+        }
+    }
+
+    function syncPageCheckboxesWithStorage() {
+        const selectedIds = getStoredSelections();
+
+        userCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = selectedIds.includes(checkbox.value);
+        });
+
+        if (selectAll && userCheckboxes.length > 0) {
+            const allChecked = Array.from(userCheckboxes).every(cb => cb.checked);
+            selectAll.checked = allChecked;
+        }
+    }
+
+    function handleCheckboxChange(checkbox) {
+        let selectedIds = getStoredSelections();
+
+        if (checkbox.checked) {
+            if (!selectedIds.includes(checkbox.value)) {
+                selectedIds.push(checkbox.value);
+            }
+        } else {
+            selectedIds = selectedIds.filter(id => id !== checkbox.value);
+        }
+
+        saveStoredSelections(selectedIds);
+        syncPageCheckboxesWithStorage();
+        updateSelectionCount();
+    }
+
+    userCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            handleCheckboxChange(checkbox);
+        });
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            let selectedIds = getStoredSelections();
+
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAll.checked;
+
+                if (selectAll.checked) {
+                    if (!selectedIds.includes(checkbox.value)) {
+                        selectedIds.push(checkbox.value);
+                    }
+                } else {
+                    selectedIds = selectedIds.filter(id => id !== checkbox.value);
+                }
+            });
+
+            saveStoredSelections(selectedIds);
+            syncPageCheckboxesWithStorage();
+            updateSelectionCount();
+        });
+    }
+
+    if (emailForm) {
+        emailForm.addEventListener('submit', function () {
+            const selectedIds = getStoredSelections();
+
+            if (hiddenContainer) {
+                hiddenContainer.innerHTML = '';
+
+                selectedIds.forEach(function (id) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selected_users[]';
+                    input.value = id;
+                    hiddenContainer.appendChild(input);
+                });
+            }
+        });
+    }
+
+    syncPageCheckboxesWithStorage();
+    updateSelectionCount();
+});
+</script>
+<script>
+function clearSelections() {
+    sessionStorage.removeItem('selectedUserIds');
+    location.reload();
+}
+</script>
 </body>
 </html>

@@ -46,27 +46,40 @@ if(isset($_GET['archive'])){
     header("Location: ./viewOverallEventsKG.php");
     exit();
 }
-// To be able to search and also to navigate through the pages
-$search = $_GET['search'] ?? '';
-// for attribute grouping
+// Search and filter values
+$search = trim($_GET['search'] ?? '');
 $search_by = $_GET['search_by'] ?? 'all';
-
-$event_date = $_GET['event_date'] ?? '';
-$event_id = $_GET['event_id'] ?? '';
 $status = $_GET['status'] ?? 'all';
+$date_from = $_GET['date_from'] ?? '';
+$date_to = $_GET['date_to'] ?? '';
 
+// Whitelist search_by
+$allowed_search_by = ['all', 'name', 'date', 'location'];
+if (!in_array($search_by, $allowed_search_by, true)) {
+    $search_by = 'all';
+}
+
+// Whitelist status
 $allowed_statuses = ['all', 'active', 'archived'];
 if (!in_array($status, $allowed_statuses, true)) {
     $status = 'all';
 }
 
-if ($event_id !== '' && !ctype_digit($event_id)) {
-    $event_id = '';
+// Validate dates
+if ($date_from !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_from)) {
+    $date_from = '';
 }
+
+if ($date_to !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_to)) {
+    $date_to = '';
+}
+
+// Pagination
 $per_page = 10;
 $page = max(1, (int)($_GET['page'] ?? 1));
 
-$total_events = getEventCount($search);
+// Count first
+$total_events = getEventCount($search, $search_by, $status, $date_from, $date_to);
 $total_pages = max(1, ceil($total_events / $per_page));
 
 if ($page > $total_pages) {
@@ -75,7 +88,8 @@ if ($page > $total_pages) {
 
 $offset = ($page - 1) * $per_page;
 
-$theEvents = getEventsForViewPage($search, $per_page, $offset);
+// Then fetch paginated results
+$theEvents = getEventsForViewPage($search, $search_by, $status, $date_from, $date_to, $per_page, $offset);
 ?>
 
 <!DOCTYPE html>
@@ -104,65 +118,43 @@ $theEvents = getEventsForViewPage($search, $per_page, $offset);
         </div>
 
         <div class="filter-card">
-            <form class="filter-form" method="GET" action="viewOverallEventsKG.php">                
+            <form class="filter-form" method="GET" action="viewOverallEventsKG.php">
+                <!-- SEARCH TYPE -->
                 <select name="search_by">
-                    <option value="all" <?php echo ($search_by === 'all' ? 'selected' : ''); ?>>All</option>
-                    <option value="name" <?php echo ($search_by === 'name' ? 'selected' : ''); ?>>Name</option>
-                    <option value="username" <?php echo ($search_by === 'username' ? 'selected' : ''); ?>>Username</option>
-                    <option value="email" <?php echo ($search_by === 'email' ? 'selected' : ''); ?>>Email</option>
-                    <option value="phone" <?php echo ($search_by === 'phone' ? 'selected' : ''); ?>>Phone</option>
+                    <option value="all" <?php echo ($search_by === 'all') ? 'selected' : ''; ?>>All</option>
+                    <option value="name" <?php echo ($search_by === 'name') ? 'selected' : ''; ?>>Name</option>
+                    <!--<option value="date" <?php echo ($search_by === 'date') ? 'selected' : ''; ?>>Date</option>-->
+                    <option value="location" <?php echo ($search_by === 'location') ? 'selected' : ''; ?>>Location</option>
+                </select>
+                <!-- SEARCH BAR -->
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search events..."
+                    value="<?php echo htmlspecialchars($search); ?>"
+                    class="search-input"
+                >
+
+                <!-- STATUS -->
+                <select name="status">
+                    <option value="all" <?php echo ($status === 'all') ? 'selected' : ''; ?>>All</option>
+                    <option value="active" <?php echo ($status === 'active') ? 'selected' : ''; ?>>Active</option>
+                    <option value="archived" <?php echo ($status === 'archived') ? 'selected' : ''; ?>>Archived</option>
+                    <!--<option value="canceled" <?php echo ($status === 'canceled') ? 'selected' : ''; ?>>Canceled</option>-->
                 </select>
 
-                <input type="text" name="search" placeholder="Search ..." value="<?php echo htmlspecialchars($search); ?>">
+                <!-- BUTTON -->
+                <button type="submit">Search</button>
+
+                <input type="date" name="date_from" value="<?php echo htmlspecialchars($date_from);?> title="Start Date">
+                <input type="date" name="date_to" value="<?php echo htmlspecialchars($date_to);?>title="End Date">
 
 
-                <button type="submit">Filter</button>
-            </form>
-        
+                <button type="submit">Apply Filters</button>
 
-        <!-- Date/Event Filtering -->
-            <form class="filter-form event-filter-form" method="GET" action="viewOverallEventsKG.php" id="date-event-form">
-                <div class="event-filter-inner">
-                    <input 
-                        type="date" 
-                        name="event_date" 
-                        id="event_date"
-                        value="<?php echo htmlspecialchars($event_date); ?>"
-                        onchange="this.form.submit()"
-                    >
-
-                    <?php
-                    $events_on_date = [];
-                    if ($event_date !== '') {
-                        $events_on_date = getEventsByDate($con, $event_date, $status);
-                    }
-
-                    if ($event_date !== '') {
-                        if (!empty($events_on_date)): ?>
-                            <select name="event_id" onchange="this.form.submit()">
-                                <option value="">— Select an Event —</option>
-                                <?php foreach ($events_on_date as $event): ?>
-                                    <option value="<?php echo htmlspecialchars((string)$event['id']); ?>"
-                                        <?php echo ($event_id !== '' && $event_id == $event['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($event['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php else: ?>
-                            <span class="no-events-msg">No events found.</span>
-                        <?php endif;
-                    }
-                    ?>
-
-                    <select name="status" onchange="this.form.submit()">
-                        <option value="all" <?php echo ($status === 'all') ? 'selected' : ''; ?>>All</option>
-                        <option value="active" <?php echo ($status === 'active') ? 'selected' : ''; ?>>Active</option>
-                        <option value="archived" <?php echo ($status === 'archived') ? 'selected' : ''; ?>>Archived</option>
-                    </select>
-                </div>
-
-                <?php if ($event_date !== '' || $event_id !== '' || $status !== 'all'): ?>
-                    <a href="viewOverallEventsKG.php" class="add-btn" style="margin-left:8px;">Clear</a>
+       
+                <?php if ($search !== '' || $status !== 'all' || $date_from !== '' || $date_to !== '' || $search_by !== 'all'): ?>
+                    <a href="viewOverallEventsKG.php" class="clear-btn">Reset Filters</a>
                 <?php endif; ?>
             </form>
         </div>
@@ -222,16 +214,26 @@ $theEvents = getEventsForViewPage($search, $per_page, $offset);
 
         <div class="pagination-container">
             <div class="pagination">
+                <?php $window = 2; ?>
+
+                <?php
+                $query_base = '&search=' . urlencode($search)
+                    . '&search_by=' . urlencode($search_by)
+                    . '&status=' . urlencode($status)
+                    . '&date_from=' . urlencode($date_from)
+                    . '&date_to=' . urlencode($date_to);
+                ?>
                 <!-- previous button -->
                 <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" 
-                    class="page-btn">Previous</a>
+                    <a href="?page=<?php echo $page - 1 . $query_base; ?>" class="page-btn">Previous</a>
                 <?php endif; ?>
+                
 
                 <!-- ALWAYS show first page -->
-                <?php $window = 2; ?>
-                    <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
+                <a href="?page=1<?php echo $query_base; ?>"
+                    class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">
+                    1
+                </a>
 
                 <!-- LEFT ELLIPSIS RAH -->
                 <?php if ($page > $window + 2): ?>
@@ -244,9 +246,9 @@ $theEvents = getEventsForViewPage($search, $per_page, $offset);
                 $end = min($total_pages - 1, $page + $window);
 
                 for ($i = $start; $i <= $end; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
-                    <?php echo $i; ?>
+                    <a href="?page=<?php echo $i . $query_base; ?>"
+                        class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
@@ -257,16 +259,16 @@ $theEvents = getEventsForViewPage($search, $per_page, $offset);
 
                 <!-- ALWAYS show last page [ assuming if more than 1 page] -->
                 <?php if ($total_pages > 1): ?>
-                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
-                    <?php echo $total_pages; ?>
+                    <a href="?page=<?php echo $total_pages . $query_base; ?>"
+                        class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
+                        <?php echo $total_pages; ?>
                     </a>
                 <?php endif; ?>
 
                 <!-- next button -->
                 <?php if ($page < $total_pages): ?>
-                            <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" class="page-btn">Next</a>
-                <?php endif; ?>   
+                    <a href="?page=<?php echo $page + 1 . $query_base; ?>" class="page-btn">Next</a>
+                <?php endif; ?> 
             </div>
         </div>
 
