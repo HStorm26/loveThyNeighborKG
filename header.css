@@ -1,4 +1,4 @@
-/* ================= HEADER ================= */
+/* The header*/
 
 .header {
     width: 100%;
@@ -25,23 +25,48 @@
 .header-left {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding-left: 30px;
+    align-items: center;
+    justify-self: start;   /* pushes the whole block to the left side of its grid column */
+    margin-left: 30px;
 }
 
-/* .header-left:hover {
+.header-left:hover {
     transform: scale(1.05);
     transition: 0.2s;
-} */
+}
 
 .calendar-icon {
-    font-size: 26px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgb(0, 74, 173);
+    text-decoration: none; /* remove underline */
+    color: inherit;        /* keep the original colors */
+    font-size: 48px;
 }
+
+
+.calendar-link:visited,
+.calendar-link:active,
+.calendar-link:hover {
+    color: rgb(0, 74, 173);
+}
+
+.calendar-icon {
+    font-size: 48px;
+    color: rgb(0, 74, 173);
+}
+
 
 .date {
     font-size: 14px;
     color: rgb(0, 74, 173);
     font-weight: bold;
+    margin-top: 12px; /* small space under icon */
+
+    background: rgba(0, 74, 173, 0.1); /* light blue background */
+    padding: 4px 10px;
+    border-radius: 20px; /* makes it a bubble */
 }
 
 /* Center */
@@ -116,7 +141,7 @@
 
 /* Right (profile) */
 .header-right {
-    position: relative;   /* VERY IMPORTANT */
+    position: relative;   /* this is important */
     display: inline-flex;
     flex-direction: column; /*Name is now under the profile icon */
     align-items: center;
@@ -133,18 +158,32 @@
 }
 
 .profile-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 5px;
+    font-size: 40px;
+    border-radius: 50%; /* make it perfectly round */
+    background: rgb(0, 74, 173);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    width: 48px;
+    height: 48px;
+
+    border: 3px solid rgb(0, 74, 173); /* blue border*/
 }
+
 
 .profile-name {
     font-size: 14px;
     color: rgb(0, 74, 173);
     font-weight: bold;
     text-align: center;
+
+    background: rgba(0, 74, 173, 0.1); /* light blue background */
+    padding: 4px 10px;
+    border-radius: 20px; /* makes it a bubble */
 }
 
 /* hide by default */
@@ -189,6 +228,34 @@
 .dropdown a.active {
     color: #8B0000;
     background: transparent;
+}
+
+.logout-link {
+    display: flex;
+    flex-direction: column;   /* puts text below the icon */
+    align-items: center;
+    text-decoration: none;
+}
+
+.logout-icon {
+    font-size: 28px;
+    color: rgb(0, 74, 173); /* blue icon */
+    margin-bottom: 4px;
+}
+
+.logout-text {
+    font-size: 12px;
+    color: rgb(0, 74, 173);
+    font-weight: bold;
+}
+
+.logout-link:hover {
+    transform: scale(1.05);
+}
+
+.logout-link:hover .logout-icon,
+.logout-link:hover .logout-text {
+    color: rgba(203, 37, 26, 1); /* your red hover */
 }
 
 /* Responsive */

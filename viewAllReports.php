@@ -89,14 +89,14 @@ if (!$con) {
             <a href="serviceLetterReport.php" class="report-btn">Open Report</a>
         </div>
 
-        <div class="report-card">
+        <!--<div class="report-card">
             <h2>Whiskey Valor Old Summary</h2>
             <p>Generate monthly or annual reports on volunteer activity. Reports are available in Excel or CSV format.</p>
             <a href="generateReport.php" class="report-btn">Open Report</a>
-        </div>
+        </div>-->
 
     </div>
 </div>
-
+<?php include 'footer.php'; ?>
 </body>
 </html>
