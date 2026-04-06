@@ -18,12 +18,14 @@
     }
         
     include_once('database/dbPersons.php');
+    include_once('database/dbpersonhours.php');
     include_once('domain/Person.php');
     // Get date?
     if (isset($_SESSION['_id'])) {
         $person = retrieve_person($_SESSION['_id']);
     }
     $notRoot = $person->get_id() != 'vmsroot';
+
 ?>
 
 <!DOCTYPE html>
@@ -110,75 +112,50 @@
         <p>6</p>
       </div>
     </section>
-
+  
     <section class="dashboard-layout">
-
       <div class="section-box soft-blue">
         <h2>Top 10 Volunteers</h2>
         <p class="muted">Ranked by total volunteer hours</p>
 
         <div class="leaderboard">
-          <div class="leader-row gold">
-            <span class="rank"><i class="fas fa-trophy trophy-icon"></i> 1</span>
-            <span class="name">Emily Carter</span>
-            <span class="hours">42 hrs</span>
-          </div>
+          <?php
+          $reportData = [];
+          $reportData = calcTop10();
+          $total = count($reportData);
 
-          <div class="leader-row silver">
-            <span class="rank"><i class="fas fa-trophy trophy-icon"></i> 2</span>
-            <span class="name">James Wilson</span>
-            <span class="hours">38 hrs</span>
-          </div>
+          for ($i = 0; $i < $total; $i++):
+            $rankClass = "";
+            if ($i == 0) $rankClass = "gold";
+            elseif ($i == 1) $rankClass = "silver";
+            elseif ($i == 2) $rankClass = "bronze";
+          ?>
+            <div class="leader-row <?php echo $rankClass; ?>">
 
-          <div class="leader-row bronze">
-            <span class="rank"><i class="fas fa-trophy trophy-icon"></i> 3</span>
-            <span class="name">Sophia Lee</span>
-            <span class="hours">34 hrs</span>
-          </div>
+            <span class="rank">
+              <?php if ($i < 3): ?>
+                <i class="fas fa-trophy trophy-icon"></i>
+              <?php endif; ?>
+              <?php echo $i + 1; ?>
+            </span>
 
-          <div class="leader-row">
-            <span class="rank">4</span>
-            <span class="name">Michael Brown</span>
-            <span class="hours">29 hrs</span>
-          </div>
+            <span class="name">
+              <?php
+              echo htmlspecialchars(
+                ($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')
+              );
+              ?>
+            </span>
 
-          <div class="leader-row">
-            <span class="rank">5</span>
-            <span class="name">Olivia Harris</span>
-            <span class="hours">27 hrs</span>
+            <span class="hours">
+              <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
+            </span>
           </div>
-
-          <div class="leader-row">
-            <span class="rank">6</span>
-            <span class="name">John Hill</span>
-            <span class="hours">25 hrs</span>
-          </div>
-
-          <div class="leader-row">
-            <span class="rank">7</span>
-            <span class="name">Ava Walker</span>
-            <span class="hours">24 hrs</span>
-          </div>
-
-          <div class="leader-row">
-            <span class="rank">8</span>
-            <span class="name">Liam Scott</span>
-            <span class="hours">22 hrs</span>
-          </div>
-
-          <div class="leader-row">
-            <span class="rank">9</span>
-            <span class="name">Chloe Young</span>
-            <span class="hours">20 hrs</span>
-          </div>
-
-          <div class="leader-row">
-            <span class="rank">10</span>
-            <span class="name">Ethan King</span>
-            <span class="hours">18 hrs</span>
-          </div>
+          <?php endfor; ?>
         </div>
       </div>
+
+
 
       <div class="right-column">
         <div class="section-box soft-maroon">
