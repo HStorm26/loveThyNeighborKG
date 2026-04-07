@@ -220,7 +220,7 @@ include 'infoBox.php';
         <div class="space-y-6">
             <div>
                 <label for="role-select" style="display:block; margin-bottom:8px; font-weight:600;">
-                    Pick a If You Have Not Already Role
+                    Pick a role if you don't already have one!
                 </label>
                 <select id="role-select" class="form-input w-full">
                     <?php if (!empty($roles)): ?>
