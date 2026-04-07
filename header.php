@@ -141,7 +141,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['viewdata.php'] = 2;
         $permission_array['deleteusersearch.php'] = 2;
         $permission_array['viewoveralluserskg.php'] = 2;
-        $permission_array['viewoveralleventskg.php'] = 2;
+        $permission_array['viewoveralleventskg.php'] = 0;
         $permission_array['adjusteventhours.php'] = 2;
         $permission_array['viewallreports.php'] = 2;
         $permission_array['kioskviewOverallEventsKG.php'] = 4;
@@ -289,6 +289,11 @@ if (date("H:i:s") > "18:19:59") {
                     </div>
 
                     <div class="header-nav">
+                        <a href="calendar.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'calendar.php' ? 'active' : '' ?>">
+                        Calendar
+                        </a>
+
                         <a href="index.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
                         Dashboard

@@ -94,7 +94,7 @@ body {
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 22px rgba(0,0,0,0.09);
-    border-color: #dbe7f6;
+    /* border-color: #dbe7f6; */
 }
 
 .card i {
