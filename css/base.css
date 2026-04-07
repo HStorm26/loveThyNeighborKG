@@ -220,16 +220,16 @@ nav {
 }
 
 a {
-    color: white;
-}
-
-a:visited {
     color: var(--main-color);
 }
 
-a:hover {
+/*a:visited {
+    color: var(--main-color);
+}*/
+
+/*a:hover {
     color: hsl(from var(--accent-color) h s calc(l+.2));
-}
+}*/
 
 #vms-logo {
     color: var(--main-color);
