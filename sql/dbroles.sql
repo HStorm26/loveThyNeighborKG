@@ -43,4 +43,4 @@ INSERT INTO `dbroles` (`role_id`, `role`, `role_description`) VALUES
 (5, 'Setup', 'Arrive 30 minutes early'), 
 (6, 'Cleanup', 'Stay 30 minutes afterwards');
 
-----------------------------------------------------------
+-- --------------------------------------------------------
