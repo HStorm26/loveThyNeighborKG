@@ -1,9 +1,11 @@
 /* ── Page shell ── */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
 .view-profile-wrap {
   max-width: 860px;
   margin: 2rem auto;
   padding: 0 1rem 3rem;
-  font-family: inherit;
   color: var(--page-font-color, #111111);
 }
 
