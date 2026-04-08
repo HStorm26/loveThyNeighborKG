@@ -299,8 +299,8 @@ if (date("H:i:s") > "18:19:59") {
                         Dashboard
                         </a>
 
-                        <a href="viewOverallEventsKG.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
+                        <a href="EventSignUp.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'EventSignUp.php' ? 'active' : '' ?>">
                         Event
                         </a>
 

@@ -383,9 +383,8 @@ h1 {
     font-size: 1.5rem;
     font-weight: 500;
     margin-bottom: 2rem;
-
-    background-color: var(#C9AB81);
-    color: var(--page-background-color);
+    background-color: var(--page-main-color);
+    color: var(--main-color);
     width: 100%;
     text-align: center;
     padding: 1rem;

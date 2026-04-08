@@ -19,25 +19,62 @@
 
     // Create database connection HERE (so everything in this file can use it)
     include_once('database/dbinfo.php'); 
-    $con=connect(); 
+    $con = connect(); 
 
     if (!$con) {
-      die("Database connection failed: " . mysqli_connect_error());
+        die("Database connection failed: " . mysqli_connect_error());
     }
         
     include_once('database/dbPersons.php');
     include_once('database/dbpersonhours.php');
     include_once('domain/Person.php');
-    // Get date?
-    if (isset($_SESSION['_id'])) {
+
+    $currentDate = date('F j, Y');
+    $person = false;
+    $personId = '';
+    $registeredEvents = 0;
+
+    if (isset($_SESSION['_id']) && $_SESSION['_id'] !== '') {
         $person = retrieve_person($_SESSION['_id']);
     }
-    $notRoot = $person->get_id() != 'vmsroot';
+
+    if (!$person || !is_object($person)) {
+        header('Location: login.php');
+        die();
+    }
+
+    $personId = $person->get_id();
+    $notRoot = $personId != 'vmsroot';
 
     // For the counts for total volunteers and total admins and total people
     $volunteers = getVolunteerCount($con);
     $admins = getAdminCount($con);
     $total = getTotalUsers($con);
+
+    // Registered events for volunteer dashboard
+    $stmt = $con->prepare("
+        SELECT COUNT(DISTINCT eventID) AS registered_events
+        FROM dbpersonhours
+        WHERE personID = ?
+    ");
+
+    if ($stmt) {
+        $stmt->bind_param("s", $personId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $row = $result->fetch_assoc()) {
+            $registeredEvents = (int)$row['registered_events'];
+        }
+
+        $stmt->close();
+    }
+
+    // Display volunteer hours in quarter-hour increments
+    $hoursValue = calcPersonHours($personId) / 60;
+    $quarterHours = round($hoursValue * 4) / 4;
+    $displayHours = number_format($quarterHours, 2, '.', '');
+    $displayHours = rtrim(rtrim($displayHours, '0'), '.');
 
 ?>
 
@@ -50,17 +87,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="./css/dashboard.css" rel="stylesheet">
     <link rel="stylesheet" href="header.css">
-        <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <title>Dashboard | Love Thy Neighbor Community Food Pantry Volunteer Management</title>
  
 <!--BEGIN TEST, UPLOAD AND NOTIFICATIONS CHANGED-->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector(".extra-info").style.maxHeight = "0px"; // Ensure proper initialization
+            const extraInfo = document.querySelector(".extra-info");
+            if (extraInfo) {
+                extraInfo.style.maxHeight = "0px";
+            }
         });
+
         function toggleInfo(event) {
             event.stopPropagation(); // Prevents triggering the main button click
             let info = event.target.nextElementSibling;
+            if (!info) return;
             let isVisible = info.style.maxHeight !== "0px";
             info.style.maxHeight = isVisible ? "0px" : "100px";
             event.target.innerText = isVisible ? "↓" : "↑";
@@ -82,7 +124,7 @@
       </div>
 
       <div class="date-box">
-        <i class="fa-solid fa-calendar-days"></i> <?php echo $currentDate; ?>
+        <i class="fa-solid fa-calendar-days"></i> <?php echo htmlspecialchars($currentDate); ?>
       </div>
     </section>
 
@@ -168,8 +210,6 @@
         </div>
       </div>
 
-
-
       <div class="right-column">
         <div class="section-box soft-maroon">
           <h2>Alerts</h2>
@@ -233,7 +273,7 @@
         </div>
 
         <div class="date-box">
-          <i class="fa-solid fa-calendar-days"></i> <?php echo $currentDate; ?>
+          <i class="fa-solid fa-calendar-days"></i> <?php echo htmlspecialchars($currentDate); ?>
       </div>
     </section>
 
@@ -241,13 +281,13 @@
         <div class="card soft-blue">
             <i class="fa-solid fa-clock icon-blue"></i>
             <h3>Total Volunteer Hours</h3>
-            <p>42</p>
+            <p><?php echo htmlspecialchars($displayHours); ?></p>
         </div>
 
         <div class="card soft-green">
             <i class="fa-solid fa-calendar-check icon-green"></i>
             <h3>Registered Events</h3>
-            <p>3</p>
+            <p><?php echo htmlspecialchars((string)$registeredEvents); ?></p>
         </div>
     </section>
 
@@ -328,4 +368,4 @@
 
 <?php endif; ?>
 
-</html> 
+</html>
