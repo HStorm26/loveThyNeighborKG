@@ -1,6 +1,6 @@
-<!-- Brooke did this page -->
-<!-- It is the event hub for the admins -->
 <?php
+/* Brooke did this page */
+/* It is the event hub for the admins */
 session_start();
 // Added
 ini_set("display_errors", 1);
