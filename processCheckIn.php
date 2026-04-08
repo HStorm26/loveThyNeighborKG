@@ -357,7 +357,7 @@ if (hasOpenCheckIn($eventid, $person_id)) {
                     box-sizing: border-box;
                 }
                 button {
-                    background-color: #C9AB81;
+                    background-color: rgb(0,73,174);
                     color: white;
                     border: none;
                     padding: 10px 15px;
@@ -379,6 +379,7 @@ if (hasOpenCheckIn($eventid, $person_id)) {
                     <button type="submit">Check Out</button>
                 </form>
             </div>
+        
         </body>
         </html>
         <?php
