@@ -23,11 +23,11 @@ function connect() {
     $database = "neighbordb";
     $user = "neighbordb";
     $pass = "neighbordb";
-    // if ($_SERVER['SERVER_NAME'] == 'jenniferp160.sg-host.com') {
-    //     $user = 'generated';
-    //     $database = 'generated';
-    //     $pass = 'generated';
-    // } 
+    if ($_SERVER['SERVER_NAME'] == 'jenniferp235.sg-host.com') {
+         $user = 'uoqzmy7vi9mgg';
+         $database = 'db4884urlbnrr1';
+         $pass = 'oxgxreakpqlq';
+    } 
  
     
     $con = mysqli_connect($host,$user,$pass,$database);

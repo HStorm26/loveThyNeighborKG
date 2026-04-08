@@ -16,33 +16,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background: linear-gradient(180deg, rgb(0, 74, 173), rgb(0, 52, 122));
-    color: white;
-    padding: 24px 18px;
-}
-
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    transition: 0.2s;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-    background: rgba(255,255,255,0.2);
-}
 
 /* Main */
 .main {
@@ -77,19 +50,121 @@ body {
     transform: translateY(-2px);
 }
 
+.selection-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #eef5ff;
+    border: 1px solid #d5e5ff;
+
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+}
+
+.selection-info {
+    font-weight: bold;
+    color: rgb(0, 74, 173);
+}
+
+/* export button */
+.export-btn {
+    background: #1f9d55;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.export-btn:hover {
+    background: #187a42;
+}
+
+/* clear button */
+.clear-btn {
+    background: #e9eef5;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.email-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: linear-gradient(135deg, rgb(0, 74, 173), rgb(0, 60, 140));
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    box-shadow: 0 6px 14px rgba(0, 74, 173, 0.2);
+}
+
+/* hover */
+.email-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 74, 173, 0.3);
+}
+
+/* click */
+.email-btn:active {
+    transform: scale(0.97);
+}
+
 /* Filter Card */
 .filter-card {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
     background: white;
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    justify-content: flex-start;
 }
 
 .filter-form {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.event-filter-form {
+    width: 400px;
+    flex-shrink: 0;
+}
+
+.event-filter-inner {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.no-events-msg {
+    font-style: italic;
+    color: #888;
+    padding: 10px;
+    display: inline-block;
+}
+
+.event-filter-form select,
+.no-events-msg {
+    width: 160px;
 }
 
 .filter-form input,
@@ -136,13 +211,13 @@ tbody tr:hover {
     background: #f9fbff;
 }
 
-/* Status badges */
+/* Status badges (Active / Inactive) */
 .badge {
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: bold;
-}
+} 
 
 .active {
     background: #dcfce7;
@@ -200,13 +275,88 @@ tbody tr:hover {
     font-weight: bold;
 }
 
+/* REPORTS SECTION */
+
+.page {
+    display: flex;
+    min-height: auto;
+}
+
+.page-wrapper {
+    max-width: 1100px;
+    margin: 20px auto 0 auto;
+    padding: 20px;
+}
+
+
+.reports-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.reports-header h1 {
+    color: rgb(0, 74, 173);
+    margin-bottom: 10px;
+    font-size: 32px;
+}
+
+.reports-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.report-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-top: 5px solid rgb(0, 74, 173);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.report-card h2 {
+    font-size: 20px;
+    color: rgb(0, 74, 173);
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.report-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.report-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: rgb(0, 74, 173);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.report-btn:hover {
+    background: rgb(0, 58, 135);
+}
+
+
+
 /* Responsive */
 @media (max-width: 900px) {
     .page {
         flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
     }
 }

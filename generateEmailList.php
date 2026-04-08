@@ -53,7 +53,8 @@
 <html>
     <head>
         <title>Volunteer Email List | Love Thy Neighbor Community Food Pantry</title>
-  	<link href="css/normal_tw.css" rel="stylesheet">
+  	    <link href="css/normal_tw.css" rel="stylesheet">
+
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php

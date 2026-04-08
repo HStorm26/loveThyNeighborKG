@@ -39,7 +39,7 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: var(--main-color);
             padding: 7px 30px;
             border-radius: 50px;
             box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
@@ -54,7 +54,7 @@ require_once('header.php');
 
 
         body, main{
-            background-color: #1F1F21;
+            background-color: white !important;
         }
 
         .main-content-box table,
@@ -63,9 +63,9 @@ require_once('header.php');
         .main-content-box table tr,
         .main-content-box table th,
         .main-content-box table td {
-        background-color: #1F1F21 !important;
-        color: #C9AB81 !important;
-        border: 1px solid #C9AB81 !important;
+        background-color: white !important;
+        color: var(--main-color) !important;
+        border: 1px solid black !important;
 }
 
 

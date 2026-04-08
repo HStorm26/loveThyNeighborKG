@@ -192,7 +192,15 @@ class Person {
     }
 
 	function get_access_level() {
-		$access = ($this->id == 'vmsroot') ? 3 : 1;
+		if($this->id == 'vmsroot') {
+			$access = 3;	
 		return $access;
+		} elseif($this->id == 'vmskiosk') {
+			$access = 4;
+			return $access;
+		} else {
+			$access = 1;
+			return $access;
+		}
 	}
 }

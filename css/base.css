@@ -63,7 +63,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --info-toast-background-color: #e6e6e6;
     --info-toast-font-color: #111111;
 
-    --error-toast-background-color: #c97b67;
+    --error-toast-background-color: rgb(203, 37, 26);
     --error-toast-font-color: #ffffff;
 
     /* Borders / shadows */
@@ -97,8 +97,8 @@ table, td, tr, th, form, fieldset, em, button, a {
     --text-field-border: 2px solid #cccccc;
 
     /* Errors / destructive */
-    --cancel-button-background-color: rgb(127,127,127); /* Love Thy Neighbor */
-    --error-color: #c97b67;
+    --cancel-button-background-color: var(--main-color); /* Love Thy Neighbor */
+    --error-color: rgb(203, 37, 26);
 
     /* Global rules */
     font-size: 18px;
@@ -223,13 +223,13 @@ a {
     color: var(--main-color);
 }
 
-a:visited {
-    color: rgb(226, 226, 226);
-}
+/*a:visited {
+    color: var(--main-color);
+}*/
 
-a:hover {
+/*a:hover {
     color: hsl(from var(--accent-color) h s calc(l+.2));
-}
+}*/
 
 #vms-logo {
     color: var(--main-color);
@@ -834,8 +834,9 @@ form.signup-form {
 }
 
 /* thomas added this */
+/*we do not like thomas */
 form.signup-form .section-box {
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--main-color);
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 20px;
@@ -929,12 +930,12 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: var(--error-color);
+    color: white;
 }
 
-form.signup-form a:hover {
+/* form.signup-form a:hover {
     color: var(--error-toast-background-color);
-}
+} */
 /* end normal_tw conversion ~Blue*/
 
 .sidebar-wrapper {
@@ -973,7 +974,7 @@ form.signup-form a:hover {
 }
 
 .sidebar-item a {
-    color: var(--accent-color);
+    color: var(--main-color);
 }
 
 .sidebar-item:hover {
@@ -1255,7 +1256,7 @@ img.profile-pic {
 }
 
 a.event-link {
-    color: var(--accent-color);
+    color: var(--main-color);
     font-weight: bold;
 }
 
