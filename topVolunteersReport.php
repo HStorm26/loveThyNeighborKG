@@ -39,7 +39,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
                 <!-- Info Section -->
         <section class="section-box">
             <p style="margin-top: 1rem;text-align:center;">
-                Use this tool to generate a report showing volunteers who participated during a selected date range, along with the number of events each volunteer participated in.
+                Use this tool to generate a list of the top ten volunteers by total hours. Reports are available in Excel or CSV format.
             </p>
         </section>
 
@@ -50,20 +50,8 @@ $fiscalYearEnd = $fiscalYearStart + 1;
                 <p style="font-size: 18px; color: #c2c2c2ff; margin-top: 0.5rem; margin-bottom: 0.5rem;">Fiscal Year: <?= $fiscalYearStart ?> - <?= $fiscalYearEnd ?></p>
             </div>-->
 
-            <form method="POST" action="processTotalHours.php"><!--make processUniqueVolunteerReport.php?-->
-                <!-- time -->
-                <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-                    
-                    <div class="Start date">
-                        <label for="name">* Start Date </label>
-                        <input type="date" id="sdate" name="sdate" <?php if ($sdate) echo 'value="' . $sdate . '"'; ?>  required>
-                        </div>
-                        <div class="End date">
-                        <label for="name">* End Date </label>
-                        <input type="date" id="edate" name="edate" <?php if ($edate) echo 'value="' . $edate . '"'; ?> required>
-                        </div>
-                </div>
-                 <!-- Format -->
+            <form method="POST" action="processTop10Report.php">
+                <!-- Format -->
                 <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
                     <label for="format" style="font-weight: 600;">File Format</label>
                     <select name="format" id="format">
@@ -90,4 +78,3 @@ $fiscalYearEnd = $fiscalYearStart + 1;
    
 </body>
 </html>
-
