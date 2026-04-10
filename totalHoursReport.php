@@ -49,7 +49,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Total Hours By Role Report | Love Thy Neighbor Community Food Pantry</title>
+    <title>Unique Volunteer Report | Love Thy Neighbor Community Food Pantry</title>
     <!--<script src="js/data-filters.js" defer></script>-->
     <link href="css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="header.css">
@@ -66,7 +66,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
                 <!-- Info Section -->
         <section class="section-box">
             <p style="margin-top: 1rem;text-align:center;">
-                Use this tool to see the hours spent in each role for a given time range.
+                Use this tool to generate a report showing volunteers who participated during a selected date range, along with the number of events each volunteer participated in.
             </p>
         </section>
 
