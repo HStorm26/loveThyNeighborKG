@@ -1,5 +1,4 @@
 <?php
-    //this file is empty for now
     session_start();
     // Admin
     $admin_id = $_SESSION['_id'] ?? null;

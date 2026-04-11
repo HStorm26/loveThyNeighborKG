@@ -57,12 +57,9 @@ $edate = $_POST['edate'] ?? '';
                 </div>
 
                 <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-                    <label for="format" style="font-weight: 600;">File Format</label>
-                    <select name="format" id="format">
-                        <option value="pdf">PDF (.pdf)</option>
-                        <option value="excel">Excel (.xls)</option>
-                        <option value="csv">CSV (.csv)</option>
-                    </select>
+                    <label for="format" style="font-weight: 600;">File Format-</span>
+                    <span style="color: #000; ">PDF (.pdf)</span>
+                    <input type="hidden" name="format" id="format" value="pdf">
                 </div>
 
                 <div style="text-align: center; margin-top: 2rem;">
