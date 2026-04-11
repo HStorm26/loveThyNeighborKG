@@ -151,6 +151,18 @@
         <span class="field-label">T-Shirt Size</span>
         <span class="field-value"><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $user->get_t_shirt_size()))); ?></span>
       </div>
+      <div class="field-row">
+        <span class="field-label">Account Type</span>
+        <span class="field-value"><?php
+          $type = $user->get_access_level();
+          if($type >= 2){
+            echo "Administrator";
+          }
+          else{
+            echo "Volunteer";
+          }
+        ?></span>
+      </div>
     </div>
 
     <!-- Contact Information panel -->
