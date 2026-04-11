@@ -1323,18 +1323,47 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return $row['total'];
     }
 
-    function getAdminCount($con) {
+    function getAdminCount() {
+        $con = connect();
         $sql = "SELECT COUNT(*) AS total FROM dbpersons WHERE type = 'admin'";
         $result = mysqli_query($con, $sql);
         $row = mysqli_fetch_assoc($result);
+        mysqli_close($con);
         return $row['total'];
     }
 
-    function getTotalUsers($con) {
+    function getTotalUsers() {
+        $con = connect();
         $sql = "SELECT COUNT(*) AS total FROM dbpersons";
         $result = mysqli_query($con, $sql);
         $row = mysqli_fetch_assoc($result);
+        mysqli_close($con);
         return $row['total'];
+    }
+
+    //get whether or not the user is an admin or a volunteer.
+    function getUserType($id){
+        $con = connect();
+        $query = "SELECT type FROM dbpersons WHERE id='" . $id . "'";
+        $result = mysqli_query($con, $query);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_close($con);
+        if(isset($row['type'])){
+            return $row['type'];    
+        }
+        return 0;
+    }
+
+    //set a user to be volunteer or admin.
+    function setUserType($id, $type){
+        if($type !== "Volunteer" && $type !== "Admin"){
+            return 0;
+        }
+        $con = connect();
+        $query = "UPDATE dbpersons SET type='" . $type . "' WHERE id='" . $id . "'";
+        mysqli_query($con, $query);
+        mysqli_close($con);
+        return 1;
     }
      /**
      * Retrieves a list of verified IDs for a specific user.
