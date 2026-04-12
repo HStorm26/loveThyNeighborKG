@@ -360,3 +360,148 @@ tbody tr:hover {
         flex-direction: column;
     }
 }
+
+/* EMAIL SECTION */
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-top: 5px solid rgb(0, 74, 173);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.info-card h2 {
+    font-size: 20px;
+    color: rgb(0, 74, 173);
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.info-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* .email-card {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 35px;
+} */
+
+.info-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.info-header h1 {
+    color: rgb(0, 74, 173);
+    margin-bottom: 10px;
+    font-size: 32px;
+}
+
+.info-form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.info-form  {
+    font-weight: 600;
+    color: rgb(0, 74, 173);
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.info-form input,
+.info-form textarea,
+.info-form select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d7dce5;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #F5F5F7;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+}
+
+.info-form input:focus,
+.info-form textarea:focus,
+.info-form select:focus {
+    outline: none;
+    border-color: rgb(0, 74, 173);
+    box-shadow: 0 0 0 3px rgba(0, 74, 173, 0.12);
+}
+
+.info-form textarea {
+    resize: vertical;
+    min-height: 180px;
+    font-family: inherit;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.info-actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+}
+
+.submit-btn {
+    border: none;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+
+    position: relative;
+
+    width: 1600px;
+    max-width: 100%;
+}
+
+.submit-btn {
+    background: rgb(0, 74, 173);
+    color: white;
+}
+
+.submit-btn:hover {
+    background: rgb(0, 58, 135);
+}
+
+
+@media (max-width: 768px) {
+    .info-card {
+        padding: 22px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .info-actions {
+        flex-direction: column;
+    }
+
+    .submit-btn {
+        width: 100%;
+    }
+}
