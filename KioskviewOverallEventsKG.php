@@ -109,7 +109,6 @@ foreach ($allEvents as $theEvent) {
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Location</th>
-                        <th>Capacity</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -133,7 +132,6 @@ foreach ($allEvents as $theEvent) {
                             <td><?php echo htmlspecialchars($theEvent->getStartTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getEndTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getLocation()); ?></td>
-                            <td><?php echo htmlspecialchars($capacityDisplay); ?></td>
                             <td class="actions">
                                 <a href="KioskViewCheckinOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
                             </td>
