@@ -198,6 +198,10 @@ class Person {
 		} elseif($this->id == 'vmskiosk') {
 			$access = 4;
 			return $access;
+		} elseif(preg_match("/admin/i", $this->type)){
+			//the regex should catch anything resembling "admin" or "administrator" just in case people aren't consistent
+			$access = 2;
+			return $access;
 		} else {
 			$access = 1;
 			return $access;
