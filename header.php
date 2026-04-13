@@ -199,6 +199,10 @@ if (date("H:i:s") > "18:19:59") {
                     </div>
 
                     <div class="header-nav">
+                        <a href="calendar.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'calendar.php' ? 'active' : '' ?>">
+                        Calendar
+                        </a>
                         <a href="index.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
                         Dashboard
@@ -213,6 +217,12 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
+                        
+                        <a href="viewMyUpcomingEvents.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewMyUpcomingEvents.php' ? 'active' : '' ?>">
+                        Signed-Up
+                        </a>
+
                         <a href="createEmail.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'createEmail.php' ? 'active' : '' ?>">
                         Email
