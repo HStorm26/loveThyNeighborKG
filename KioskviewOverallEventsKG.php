@@ -1,11 +1,11 @@
-<!-- Brooke did this page -->
-<!-- Josh modified this page -->
-<!-- It is the event hub for the admins -->
 <?php
 session_start();
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
-
+/*
+<!-- Brooke did this page -->
+<!-- Josh modified this page -->
+<!-- It is the event hub for the admins*/
 $loggedIn = false;
 $accessLevel = 0;
 $username = null;
@@ -63,7 +63,7 @@ function countCurrentCheckedInForEvent($con, $eventID) {
 
 // Get only today's events
 $today = date('Y-n-j');
-$allEvents = get_all_events();
+$allEvents = Kiosk_get_all_events_sorted_by_date_not_archived();
 $theEvents = array();
 
 foreach ($allEvents as $theEvent) {

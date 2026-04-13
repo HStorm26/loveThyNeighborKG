@@ -422,12 +422,17 @@ function get_all_events() {
     mysqli_close($con);
     return $theEvents;
  }
- 
- /*function get_all_events_sorted_by_date_not_archived() {
+ function auto_Archive(){
     $con=connect();
-    $query = "SELECT * FROM dbevents" .
-            " WHERE completed = 'N'" . // ?
-            " ORDER BY startDate ASC";
+    $query = "UPDATE dbevents SET archived = 1 WHERE date < CURDATE() AND archived = 0";
+    $result = mysqli_query($con,$query);
+    mysqli_close($con);
+    return $result;
+ }
+ 
+ function Kiosk_get_all_events_sorted_by_date_not_archived() {
+    $con=connect();
+    $query = "SELECT * FROM dbevents WHERE archived = 0 ORDER BY date ASC, startTime ASC";
     $result = mysqli_query($con,$query);
     $theEvents = array();
     while ($result_row = mysqli_fetch_assoc($result)) {
@@ -436,7 +441,7 @@ function get_all_events() {
     }
     mysqli_close($con);
     return $theEvents;
- }*/
+ }
 
 // -Brooke changed it to fit with the updated dbevents database better 
 function get_all_events_sorted_by_date_not_archived() {
