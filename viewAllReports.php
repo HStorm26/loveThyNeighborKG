@@ -22,7 +22,8 @@ if ($accessLevel < 1) {
 //End of added
 
 // Create database connection HERE (so everything in this file can use it)
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
+include_once('database/dbinfo.php'); 
+$con=connect(); 
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
@@ -38,12 +39,11 @@ if (!$con) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
     <title>Admin Reports | Love Thy Neighbor Community Food Pantry</title>
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="layoutInfo.css">
 </head>
 <body>
 
-<?php include('newheader.php'); ?>
+<?php include('header.php'); ?>
 
 <div class="page-wrapper">
     <div class="reports-header">
@@ -89,14 +89,14 @@ if (!$con) {
             <a href="serviceLetterReport.php" class="report-btn">Open Report</a>
         </div>
 
-        <div class="report-card">
+        <!--<div class="report-card">
             <h2>Whiskey Valor Old Summary</h2>
             <p>Generate monthly or annual reports on volunteer activity. Reports are available in Excel or CSV format.</p>
             <a href="generateReport.php" class="report-btn">Open Report</a>
-        </div>
+        </div>-->
 
     </div>
 </div>
-
+<?php include 'footer.php'; ?>
 </body>
 </html>

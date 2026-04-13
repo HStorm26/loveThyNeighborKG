@@ -50,20 +50,121 @@ body {
     transform: translateY(-2px);
 }
 
+.selection-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #eef5ff;
+    border: 1px solid #d5e5ff;
+
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+}
+
+.selection-info {
+    font-weight: bold;
+    color: rgb(0, 74, 173);
+}
+
+/* export button */
+.export-btn {
+    background: #1f9d55;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.export-btn:hover {
+    background: #187a42;
+}
+
+/* clear button */
+.clear-btn {
+    background: #e9eef5;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.email-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: linear-gradient(135deg, rgb(0, 74, 173), rgb(0, 60, 140));
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    box-shadow: 0 6px 14px rgba(0, 74, 173, 0.2);
+}
+
+/* hover */
+.email-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 74, 173, 0.3);
+}
+
+/* click */
+.email-btn:active {
+    transform: scale(0.97);
+}
 
 /* Filter Card */
 .filter-card {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
     background: white;
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    justify-content: flex-start;
 }
 
 .filter-form {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.event-filter-form {
+    width: 400px;
+    flex-shrink: 0;
+}
+
+.event-filter-inner {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.no-events-msg {
+    font-style: italic;
+    color: #888;
+    padding: 10px;
+    display: inline-block;
+}
+
+.event-filter-form select,
+.no-events-msg {
+    width: 160px;
 }
 
 .filter-form input,
@@ -178,14 +279,15 @@ tbody tr:hover {
 
 .page {
     display: flex;
-    min-height: 100vh;
+    min-height: auto;
 }
 
 .page-wrapper {
     max-width: 1100px;
-    margin: 50px auto;
+    margin: 20px auto 0 auto;
     padding: 20px;
 }
+
 
 .reports-header {
     text-align: center;

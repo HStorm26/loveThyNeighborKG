@@ -86,6 +86,7 @@
         $isRecurring = isset($_POST['recurring']) ? 1 : 0;
         $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
         $monthlyWeek = $_POST['monthly_week'] ?? '';
+        $monthlyDay = $_POST['monthly_day'] ?? '';
         $weeklyDay = $_POST['weekly_day'] ?? '';
         $customDays = ($isRecurring && $recurrenceType === 'custom') ? (int)($_POST['custom_days'] ?? 0) : null;
         $recurrenceEndDate = $_POST['recurrence_end_date'] ?? '';
@@ -159,7 +160,6 @@
         }
         $args['capacity'] = $totalCapacity;
         $args['series_id'] = random_int(100, 999999); 
-
         // Only create event if there are no errors
         if (empty($errors)) {
             $id = create_event($args);

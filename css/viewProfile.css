@@ -1,23 +1,14 @@
 /* ── Page shell ── */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
 .view-profile-wrap {
   max-width: 860px;
   margin: 2rem auto;
   padding: 0 1rem 3rem;
-  font-family: inherit;
   color: var(--page-font-color, #111111);
 }
 
-:root {
-  /* CSS variables that will be used across the page */
-  --main-color: rgb(0, 74, 173); 
-  --page-background-color: white;
-  --page-font-color: var(--main-color);
-  --inactive-font-color: #d0d0d0;
-  --inactive-background-color: #f0f0f0;
-  --standout-background: #fafafa;
-  --shadow-and-border-color: #e8e8e8;
-  --accent-color: var(--main-color);
-}
 /* ── Section cards (mirrors .section-box) ── */
 .view-section-box {
   border: 1px solid var(--accent-color, rgb(0, 74, 173));
@@ -88,7 +79,7 @@
 .btn-primary {
   display: inline-block;
   padding: var(--button-padding, 0.5rem 1.5rem);
-  background-color: var(--main-color);
+  background-color: var(--main-color, rgb(62, 129, 50));
   color: var(--button-font-color, #ffffff);
   border: none;
   border-radius: var(--button-border-radius, 0.25rem);
@@ -164,7 +155,7 @@
   text-align: center;
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--main-color);
+  color: #6b7280;
   cursor: pointer;
   border-right: 1px solid #e5e7eb;
   transition: background 0.12s, color 0.12s;
@@ -180,7 +171,7 @@
 #tab-personal:checked ~ .tab-card .tab-label[for="tab-personal"],
 #tab-contact:checked  ~ .tab-card .tab-label[for="tab-contact"],
 #tab-notifs:checked   ~ .tab-card .tab-label[for="tab-notifs"] {
-  background: var(--main-color);
+  background: var(--accent-color, rgb(0, 74, 173));
   color: #ffffff;
 }
 
@@ -295,7 +286,7 @@
   background: #f5f5f7;
 }
 .verified-badge {
-  color: var(--main-color);
+  color: var(--main-color, rgb(62, 129, 50));
   font-weight: 600;
 }
 .modal-footer {

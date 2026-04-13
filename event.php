@@ -331,8 +331,8 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
 
-            <!--@@@ Check-In and Check-Out Buttons by Thomas -->
-            <?php if (isset($user) && can_check_in($user->get_id(), $event_info))  : ?>
+            <!-- @@@ Check-In and Check-Out Buttons by Thomas
+            <?php /*if (isset($user) && can_check_in($user->get_id(), $event_info))  : ?>
                 <form method="POST" action="">
                     <input type="hidden" name="checking_in" value="1">
                     <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
@@ -341,9 +341,9 @@
                     <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
                     <button type="submit" class="button success">Check-In</button>
                 </form>
-            <?php endif ?>
+            <?php endif */?>
 
-            <?php if (isset($user) && can_check_out($user->get_id(), $event_info))  : ?>
+            <?php /*if (isset($user) && can_check_out($user->get_id(), $event_info))  : ?>
                 <form method="POST" action="">
                     <input type="hidden" name="checking_out" value="1">
                     <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
@@ -352,7 +352,7 @@
                     <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
                     <button type="submit" class="button danger">Check-Out</button>
                 </form>
-            <?php endif ?>
+            <?php endif */?> -->
 
             <!-- end of Thomas's work-->
 

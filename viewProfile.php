@@ -73,13 +73,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Love Thy Neighbor | Profile Page</title>
+  <link rel="stylesheet" href="css/viewProfile.css">
+</head>
+<body>
   <?php
     require_once('header.php');
     require_once('include/output.php');
   ?>
-  <link rel="stylesheet" href="css/viewProfile.css">
-</head>
-<body>
 
 <?php if ($id == 'vmsroot'): ?>
   <main class="view-profile-wrap">

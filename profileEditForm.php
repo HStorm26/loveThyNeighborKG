@@ -256,7 +256,7 @@
             <div class="blue-div"></div>
 
             <label>Email Preferences</label>
-            <p>Would you like to recieve emails from the Whiskey Valor Foundation?</p>
+            <p>Would you like to recieve emails from Love Thy Neighbor Food Pantry?</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="checkbox" id="reminders" name="email_prefs" value="reminders" <?php
