@@ -254,10 +254,10 @@
                     <input type="radio" id="agree" name="photo_release" value="yes" required>
                     <label for="agree">Yes</label>
                 </div>
-                <!--<div class="radio-element">
+                <div class="radio-element">
                     <input type="radio" id="disagree" name="photo_release" value="no">
-                    <label for="disagree">I do not agree.</label>
-                </div>-->
+                    <label for="disagree">No</label>
+                </div>
             </div>   
         </fieldset>
         <p class="text-center notice"></p>

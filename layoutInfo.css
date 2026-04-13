@@ -612,3 +612,127 @@ tbody tr:hover {
     font-weight: 700;
     color: #dc2626;
 }
+
+
+
+/* Sign Up Form */
+
+.event-link,
+.event-link:visited {
+    color: black;
+    text-decoration: none;
+}
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eef5ff;
+    color: rgb(0, 74, 173);
+    border: 1px solid #d5e5ff;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(185, 28, 28, 0.25);
+}
+
+
+.role-pill {
+    display: inline-block;
+    background: #eef5ff;
+    color: rgb(0, 74, 173);
+    border: 1px solid #d5e5ff;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 2px;
+}
+
+
+/* THE SIGN UP ATTENDANCE */
+.action-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: auto;
+}
+
+.action-buttons form {
+    margin: 0;
+}
+
+.action-btn {
+    width: auto;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    border-radius: 999px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.adjust-btn {
+    background: #eef5ff;
+    color: rgb(0, 74, 173);
+    border: 1px solid #cfe0ff;
+}
+
+.adjust-btn:hover {
+    background: #e1efff;
+}
+
+.remove-btn {
+    background: #fff1f2;
+    color: #b42318;
+    border: 1px solid #f3c7cd;
+}
+
+.remove-btn:hover {
+    background: #ffe4e8;
+}
+
+.event-summary {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    border-left: 6px solid rgb(0, 74, 173);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: 0.2s ease;
+    font: bold;
+    color: rgb(0, 74, 173);
+}
+
+.event-summary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 74, 173, 0.15);
+}
