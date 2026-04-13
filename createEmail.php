@@ -285,9 +285,8 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-    <?php require_once('universal.inc'); ?>
     <title>Send Email | Love Thy Neighbor Community Food Pantry</title>
-    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="layoutInfo.css">
 </head>
 <body>
 <?php require_once('header.php'); ?>
@@ -298,55 +297,75 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 <?= $submissionMessage ?>
 
-<form method="POST">
-    <label for="subject">* Email Subject</label>
-    <input type="text" id="subject" name="subject" required>
+<form method="POST" class="info-form">
+    <div class="page-wrapper">
+        <div class="info-card">
+            <div class="info-header">
+                <h1>Email</h1>
+            </div>
+            <div class="form-group">
+                <label for="subject">* Email Subject</label>
+                <input type="text" id="subject" name="subject" required>
+            </div>
 
-    <label for="content">Email Body</label>
-    <textarea id="content" name="content" rows="10"></textarea>
+            <div class="form-group">
+                <label for="content">Email Body</label>
+                <textarea id="content" name="content" rows="10"></textarea>
+            </div>
+            <div class ="form-row">
+                <div class ="form-group">
+                    <label for="scheduled">Send Now?</label>
+                    <select name="scheduled" id="scheduled">
+                        <option value="true">Yes</option>
+                        <option value="false">No (Schedule)</option>
+                    </select>
+                </div>   
+                <div class="form-group" id="selectorTime" style="display: none;">
+                    <label for="sendTime">Send Date</label>
+                    <input type="date" id="sendTime" name="sendTime">
+                </div>
+            </div>    
+            
+            <div class="form-group">
+                <label for="recipients">Recipients</label>
+                <select name="recipients" id="recipients">
+                    <option value="all">All Love Thy Neighbor KG Members</option>
+                    <option value="specific">Specific Users</option>
+                    <option value="events">Event Participants</option>
+                </select>
+            </div>
 
-    <label for="scheduled">Send Now?</label>
-    <select name="scheduled" id="scheduled">
-        <option value="true">Yes</option>
-        <option value="false">No (Schedule)</option>
-    </select>
+        <!--This only appears when specific users is selected  -->
+            <div class="form-group" id="selectorRecipients" style="display:none;">
+                <label for="recipientID">Select Member</label>
+                <select id="recipientID" name="recipientID">
+                    <option value="">-- Select a Member --</option>
+                    <?php foreach ($allMembers as $m): ?>
+                        <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+                    <!--I will put the event functionallity here  -->
+            <div class="form-group" id="selectorEvents" style="display:none;">
+                <label for="eventID">Select Event</label>
+                <select id="eventID" name="eventID">
+                    <option value="">-- Select an Event --</option>
+                    <?php foreach ($allEvents as $m): ?>
+                        <option value="<?= htmlspecialchars($m->getID()) ?>"><?= htmlspecialchars($m->getName())?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-    <div id="selectorTime" style="display:none;">
-        <label for="sendTime">Send Date</label>
-        <input type="date" id="sendTime" name="sendTime">
+            <div class="email-actions">
+                <button type="submit" name="action" value="send" class="submit-btn">Create Email</button>
+                <!--<button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button> -->
+            </div>
+        </div>
     </div>
-
-    <label for="recipients">Recipients</label>
-    <select name="recipients" id="recipients">
-        <option value="all">All Love Thy Neighbor KG Members</option>
-        <option value="specific">Specific Users</option>
-        <option value="events">Event Participants</option>
-    </select>
-<!--This only appears when specific users is selected  -->
-    <div id="selectorRecipients" style="display:none;">
-        <label for="recipientID">Select Member</label>
-        <select id="recipientID" name="recipientID">
-            <option value="">-- Select a Member --</option>
-            <?php foreach ($allMembers as $m): ?>
-                <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-            <!--I will put the event functionallity here  -->
-     <div id="selectorEvents" style="display:none;">
-        <label for="eventID">Select Event</label>
-        <select id="eventID" name="eventID">
-            <option value="">-- Select an Event --</option>
-            <?php foreach ($allEvents as $m): ?>
-                <option value="<?= htmlspecialchars($m->getID()) ?>"><?= htmlspecialchars($m->getName())?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-    <button type="submit" name="action" value="send" class="submit-btn">Create Email</button>
-    <button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button>
 
 </form>
+<?php include 'footer.php'; ?>
+
 
 <script>
 const scheduledSelect = document.getElementById('scheduled');
