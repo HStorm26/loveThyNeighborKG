@@ -206,19 +206,19 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     $sendNowStr = $_POST['scheduled'] ?? 'true';
     $sendDate = $_POST['sendTime'] ?? '';
     $recipientsType = $_POST['recipients'] ?? 'all';
-    $recipientID = $_POST['recipientID'] ?? '';
+    $recipientIDs_raw = $_POST['recipientIDs'] ?? [];
     $eventID = $_POST['eventID'] ?? '';
     $sendNow = ($sendNowStr === 'true');
 
     // Collect recipient IDs
     $recipientIDs = [];
-    if ($recipientsType === 'specific' && !empty($recipientID)) {
-        $recipientIDs = [$recipientID];
+    if ($recipientsType === 'specific' && !empty($recipientIDs_raw)) {
+        $recipientIDs = array_filter(array_map('trim', (array)$recipientIDs_raw));
     }
 
     if ($recipientsType === 'events' && !empty($eventID))
         {
-            $recipientIDs = getEvetnPartipants((int)$eventID);
+            $recipientIDs = getEventParticipants((int)$eventID);
             
         }
 
@@ -337,7 +337,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         <!--This only appears when specific users is selected  -->
             <div class="form-group" id="selectorRecipients" style="display:none;">
-                <label for="recipientSearch">Select Member</label>
+                <label for="recipientSearch">Select Members</label>
                 <div class="search-select" id="recipientSearchSelect">
                     <input
                         type="text"
@@ -350,7 +350,15 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
                     >
                     <div class="search-select-results" id="recipientResults" role="listbox"></div>
                 </div>
-                <select id="recipientID" name="recipientID" class="search-select-native">
+
+                <!-- Selected members appear here as chips -->
+                <div id="selectedMembersContainer" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+
+                <!-- Hidden inputs injected by JS -->
+                <div id="recipientHiddenInputs"></div>
+
+                <!-- Keep the original select for JS data source only — hide it visually -->
+                <select id="recipientID" name="_recipientID_unused" class="search-select-native" style="display:none;">
                     <option value="">-- Select a Member --</option>
                     <?php foreach ($allMembers as $m): ?>
                         <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
@@ -391,6 +399,35 @@ const recipientResults = document.getElementById('recipientResults');
 const recipientSearchSelect = document.getElementById('recipientSearchSelect');
 const eventsDiv = document.getElementById('selectorEvents');
 const eventSelect = document.getElementById('eventID');
+const selectedMembersContainer = document.getElementById('selectedMembersContainer');
+const recipientHiddenInputs = document.getElementById('recipientHiddenInputs');
+
+let selectedMembers = [];
+
+function renderSelectedChips() {
+    selectedMembersContainer.innerHTML = '';
+    recipientHiddenInputs.innerHTML = '';
+    selectedMembers.forEach((member) => {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;background:#e2e8f0;padding:4px 10px;border-radius:999px;font-size:0.85rem;';
+        chip.textContent = member.label;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '×';
+        removeBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:0;margin-left:2px;';
+        removeBtn.addEventListener('click', () => {
+            selectedMembers = selectedMembers.filter(m => m.value !== member.value);
+            renderSelectedChips();
+        });
+        chip.appendChild(removeBtn);
+        selectedMembersContainer.appendChild(chip);
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'recipientIDs[]';
+        hidden.value = member.value;
+        recipientHiddenInputs.appendChild(hidden);
+    });
+}
 
 const memberOptions = Array.from(recipientSelect.options)
     .filter((option) => option.value !== '')
@@ -433,8 +470,12 @@ function renderRecipientResults(filterText = '') {
         optionButton.setAttribute('role', 'option');
         optionButton.dataset.value = member.value;
         optionButton.addEventListener('click', () => {
-            recipientSelect.value = member.value;
-            recipientSearch.value = member.label;
+            const alreadySelected = selectedMembers.some(m => m.value === member.value);
+            if (!alreadySelected) {
+                selectedMembers.push({ value: member.value, label: member.label });
+                renderSelectedChips();
+            }
+            recipientSearch.value = '';
             closeRecipientResults();
         });
         recipientResults.appendChild(optionButton);
@@ -456,11 +497,12 @@ function toggleRecipients() {
     recipientsDiv.style.display = showSpecificMembers ? 'block' : 'none';
     eventsDiv.style.display = showEvents ? 'block' : 'none';
 
-    recipientSearch.required = showSpecificMembers;
+    recipientSearch.required = false;
     eventSelect.required = showEvents;
 
     if (!showSpecificMembers) {
-        recipientSelect.value = '';
+        selectedMembers = [];
+        renderSelectedChips();
         recipientSearch.value = '';
         closeRecipientResults();
     }
@@ -493,6 +535,14 @@ document.addEventListener('click', (event) => {
 
 scheduledSelect.addEventListener('change', toggleTime);
 recipientsSelect.addEventListener('change', toggleRecipients);
+
+document.querySelector('form').addEventListener('submit', (e) => {
+    if (recipientsSelect.value === 'specific' && selectedMembers.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one recipient.');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => { toggleTime(); toggleRecipients(); });
 </script>
 

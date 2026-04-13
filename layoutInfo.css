@@ -573,3 +573,42 @@ tbody tr:hover {
         width: 100%;
     }
 }
+
+.success-toast, .error-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 600px;
+    margin: 16px auto;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.success-toast {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.success-toast::before {
+    content: '✓';
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.error-toast {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.error-toast::before {
+    content: '✕';
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #dc2626;
+}
