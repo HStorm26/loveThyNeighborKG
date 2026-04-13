@@ -337,8 +337,20 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         <!--This only appears when specific users is selected  -->
             <div class="form-group" id="selectorRecipients" style="display:none;">
-                <label for="recipientID">Select Member</label>
-                <select id="recipientID" name="recipientID">
+                <label for="recipientSearch">Select Member</label>
+                <div class="search-select" id="recipientSearchSelect">
+                    <input
+                        type="text"
+                        id="recipientSearch"
+                        class="search-select-input"
+                        placeholder="Search by name or email"
+                        autocomplete="off"
+                        aria-expanded="false"
+                        aria-controls="recipientResults"
+                    >
+                    <div class="search-select-results" id="recipientResults" role="listbox"></div>
+                </div>
+                <select id="recipientID" name="recipientID" class="search-select-native">
                     <option value="">-- Select a Member --</option>
                     <?php foreach ($allMembers as $m): ?>
                         <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
@@ -373,8 +385,63 @@ const timeDiv = document.getElementById('selectorTime');
 const sendTimeInput = document.getElementById('sendTime');
 const recipientsSelect = document.getElementById('recipients');
 const recipientsDiv = document.getElementById('selectorRecipients');
-
+const recipientSelect = document.getElementById('recipientID');
+const recipientSearch = document.getElementById('recipientSearch');
+const recipientResults = document.getElementById('recipientResults');
+const recipientSearchSelect = document.getElementById('recipientSearchSelect');
 const eventsDiv = document.getElementById('selectorEvents');
+const eventSelect = document.getElementById('eventID');
+
+const memberOptions = Array.from(recipientSelect.options)
+    .filter((option) => option.value !== '')
+    .map((option) => ({
+        value: option.value,
+        label: option.textContent.trim(),
+        searchText: option.textContent.trim().toLowerCase()
+    }));
+
+function closeRecipientResults() {
+    recipientResults.classList.remove('is-open');
+    recipientSearch.setAttribute('aria-expanded', 'false');
+}
+
+function openRecipientResults() {
+    recipientResults.classList.add('is-open');
+    recipientSearch.setAttribute('aria-expanded', 'true');
+}
+
+function renderRecipientResults(filterText = '') {
+    const normalizedFilter = filterText.trim().toLowerCase();
+    const matchingMembers = memberOptions.filter((member) => member.searchText.includes(normalizedFilter));
+
+    recipientResults.innerHTML = '';
+
+    if (matchingMembers.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'search-select-empty';
+        emptyState.textContent = 'No matching members found.';
+        recipientResults.appendChild(emptyState);
+        openRecipientResults();
+        return;
+    }
+
+    matchingMembers.slice(0, 8).forEach((member) => {
+        const optionButton = document.createElement('button');
+        optionButton.type = 'button';
+        optionButton.className = 'search-select-option';
+        optionButton.textContent = member.label;
+        optionButton.setAttribute('role', 'option');
+        optionButton.dataset.value = member.value;
+        optionButton.addEventListener('click', () => {
+            recipientSelect.value = member.value;
+            recipientSearch.value = member.label;
+            closeRecipientResults();
+        });
+        recipientResults.appendChild(optionButton);
+    });
+
+    openRecipientResults();
+}
 
 function toggleTime() {
     const sendNow = scheduledSelect.value === 'true';
@@ -383,38 +450,53 @@ function toggleTime() {
 }
 
 function toggleRecipients() {
-    //recipientsDiv.style.display = recipientsSelect.value === 'specific' ? 'block' : 'none';
-    if (recipientsSelect.value === 'specific')
-    {
-        recipientsDiv.style.display ='block';
+    const showSpecificMembers = recipientsSelect.value === 'specific';
+    const showEvents = recipientsSelect.value === 'events';
+
+    recipientsDiv.style.display = showSpecificMembers ? 'block' : 'none';
+    eventsDiv.style.display = showEvents ? 'block' : 'none';
+
+    recipientSearch.required = showSpecificMembers;
+    eventSelect.required = showEvents;
+
+    if (!showSpecificMembers) {
+        recipientSelect.value = '';
+        recipientSearch.value = '';
+        closeRecipientResults();
     }
-    else
-    {
-        recipientsDiv.style.display ='none';
+
+    if (!showEvents) {
+        eventSelect.value = '';
     }
-    if (recipientsSelect.value === 'events')
-    {
-        eventsDiv.style.display = 'block';
-    }
-    else
-    {
-        eventsDiv.style.display = 'none';
-    }
-    
 }
 
-//function toggleEvents() {
-    //eventsDiv.style.display = recipientsSelect.value === 'events' ? 'block' : 'none';
-//}
+recipientSearch.addEventListener('focus', () => {
+    renderRecipientResults(recipientSearch.value);
+});
+
+recipientSearch.addEventListener('input', () => {
+    recipientSelect.value = '';
+    renderRecipientResults(recipientSearch.value);
+});
+
+recipientSearch.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeRecipientResults();
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!recipientSearchSelect.contains(event.target)) {
+        closeRecipientResults();
+    }
+});
 
 scheduledSelect.addEventListener('change', toggleTime);
 recipientsSelect.addEventListener('change', toggleRecipients);
-eventsSelect.addEventListener('change', toggleEvents);
 document.addEventListener('DOMContentLoaded', () => { toggleTime(); toggleRecipients(); });
 </script>
 
 <?php endif; ?>
 </body>
 </html>
-
 

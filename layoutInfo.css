@@ -447,6 +447,74 @@ tbody tr:hover {
     font-family: inherit;
 }
 
+.search-select {
+    position: relative;
+}
+
+.search-select-input {
+    padding-right: 42px;
+}
+
+.search-select::after {
+    content: '\25BE';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(0, 74, 173);
+    pointer-events: none;
+    font-size: 14px;
+}
+
+.search-select-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #d7dce5;
+    border-radius: 12px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.14);
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 25;
+    display: none;
+}
+
+.search-select-results.is-open {
+    display: block;
+}
+
+.search-select-option,
+.search-select-empty {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.search-select-option {
+    border: none;
+    background: #fff;
+    cursor: pointer;
+    color: #243042;
+}
+
+.search-select-option:hover,
+.search-select-option:focus {
+    background: rgba(0, 74, 173, 0.08);
+    outline: none;
+}
+
+.search-select-empty {
+    color: #687385;
+}
+
+.search-select-native {
+    display: none;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
