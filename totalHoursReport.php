@@ -21,7 +21,7 @@ $edate = $_POST['edate'] ?? '';
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unique Volunteer Report | Love Thy Neighbor Community Food Pantry</title>
+    <title>total Hours Report | Love Thy Neighbor Community Food Pantry</title>
     <link href="css/base.css" rel="stylesheet">
     <?php require_once('header.php'); ?>
 </head>
@@ -36,7 +36,7 @@ $edate = $_POST['edate'] ?? '';
 
     <section class="section-box">
         <p style="margin-top: 1rem; text-align:center;">
-            Use this tool to generate a PDF report showing the cumulative hours volunteered across all persons during a selected date range, along with the average hours volunteered per person.
+            Use this tool to generate a PDF report showing the cumulative hours volunteered across all persons during a selected date range, along with the number of volunteers who contributed.
         </p>
     </section>
 

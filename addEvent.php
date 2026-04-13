@@ -368,8 +368,8 @@
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
 
-                <label for="name">Location </label>
-                <input type="text" id="location" name="location" placeholder="Enter location">
+                <label for="name">* Location </label>
+                <input type="text" id="location" name="location" placeholder="Enter location" required>
                 </div>    
 
                 <div class="event-sect">

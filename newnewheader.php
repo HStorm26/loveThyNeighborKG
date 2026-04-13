@@ -37,8 +37,8 @@ if (!isset($currentDate)) {
                 </a>
 
                 <div class="text-group">
-                    <h1 class="main-title">King George County Community Food Pantry</h1>
-                    <p class="sub-title">LOVE THY NEIGHBOR</p>
+                    <h1 class="main-title">LOVE THY NEIGHBOR</h1>
+                    <p class="sub-title">King George County Community Food Pantry</p>
                 </div>
             </div>
         </div>

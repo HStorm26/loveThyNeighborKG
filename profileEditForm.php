@@ -11,6 +11,9 @@
         $id = $args['id'];
         $editingSelf = $id == $_SESSION['_id'];
         // Check to see if user is a lower-level manager here
+        if(isset($_POST['adminID'])){
+            setUserType($_POST['adminID'], "Admin");
+        }
     } else {
         $editingSelf = true;
         $id = $_SESSION['_id'];
@@ -109,10 +112,21 @@
         </div>
     </div>
     <div class="main-content-box">
-
+    <?php if ($person->get_access_level() < 2 && $_SESSION['access_level'] >= 2): ?>
+    <form class="admin-status" method="post">
+        <input type="hidden" name="adminID" value="<?php echo $person->get_id()?>"/>
+        <fieldset class="section-box">
+            <h3 class="mt-2" id="login">Update Admin Status</h3>
+            <label>You are seeing this action because you are an administrator. This section is not required to edit this user's profile.</label>
+            <div class="blue-div"></div>
+            <p>Make this person a LTN volunteer network administrator. This action cannot be undone.</p>
+        <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to make this user an admin?');">Make Administrator</button>
+        </fieldset>
+    </form>
+    <?php endif; ?>
     <form class="signup-form" method="post">
 	<div class="text-center">
-          <h2 class="mb-8">Edit Profile</h2>
+          <h2 class="mb-8">Edit <?php if($person->get_access_level() >= 2) { echo "Admin"; } ?> Profile</h2>
             <div class="info-box">
               <p>An asterisk ( <em>*</em> ) indicates a required field.</p>
             </div>
