@@ -206,19 +206,19 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
     $sendNowStr = $_POST['scheduled'] ?? 'true';
     $sendDate = $_POST['sendTime'] ?? '';
     $recipientsType = $_POST['recipients'] ?? 'all';
-    $recipientID = $_POST['recipientID'] ?? '';
+    $recipientIDs_raw = $_POST['recipientIDs'] ?? [];
     $eventID = $_POST['eventID'] ?? '';
     $sendNow = ($sendNowStr === 'true');
 
     // Collect recipient IDs
     $recipientIDs = [];
-    if ($recipientsType === 'specific' && !empty($recipientID)) {
-        $recipientIDs = [$recipientID];
+    if ($recipientsType === 'specific' && !empty($recipientIDs_raw)) {
+        $recipientIDs = array_filter(array_map('trim', (array)$recipientIDs_raw));
     }
 
     if ($recipientsType === 'events' && !empty($eventID))
         {
-            $recipientIDs = getEvetnPartipants((int)$eventID);
+            $recipientIDs = getEventParticipants((int)$eventID);
             
         }
 
@@ -337,8 +337,28 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         <!--This only appears when specific users is selected  -->
             <div class="form-group" id="selectorRecipients" style="display:none;">
-                <label for="recipientID">Select Member</label>
-                <select id="recipientID" name="recipientID">
+                <label for="recipientSearch">Select Members</label>
+                <div class="search-select" id="recipientSearchSelect">
+                    <input
+                        type="text"
+                        id="recipientSearch"
+                        class="search-select-input"
+                        placeholder="Search by name or email"
+                        autocomplete="off"
+                        aria-expanded="false"
+                        aria-controls="recipientResults"
+                    >
+                    <div class="search-select-results" id="recipientResults" role="listbox"></div>
+                </div>
+
+                <!-- Selected members appear here as chips -->
+                <div id="selectedMembersContainer" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+
+                <!-- Hidden inputs injected by JS -->
+                <div id="recipientHiddenInputs"></div>
+
+                <!-- Keep the original select for JS data source only — hide it visually -->
+                <select id="recipientID" name="_recipientID_unused" class="search-select-native" style="display:none;">
                     <option value="">-- Select a Member --</option>
                     <?php foreach ($allMembers as $m): ?>
                         <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
@@ -373,8 +393,96 @@ const timeDiv = document.getElementById('selectorTime');
 const sendTimeInput = document.getElementById('sendTime');
 const recipientsSelect = document.getElementById('recipients');
 const recipientsDiv = document.getElementById('selectorRecipients');
-
+const recipientSelect = document.getElementById('recipientID');
+const recipientSearch = document.getElementById('recipientSearch');
+const recipientResults = document.getElementById('recipientResults');
+const recipientSearchSelect = document.getElementById('recipientSearchSelect');
 const eventsDiv = document.getElementById('selectorEvents');
+const eventSelect = document.getElementById('eventID');
+const selectedMembersContainer = document.getElementById('selectedMembersContainer');
+const recipientHiddenInputs = document.getElementById('recipientHiddenInputs');
+
+let selectedMembers = [];
+
+function renderSelectedChips() {
+    selectedMembersContainer.innerHTML = '';
+    recipientHiddenInputs.innerHTML = '';
+    selectedMembers.forEach((member) => {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;background:#e2e8f0;padding:4px 10px;border-radius:999px;font-size:0.85rem;';
+        chip.textContent = member.label;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '×';
+        removeBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:0;margin-left:2px;';
+        removeBtn.addEventListener('click', () => {
+            selectedMembers = selectedMembers.filter(m => m.value !== member.value);
+            renderSelectedChips();
+        });
+        chip.appendChild(removeBtn);
+        selectedMembersContainer.appendChild(chip);
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'recipientIDs[]';
+        hidden.value = member.value;
+        recipientHiddenInputs.appendChild(hidden);
+    });
+}
+
+const memberOptions = Array.from(recipientSelect.options)
+    .filter((option) => option.value !== '')
+    .map((option) => ({
+        value: option.value,
+        label: option.textContent.trim(),
+        searchText: option.textContent.trim().toLowerCase()
+    }));
+
+function closeRecipientResults() {
+    recipientResults.classList.remove('is-open');
+    recipientSearch.setAttribute('aria-expanded', 'false');
+}
+
+function openRecipientResults() {
+    recipientResults.classList.add('is-open');
+    recipientSearch.setAttribute('aria-expanded', 'true');
+}
+
+function renderRecipientResults(filterText = '') {
+    const normalizedFilter = filterText.trim().toLowerCase();
+    const matchingMembers = memberOptions.filter((member) => member.searchText.includes(normalizedFilter));
+
+    recipientResults.innerHTML = '';
+
+    if (matchingMembers.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'search-select-empty';
+        emptyState.textContent = 'No matching members found.';
+        recipientResults.appendChild(emptyState);
+        openRecipientResults();
+        return;
+    }
+
+    matchingMembers.slice(0, 8).forEach((member) => {
+        const optionButton = document.createElement('button');
+        optionButton.type = 'button';
+        optionButton.className = 'search-select-option';
+        optionButton.textContent = member.label;
+        optionButton.setAttribute('role', 'option');
+        optionButton.dataset.value = member.value;
+        optionButton.addEventListener('click', () => {
+            const alreadySelected = selectedMembers.some(m => m.value === member.value);
+            if (!alreadySelected) {
+                selectedMembers.push({ value: member.value, label: member.label });
+                renderSelectedChips();
+            }
+            recipientSearch.value = '';
+            closeRecipientResults();
+        });
+        recipientResults.appendChild(optionButton);
+    });
+
+    openRecipientResults();
+}
 
 function toggleTime() {
     const sendNow = scheduledSelect.value === 'true';
@@ -383,38 +491,62 @@ function toggleTime() {
 }
 
 function toggleRecipients() {
-    //recipientsDiv.style.display = recipientsSelect.value === 'specific' ? 'block' : 'none';
-    if (recipientsSelect.value === 'specific')
-    {
-        recipientsDiv.style.display ='block';
+    const showSpecificMembers = recipientsSelect.value === 'specific';
+    const showEvents = recipientsSelect.value === 'events';
+
+    recipientsDiv.style.display = showSpecificMembers ? 'block' : 'none';
+    eventsDiv.style.display = showEvents ? 'block' : 'none';
+
+    recipientSearch.required = false;
+    eventSelect.required = showEvents;
+
+    if (!showSpecificMembers) {
+        selectedMembers = [];
+        renderSelectedChips();
+        recipientSearch.value = '';
+        closeRecipientResults();
     }
-    else
-    {
-        recipientsDiv.style.display ='none';
+
+    if (!showEvents) {
+        eventSelect.value = '';
     }
-    if (recipientsSelect.value === 'events')
-    {
-        eventsDiv.style.display = 'block';
-    }
-    else
-    {
-        eventsDiv.style.display = 'none';
-    }
-    
 }
 
-//function toggleEvents() {
-    //eventsDiv.style.display = recipientsSelect.value === 'events' ? 'block' : 'none';
-//}
+recipientSearch.addEventListener('focus', () => {
+    renderRecipientResults(recipientSearch.value);
+});
+
+recipientSearch.addEventListener('input', () => {
+    recipientSelect.value = '';
+    renderRecipientResults(recipientSearch.value);
+});
+
+recipientSearch.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeRecipientResults();
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!recipientSearchSelect.contains(event.target)) {
+        closeRecipientResults();
+    }
+});
 
 scheduledSelect.addEventListener('change', toggleTime);
 recipientsSelect.addEventListener('change', toggleRecipients);
-eventsSelect.addEventListener('change', toggleEvents);
+
+document.querySelector('form').addEventListener('submit', (e) => {
+    if (recipientsSelect.value === 'specific' && selectedMembers.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one recipient.');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => { toggleTime(); toggleRecipients(); });
 </script>
 
 <?php endif; ?>
 </body>
 </html>
-
 
