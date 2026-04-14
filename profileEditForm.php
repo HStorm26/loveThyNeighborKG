@@ -14,6 +14,9 @@
         if(isset($_POST['adminID'])){
             setUserType($_POST['adminID'], "Admin");
         }
+        if(isset($_POST['unAdminID'])){
+            setUserType($_POST['unAdminID'], "Volunteer");
+        }
     } else {
         $editingSelf = true;
         $id = $_SESSION['_id'];
@@ -112,17 +115,45 @@
         </div>
     </div>
     <div class="main-content-box">
-    <?php if ($person->get_access_level() < 2 && $_SESSION['access_level'] >= 2): ?>
-    <form class="admin-status" method="post">
-        <input type="hidden" name="adminID" value="<?php echo $person->get_id()?>"/>
-        <fieldset class="section-box">
-            <h3 class="mt-2" id="login">Update Admin Status</h3>
-            <label>You are seeing this action because you are an administrator. This section is not required to edit this user's profile.</label>
-            <div class="blue-div"></div>
-            <p>Make this person a LTN volunteer network administrator. This action cannot be undone.</p>
-        <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to make this user an admin?');">Make Administrator</button>
-        </fieldset>
-    </form>
+    <?php if ($_SESSION['access_level'] >= 2): ?>
+        <!-- promotion and demotion behaviors. Only available to root user and admins -->
+        <?php if ($person->get_access_level() == 1): ?>
+        <!-- admin wants to promote user -->
+        <form class="admin-status" method="post">
+            <input type="hidden" name="adminID" value="<?php echo $person->get_id()?>"/>
+            <fieldset class="section-box">
+                <h3 class="mt-2" id="login">Update Admin Status</h3>
+                <label>You are seeing this action because you are an administrator. This section is not required to edit this user's profile.</label>
+                <div class="blue-div"></div>
+                <p>Press this button to promote this person a LTN volunteer network administrator.</p>
+            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to make this user an admin?');">Make Administrator</button>
+            </fieldset>
+        </form>
+        <?php elseif ($editingSelf && getAdminCount() > 1): ?>
+        <!-- admin wants to demote self, but there needs to be at least one admin at all times-->
+        <form class="admin-status" method="post">
+            <input type="hidden" name="unAdminID" value="<?php echo $person->get_id()?>"/>
+            <fieldset class="section-box">
+                <h3 class="mt-2" id="login">Update Admin Status</h3>
+                <label>You are seeing this action because you are an administrator. This section is not required to edit your profile.</label>
+                <div class="blue-div"></div>
+                <p>Press this button to demote yourself back to a volunteer. You will lose all access to admin tools and privileges.</p>
+            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove your admin privileges?');">Demote Self</button>
+            </fieldset>
+        </form>
+        <?php elseif ($_SESSION['access_level'] == 3 && $editingSelf != true && $person->get_access_level() == 2): ?>
+        <!-- Root user can demote admins -->
+        <form class="admin-status" method="post">
+            <input type="hidden" name="unAdminID" value="<?php echo $person->get_id()?>"/>
+            <fieldset class="section-box">
+                <h3 class="mt-2" id="login">Update Admin Status</h3>
+                <label>You are seeing this action because you are using the root user. This section is not required to edit this user's profile.</label>
+                <div class="blue-div"></div>
+                <p>Press this button to demote this user back to a volunteer. They will lose all access to admin tools and privileges.</p>
+            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user's admin privileges?');">Demote User</button>
+            </fieldset>
+        </form>          
+        <?php endif; ?>
     <?php endif; ?>
     <form class="signup-form" method="post">
 	<div class="text-center">

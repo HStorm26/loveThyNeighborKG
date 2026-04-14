@@ -48,7 +48,7 @@
 
     // For the counts for total volunteers and total admins and total people
     $volunteers = getVolunteerCount($con);
-    $admins = getAdminCount($con);
+    $admins = getAdminCount();
     $total = getTotalUsers($con);
 
     // Registered events for volunteer dashboard
