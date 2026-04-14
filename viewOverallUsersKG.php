@@ -1,5 +1,3 @@
-<!-- Brooke did this page -->
-<!-- It is the user hub for the admins -->
 <?php
 session_start();
 // Added
