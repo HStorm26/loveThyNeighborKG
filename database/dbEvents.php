@@ -422,13 +422,13 @@ function get_all_events() {
     mysqli_close($con);
     return $theEvents;
  }
- function auto_Archive(){
-    $con=connect();
-    $query = "UPDATE dbevents SET archived = 1 WHERE date < CURDATE() AND archived = 0";
-    $result = mysqli_query($con,$query);
+ function auto_Archive() {
+    $con = connect();
+    $query = "UPDATE dbevents SET archived = 1 WHERE date < CURDATE() - INTERVAL 5 DAY AND archived = 0";
+    $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
- }
+}
  
  function Kiosk_get_all_events_sorted_by_date_not_archived() {
     $con=connect();
