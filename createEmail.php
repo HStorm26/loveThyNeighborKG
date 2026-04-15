@@ -37,6 +37,10 @@ function getUsersAndEmails() {
 }
 
 $allMembers = getUsersAndEmails();
+$memberLookup = [];
+foreach ($allMembers as $member) {
+    $memberLookup[$member['value']] = $member['label'];
+}
 
 // ------------------
 // get events for drop down
@@ -197,10 +201,21 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
 // ------------------------
 $isAdmin = $_SESSION['access_level'] >= 2;
 $submissionMessage = '';
+$preselectedRecipientIDs = array_values(array_filter(array_map('trim', (array)($_POST['selected_users'] ?? []))));
+$preselectedMembers = [];
 
-if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
+foreach ($preselectedRecipientIDs as $recipientID) {
+    if (isset($memberLookup[$recipientID])) {
+        $preselectedMembers[] = [
+            'value' => $recipientID,
+            'label' => $memberLookup[$recipientID]
+        ];
+    }
+}
 
-    $action = $_POST['action'] ?? 'send';
+if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
+
+    $action = $_POST['action'] ?? '';
     $subject = trim($_POST['subject'] ?? '');
     $content = trim($_POST['content'] ?? '');
     $sendNowStr = $_POST['scheduled'] ?? 'true';
@@ -235,9 +250,8 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         $uid = (string)$_SESSION['_id'];
 
-        // use the real recipientID selected from the form
-        // If no recipient selected, store "all"
-        $rid = $recipientID !== '' ? $recipientID : "all";
+        // Store selected users as a comma-separated list for drafts, or "all" when none are selected.
+        $rid = !empty($recipientIDs) ? implode(',', $recipientIDs) : "all";
 
 
         $stmt->bind_param("ssss", 
@@ -401,8 +415,9 @@ const eventsDiv = document.getElementById('selectorEvents');
 const eventSelect = document.getElementById('eventID');
 const selectedMembersContainer = document.getElementById('selectedMembersContainer');
 const recipientHiddenInputs = document.getElementById('recipientHiddenInputs');
+const preselectedMembers = <?= json_encode($preselectedMembers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
-let selectedMembers = [];
+let selectedMembers = [...preselectedMembers];
 
 function renderSelectedChips() {
     selectedMembersContainer.innerHTML = '';
@@ -543,10 +558,17 @@ document.querySelector('form').addEventListener('submit', (e) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => { toggleTime(); toggleRecipients(); });
+document.addEventListener('DOMContentLoaded', () => {
+    if (selectedMembers.length > 0) {
+        recipientsSelect.value = 'specific';
+        renderSelectedChips();
+    }
+
+    toggleTime();
+    toggleRecipients();
+});
 </script>
 
 <?php endif; ?>
 </body>
 </html>
-

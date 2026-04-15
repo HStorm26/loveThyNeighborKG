@@ -138,15 +138,13 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                 <?php endif; ?>
             </form>
         </div>
-        <div id="hidden-selected-users"></div>
-
-        <form action="composeEmail.php" method="POST">
+        <form action="createEmail.php" method="POST" id="email-selection-form">
             <div class="selection-bar">
     <div class="selection-info" id="selection-count">
         0 users selected
     </div>
     <div class="selection-actions">
-        <button type="submit" name="email_mode" value="all" class="email-btn">
+        <button type="button" id="select-all-users-btn" class="email-btn">
         <i class="fas fa-users"></i>
         Select All Users
         </button>
@@ -276,29 +274,14 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const STORAGE_KEY = 'selectedUserIds';
-
     const userCheckboxes = document.querySelectorAll('input[name="selected_users[]"]');
     const selectAll = document.getElementById('select-all');
     const selectionCount = document.getElementById('selection-count');
-    const emailForm = document.querySelector('form[action="composeEmail.php"]');
-    const hiddenContainer = document.getElementById('hidden-selected-users');
-
-    function getStoredSelections() {
-        try {
-            return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function saveStoredSelections(ids) {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    }
+    const emailForm = document.getElementById('email-selection-form');
+    const selectAllUsersButton = document.getElementById('select-all-users-btn');
 
     function updateSelectionCount() {
-        const selectedIds = getStoredSelections();
-        const count = selectedIds.length;
+        const count = Array.from(userCheckboxes).filter((checkbox) => checkbox.checked).length;
 
         if (!selectionCount) return;
 
@@ -311,89 +294,76 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function syncPageCheckboxesWithStorage() {
-        const selectedIds = getStoredSelections();
-
-        userCheckboxes.forEach(function (checkbox) {
-            checkbox.checked = selectedIds.includes(checkbox.value);
-        });
-
+    function syncSelectAllState() {
         if (selectAll && userCheckboxes.length > 0) {
-            const allChecked = Array.from(userCheckboxes).every(cb => cb.checked);
-            selectAll.checked = allChecked;
+            selectAll.checked = Array.from(userCheckboxes).every((checkbox) => checkbox.checked);
         }
-    }
-
-    function handleCheckboxChange(checkbox) {
-        let selectedIds = getStoredSelections();
-
-        if (checkbox.checked) {
-            if (!selectedIds.includes(checkbox.value)) {
-                selectedIds.push(checkbox.value);
-            }
-        } else {
-            selectedIds = selectedIds.filter(id => id !== checkbox.value);
-        }
-
-        saveStoredSelections(selectedIds);
-        syncPageCheckboxesWithStorage();
-        updateSelectionCount();
     }
 
     userCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-            handleCheckboxChange(checkbox);
+            syncSelectAllState();
+            updateSelectionCount();
         });
     });
 
     if (selectAll) {
         selectAll.addEventListener('change', function () {
-            let selectedIds = getStoredSelections();
-
             userCheckboxes.forEach(function (checkbox) {
                 checkbox.checked = selectAll.checked;
-
-                if (selectAll.checked) {
-                    if (!selectedIds.includes(checkbox.value)) {
-                        selectedIds.push(checkbox.value);
-                    }
-                } else {
-                    selectedIds = selectedIds.filter(id => id !== checkbox.value);
-                }
             });
+            updateSelectionCount();
+        });
+    }
 
-            saveStoredSelections(selectedIds);
-            syncPageCheckboxesWithStorage();
+    if (selectAllUsersButton) {
+        selectAllUsersButton.addEventListener('click', function () {
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = true;
+            });
+            syncSelectAllState();
             updateSelectionCount();
         });
     }
 
     if (emailForm) {
-        emailForm.addEventListener('submit', function () {
-            const selectedIds = getStoredSelections();
+        emailForm.addEventListener('submit', function (event) {
+            const selectedIds = Array.from(userCheckboxes)
+                .filter((checkbox) => checkbox.checked)
+                .map((checkbox) => checkbox.value);
 
-            if (hiddenContainer) {
-                hiddenContainer.innerHTML = '';
-
-                selectedIds.forEach(function (id) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'selected_users[]';
-                    input.value = id;
-                    hiddenContainer.appendChild(input);
-                });
+            if (selectedIds.length === 0) {
+                event.preventDefault();
+                alert('Select at least one user before emailing.');
+                return;
             }
+
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.disabled = !checkbox.checked;
+            });
         });
     }
 
-    syncPageCheckboxesWithStorage();
+    syncSelectAllState();
     updateSelectionCount();
 });
 </script>
 <script>
 function clearSelections() {
-    sessionStorage.removeItem('selectedUserIds');
-    location.reload();
+    document.querySelectorAll('input[name="selected_users[]"]').forEach(function (checkbox) {
+        checkbox.checked = false;
+    });
+
+    const selectAll = document.getElementById('select-all');
+    const selectionCount = document.getElementById('selection-count');
+
+    if (selectAll) {
+        selectAll.checked = false;
+    }
+
+    if (selectionCount) {
+        selectionCount.textContent = '0 users selected';
+    }
 }
 </script>
 </body>
