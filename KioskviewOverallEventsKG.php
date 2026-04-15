@@ -21,10 +21,16 @@ if ($accessLevel < 1) {
     header('Location: login.php');
     die();
 }
-
-// Create database connection here so everything in this file can use it
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
-
+$host = "localhost"; 
+    $database = "neighbordb";
+    $user = "neighbordb";
+    $pass = "neighbordb";
+    if ($_SERVER['SERVER_NAME'] == 'jenniferp235.sg-host.com') {
+         $user = 'uoqzmy7vi9mgg';
+         $database = 'db4884urlbnrr1';
+         $pass = 'oxgxreakpqlq';
+    }
+$con = mysqli_connect($host,$user,$pass,$database);
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }
