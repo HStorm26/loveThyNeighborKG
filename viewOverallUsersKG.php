@@ -1,5 +1,3 @@
-<!-- Brooke did this page -->
-<!-- It is the user hub for the admins -->
 <?php
 session_start();
 // Added
@@ -76,7 +74,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
         <div class="page-header">
             <h1>Users</h1>
             <a href="VolunteerRegister.php" class="add-btn">+ Add User</a>
-            <a href="deleteUserSearch.php" class="add-btn">- Delete User</a>
+            <!-- <a href="deleteUserSearch.php" class="add-btn">- Delete User</a> -->
         </div>
 
         <!-- Status Filters + Attribute Selection -->
