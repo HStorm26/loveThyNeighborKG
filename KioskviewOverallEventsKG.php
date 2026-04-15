@@ -139,7 +139,7 @@ foreach ($allEvents as $theEvent) {
                             <td><?php echo htmlspecialchars($theEvent->getEndTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getLocation()); ?></td>
                             <td class="actions">
-                                <a href="KioskViewCheckinOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
+                                <a href="KioskviewCheckInOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
