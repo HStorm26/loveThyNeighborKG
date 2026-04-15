@@ -4,8 +4,7 @@ session_start();
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
 /*<!-- Brooke did this page -->
-<!-- It is the user hub for the admins -->
-*/
+<!-- It is the user hub for the admins -->*/
 $loggedIn = false;
 $accessLevel = 0;
 $username = null;
@@ -77,8 +76,6 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
             <h1>Users</h1>
             <a href="VolunteerRegister.php" class="add-btn">+ Add User</a>
             <a href="deleteUserSearch.php" class="add-btn">- Delete User</a>
-
-        
         </div>
 
         <!-- Status Filters + Attribute Selection -->

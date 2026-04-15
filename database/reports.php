@@ -1,0 +1,138 @@
+<?php
+// Author: Daniel Leaman
+// purpose: to provide functions for talking to the db to get data for the LTN reports
+// date: 2026 04 10
+// notes: I hope to provide good comments to help you use the functions
+
+
+// -----------------------
+// include statement(s)
+//-------------------------------
+include_once("dbinfo.php");
+
+// ---------------------------------
+// formats:
+// 1. $sd and $ed stand for start date and end dates and will be in the format YYYY-MM-DD to be compatible with html forms
+// 
+// ----------------------------------
+
+
+
+// -----------------------------------------
+// functions for unique volunteer count
+// ------------------------------------------
+function countUniqueVolunteersForDateRange($sd,$ed)
+// returns an int
+{
+    
+    $con = connect();
+    $querey = "SELECT count(DISTINCT `personID`) as c from `dbpersonhours` where `start_time` >= ? AND `end_time` < ?";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('ss',$sd,$ed);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    
+    while ($stmt->fetch())
+        {
+           $num = $count;
+        }
+    $con->close();
+    return $num;
+}
+function volunteerUniqueEventsForDateRange($sd,$ed)
+// returns a 2d array in the format [[string first, string last, int events partisipated in]...]
+{
+    $con = connect();
+    $querey = "SELECt p.first_name, p.last_name, count(h.eventID) as `m` FROM `dbpersonhours` as `h` left join `dbpersons` as `p` on h.personID = p.id WHERE h.start_time >= ? AND h.start_time < ? GROUP BY h.personID order by m desc";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('ss',$sd,$ed);
+    $stmt->execute();
+    $stmt->bind_result($f,$l,$e);
+    $rows = [];
+    while ($stmt->fetch())
+    {
+        $rows[] = [$f,$l,$e];
+    }
+    $con->close();
+    return $rows;
+}
+//---------------------------------------
+// functions for inactive volunteers
+// --------------------------------------
+function getInactiveVolunteers()
+// no input as it is allways to be one year in the past
+// returns a 2d array in the format [[str first, str last, str date of last event (yyyy-mm-dd)]...]
+{
+// var_dump(date('Y-m-d', strtotime('-1 year')));
+    $con = connect();
+    $querey = "SELECt p.first_name, p.last_name, DATE_FORMAT(max(h.end_time), '%Y-%m-%d') FROM `dbpersons` as `p` left join `dbpersonhours` as `h` on p.id = h.personID WHERE p.id NOT IN ( SELECT DISTINCT(h.personID) FROM dbpersonhours as h where h.end_time >= ? ) GROUP BY p.first_name, p.last_name;";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('s',date('Y-m-d', strtotime('-1 year')));
+    $stmt->execute();
+    $stmt->bind_result($f,$l,$d);
+    $rows = [];
+    while ($stmt->fetch())
+    {
+        $rows[] = [$f,$l,$d];
+    }
+    $con->close();
+    return $rows;
+}
+// --------------------------------------
+// functions for total volunteer hours
+// ---------------------------------------
+
+// use function roleHoursForDateRange($sd,$ed) in dbperson hours to break it down by role
+// it uses the format [[$r(str role),$h(int hours),$m(int minutes)]....]
+
+function totalHoursForDateRange($sd,$ed)
+// retunrs array in format [int hours, int minutes]
+{
+    $con = connect();
+    $querey = "select sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` from dbpersonhours as h WHERE h.start_time >= ? AND h.end_time < ?";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('ss',$sd,$ed);
+    $stmt->execute();
+    $stmt->bind_result($m);
+
+    while ($stmt->fetch())
+    {
+       $minutes = $m;
+    }
+    $con->close();
+    $h = intdiv((int)$minutes, 60);
+    $m = $minutes % 60;
+    return [$h,$m];
+}
+// ------------------------------------------
+// functions for hour category summary
+// ------------------------------------------
+function hoursPerRoleAllTime($roles)
+// $roles is to be an array of the role ids as ints
+// returns a 2d array in the format [[$r(str role),$h(int hours),$m(int minutes)]....]
+{
+    for ($i = 0; $i < sizeof($roles); $i++) // makes sure that everything is an int to prevent injection 
+        {
+            $isi = is_int($roles[$i]);
+            if (!$isi)
+                {
+                    return []; // if any element is not an int, return empty array
+                }
+        }
+    $placeholders = implode(',', array_fill(0, count($roles), '?')); // generate a string of ?,?... equal to the number of ids in $roles
+
+    $con = connect();
+    $querey = "SELECT r.role, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` FROM `dbpersonhours` as `h` left join `dbroles` as `r` on h.roleID = r.role_id WHERE r.role_id in (" . $placeholders . ") GROUP BY r.role order by m desc";
+    $stmt = $con->prepare($querey);
+    $stmt->execute($roles);
+    $stmt->bind_result($r,$tm);
+    $rows = [];
+    while ($stmt->fetch())
+        {
+            $h = intdiv((int)$tm,60);
+            $m = ((int)$tm % 60);
+            $rows[] = [$r,$h,$m];
+        }
+    $con->close();
+    return $rows;
+}
