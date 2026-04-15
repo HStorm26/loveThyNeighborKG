@@ -1,11 +1,11 @@
-<!-- Brooke did this page -->
-<!-- Josh modified this page -->
-<!-- It is the event hub for the admins -->
 <?php
 session_start();
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
-
+/*
+<!-- Brooke did this page -->
+<!-- Josh modified this page -->
+<!-- It is the event hub for the admins*/
 $loggedIn = false;
 $accessLevel = 0;
 $username = null;
@@ -21,10 +21,16 @@ if ($accessLevel < 1) {
     header('Location: login.php');
     die();
 }
-
-// Create database connection here so everything in this file can use it
-$con = mysqli_connect("localhost", "root", "", "neighbordb");
-
+$host = "localhost"; 
+    $database = "neighbordb";
+    $user = "neighbordb";
+    $pass = "neighbordb";
+    if ($_SERVER['SERVER_NAME'] == 'jenniferp235.sg-host.com') {
+         $user = 'uoqzmy7vi9mgg';
+         $database = 'db4884urlbnrr1';
+         $pass = 'oxgxreakpqlq';
+    }
+$con = mysqli_connect($host,$user,$pass,$database);
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }
@@ -63,7 +69,7 @@ function countCurrentCheckedInForEvent($con, $eventID) {
 
 // Get only today's events
 $today = date('Y-n-j');
-$allEvents = get_all_events();
+$allEvents = Kiosk_get_all_events_sorted_by_date_not_archived();
 $theEvents = array();
 
 foreach ($allEvents as $theEvent) {
@@ -109,7 +115,6 @@ foreach ($allEvents as $theEvent) {
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Location</th>
-                        <th>Capacity</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -133,9 +138,8 @@ foreach ($allEvents as $theEvent) {
                             <td><?php echo htmlspecialchars($theEvent->getStartTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getEndTime()); ?></td>
                             <td><?php echo htmlspecialchars($theEvent->getLocation()); ?></td>
-                            <td><?php echo htmlspecialchars($capacityDisplay); ?></td>
                             <td class="actions">
-                                <a href="KioskViewCheckinOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
+                                <a href="KioskviewCheckInOut.php?id=<?php echo urlencode($theEvent->getID()); ?>" class="view-btn">Sign up</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -397,6 +397,7 @@ h2 {
 
 h3 {
     font-size: 1.25rem;
+    color: var(--main-color);
     font-weight: 400;
 }
 
@@ -929,7 +930,7 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: white;
+    color: var(--main-color);
 }
 
 /* form.signup-form a:hover {
@@ -983,7 +984,7 @@ form.signup-form a {
 
 .sidebar-item img {
     margin-right: 5px;
-    filter: invert(1);
+    color: var(--main-color);
     min-height: 20px;
     max-height: 25px;
     height: 20px;

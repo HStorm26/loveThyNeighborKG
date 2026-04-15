@@ -1,4 +1,3 @@
-<!-- This looks really, really great!  -Thomas -->
 <?php
 date_default_timezone_set('America/New_York');
 require_once('database/dbPersons.php');
@@ -144,7 +143,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['viewoveralleventskg.php'] = 0;
         $permission_array['adjusteventhours.php'] = 2;
         $permission_array['viewallreports.php'] = 2;
-        $permission_array['kioskviewOverallEventsKG.php'] = 4;
+        $permission_array['KioskviewOverallEventsKG.php'] = 4;
         $permission_array['totalhoursreport.php'] = 2;
         $permission_array['topvolunteersreport.php'] = 2;
         $permission_array['hourcategoryreport.php'] = 2;
@@ -239,8 +238,8 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'inbox.php' ? 'active' : '' ?>">
                         Notification
                         </a>
-                        <a href="kioskviewOverallEventsKG.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'kioskviewOverallEventsKG.php' ? 'active' : '' ?>">
+                        <a href="KioskviewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'KioskviewOverallEventsKG.php' ? 'active' : '' ?>">
                         Kiosk
                         </a>
                         

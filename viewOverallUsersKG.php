@@ -3,7 +3,8 @@ session_start();
 // Added
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
-
+/*<!-- Brooke did this page -->
+<!-- It is the user hub for the admins -->*/
 $loggedIn = false;
 $accessLevel = 0;
 $username = null;
