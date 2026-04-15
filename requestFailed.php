@@ -1,7 +1,7 @@
 <?php
     session_cache_expire(30);
     session_start();
-    header("refresh:2; url=viewAllEvents.php");
+    header("refresh:2; url=viewMyUpcomingEvents.php");
 ?>
     <!DOCTYPE html>
     <html>

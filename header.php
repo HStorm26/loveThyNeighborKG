@@ -193,8 +193,8 @@ if (date("H:i:s") > "18:19:59") {
                         </a>
 
                         <div class="text-group">
-                            <h1 class="main-title">King George County Community Food Pantry</h1>
-                            <p class="sub-title">LOVE THY NEIGHBOR</p>
+                            <h1 class="main-title">LOVE THY NEIGHBOR</h1>
+                            <p class="sub-title">King George County Community Food Pantry</p>
                         </div>
                     </div>
 
@@ -283,8 +283,8 @@ if (date("H:i:s") > "18:19:59") {
                         </a>
 
                         <div class="text-group">
-                            <h1 class="main-title">King George County Community Food Pantry</h1>
-                            <p class="sub-title">LOVE THY NEIGHBOR</p>
+                            <h1 class="main-title">LOVE THY NEIGHBOR</h1>
+                            <p class="sub-title">King George County Community Food Pantry</p>
                         </div>
                     </div>
 
@@ -299,8 +299,8 @@ if (date("H:i:s") > "18:19:59") {
                         Dashboard
                         </a>
 
-                        <a href="EventSignUp.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'EventSignUp.php' ? 'active' : '' ?>">
+                        <a href="viewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
 

@@ -121,10 +121,10 @@
             $errors = true;
         }
 
-        if(!isset($args['photo_release']) || $args['photo_release'] == 'no') {
-            echo "<p>You must agree to being photographed to create an account.</p>";
-            $errors = true;
-        }
+        // if(!isset($args['photo_release']) || $args['photo_release'] == 'no') {
+        //     echo "<p>You must agree to being photographed to create an account.</p>";
+        //     $errors = true;
+        // }
 
         //$affiliation = $args['affiliation']; - Brooke wants to Delete (whiskey)
         //$branch = $args['branch'];   -Brooke wants to Delete (whiskey)

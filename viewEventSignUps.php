@@ -51,170 +51,93 @@ $access_level = $_SESSION['access_level'];
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php require_once('universal.inc'); ?>
-    <link rel="stylesheet" href="css/event.css" type="text/css" />
-    <title>View Event Details | <?php echo htmlspecialchars($event_info['name']); ?></title>
-    <link rel="stylesheet" href="css/messages.css" />
-    <script>
-        function showResolutionConfirmation() {
-            document.getElementById('resolution-confirmation-wrapper').classList.remove('hidden');
-            return false;
-        }
-        function showApprove() {
-            document.getElementById('approve-confirmation-wrapper').classList.remove('hidden');
-            return false;
-        }
-        function showReject() {
-            document.getElementById('reject-confirmation-wrapper').classList.remove('hidden');
-            return false;
-        }
-        document.addEventListener('DOMContentLoaded', function () {
-            var selectAll = document.getElementById('select-all-pending');
-            var itemChecks = document.querySelectorAll('.bulk-select');
-            var bulkApprove = document.getElementById('bulk-approve');
-            var bulkReject = document.getElementById('bulk-reject');
-            function updateButtons() {
-                var anyChecked = Array.prototype.slice.call(itemChecks).some(function(cb){return cb.checked;});
-                if (bulkApprove) bulkApprove.disabled = !anyChecked;
-                if (bulkReject) bulkReject.disabled = !anyChecked;
-            }
-            if (selectAll) {
-                selectAll.addEventListener('change', function () {
-                    itemChecks.forEach(function(cb){cb.checked = selectAll.checked;});
-                    updateButtons();
-                });
-            }
-            itemChecks.forEach(function(cb){cb.addEventListener('change', updateButtons);});
-            updateButtons();
+    
 
-            function postForm(url, data) {
-                return fetch(url, { method: 'POST', body: data, credentials: 'same-origin' });
-            }
-            function handleBulk(action) {
-                var selected = Array.prototype.slice.call(document.querySelectorAll('.bulk-select:checked'));
-                if (!selected.length) return;
-                var id = document.getElementById('event-id').value;
-                var tasks = selected.map(function(cb){
-                    var fd = new FormData();
-                    fd.append('id', id);
-                    fd.append('user_id', cb.value);
-                    fd.append('notes', cb.dataset.notes || '');
-                    var endpoint = action === 'approve' ? 'approveSignup.php' : 'rejectSignup.php';
-                    return postForm(endpoint, fd);
-                });
-                Promise.all(tasks).then(function(){
-                    var url = new URL(window.location.href);
-                    url.searchParams.set('id', id);
-                    url.searchParams.set('pendingSignupSuccess', '1');
-                    window.location.href = url.toString();
-                });
-            }
-            if (bulkApprove) bulkApprove.addEventListener('click', function(e){ e.preventDefault(); handleBulk('approve'); });
-            if (bulkReject)  bulkReject.addEventListener('click',  function(e){ e.preventDefault(); handleBulk('reject'); });
-        });
-    </script>
-    <style>
-        th.select-col, td.select-col { text-align: center; width: 52px; }
-        .bulk-actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin: 1rem 0; }
-        .bulk-actions .spacer { flex: 1 1 auto; }
-    </style>
+    <title>View Event Details | <?php echo htmlspecialchars($event_info['name']); ?></title>
+    <link rel="stylesheet" href="layoutInfo.css" />
 </head>
 <body>
-    <?php require_once('header.php'); ?>
+<?php require_once('header.php'); ?>
 
-    <h1>View Sign-Up List</h1>
-    <?php if (isset($_GET['pendingSignupSuccess'])) : ?>
-        <div class="happy-toast">Sign-up request resolved successfully.</div>
-    <?php endif ?>
+<div class="page">
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <h1><?php echo htmlspecialchars($event_info['name']); ?> Sign Ups</h1>
+                <p class="signup-subtitle">Manage volunteers registered for this event</p>
+            </div>
+            <a href="viewOverallEventsKG.php" class="add-btn back-btn">← Back to Events</a>
+        </div>
 
-    <main class="general">
+        <div class="event-summary">
+            <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
+            <div class="signup-count">
+                <?php echo count($signups); ?> volunteer<?php echo count($signups) === 1 ? '' : 's'; ?> signed up
+            </div>
 
-        <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
-
-        <?php if (isset($remove_success)): ?>
-            <p class="success"><?php echo htmlspecialchars($remove_success); ?></p>
-        <?php elseif (isset($remove_error)): ?>
-            <p class="error"><?php echo htmlspecialchars($remove_error); ?></p>
-        <?php endif; ?>
-
-        <p>
-            <?php if (count($signups) === 1): ?>
-                <p>1 person has signed up for this event.</p>
-            <?php else: ?>
-                <p><?php echo htmlspecialchars(count($signups)); ?> people have signed up for this event.</p>
+            <?php if (!empty($remove_success)): ?>
+                <div class="success"><?php echo htmlspecialchars($remove_success); ?></div>
             <?php endif; ?>
-        </p>
 
-        <input type="hidden" id="event-id" value="<?php echo htmlspecialchars($id); ?>">
+            <?php if (!empty($remove_error)): ?>
+                <div class="error"><?php echo htmlspecialchars($remove_error); ?></div>
+            <?php endif; ?>
+        </div>
 
-        <?php if (count($signups) > 0): ?> 
+        <?php if (count($signups) > 0): ?>
             <div class="table-wrapper">
-                <table class="general">
+                <table class="table-card">
                     <thead>
                         <tr>
-                            <?php if ($access_level >= 2): ?>
-                                <th class="select-col">
-                                    <?php /*if (count($pending_signups) > 0): ?>
-                                        <input type="checkbox" id="select-all-pending" title="Select all pending">
-                                    <?php endif; */?>
-                                </th>
-                            <?php endif; ?>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>User ID</th>
-                            <th>Notes</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Photos?</th>
                             <?php if ($access_level >= 2): ?>
                                 <th>Actions</th>
                             <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($signups as $signup): 
+                        <?php foreach ($signups as $signup):
                             $user_info = retrieve_person($signup['userID']);
-                            $pending = check_if_signed_up($args['id'], $signup['userID']);
-                            $notes = isset($signup['notes']) && ($signup['notes'] !== '' && $signup['notes'] !== NULL) ? $signup['notes'] : 'No notes.';
                         ?>
                             <tr>
-                                <?php if ($access_level >= 2): ?>
-                                    <td class="select-col"></td>
-                                <?php endif; ?>
                                 <td><?php echo htmlspecialchars($user_info->get_first_name()); ?></td>
                                 <td><?php echo htmlspecialchars($user_info->get_last_name()); ?></td>
-                                <td><a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>"><?php echo htmlspecialchars($signup['userID']); ?></a></td>
-                                
                                 <td>
-                                <?php
-                                    $formatted_notes = isset($signup['notes']) && ($signup['notes'] !== '' && $signup['notes'] !== NULL) ? $signup['notes'] : 'N/A';
-                                    $formatted_notes = preg_replace('/Skills:\s*\|/', 'Skills: N/A', $formatted_notes);
-                                    $formatted_notes = preg_replace('/Dietary restrictions:\s*\|/', 'Dietary restrictions: N/A', $formatted_notes);
-                                    $formatted_notes = preg_replace('/Disabilities:\s*\|/', 'Disabilities: N/A', $formatted_notes);
-                                    $formatted_notes = preg_replace('/Materials:\s*(\||$)/', 'Materials: N/A', $formatted_notes);
-                                    $formatted_notes = preg_replace('/\s*\|\s*$/', '', $formatted_notes);
-                                    $formatted_notes = preg_replace('/\s*\|\s*/', "<br>", htmlspecialchars($formatted_notes));
-                                    $formatted_notes = preg_replace('/(Skills: N\/A|Dietary restrictions: N\/A|Disabilities: N\/A|Materials: N\/A)/', '$1<br>', $formatted_notes);
-                                    $formatted_notes = preg_replace('/(Skills: .+|Dietary restrictions: .+|Disabilities: .+|Materials: .+)/', '$0<br>', $formatted_notes);
-                                    if (trim($formatted_notes) === "Skills: N/A<br>Dietary restrictions: N/A<br>Disabilities: N/A<br>Materials: N/A<br>") {
-                                        $formatted_notes = "N/A";
-                                    }
-                                    $formatted_notes = str_replace("N/A.", "N/A.<br>", $formatted_notes);
-                                    echo nl2br($formatted_notes);
-                                ?>
+                                    <a class="user-link" href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>">
+                                        <?php echo htmlspecialchars($signup['userID']); ?>
+                                    </a>
                                 </td>
+                                    <td><?php echo htmlspecialchars($user_info->get_email()); ?></td>
+                                    <td><?php echo htmlspecialchars($user_info->get_phone1()); ?></td>
+                                    <td><?php echo htmlspecialchars($user_info->get_photo_release() == 1 ? 'Yes' : 'No'); ?></td>
+
+
                                 
+
                                 <?php if ($access_level >= 2): ?>
                                     <td>
-                                        <form method="POST" style="display:flex;" action="./adjustEventHours.php">
-                                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
-                                            <input type="hidden" name="nav" value="viewEventSignUps"/>
-                                            <button type="submit" class="button">Adjust Hours</button>
-                                        </form>
-                                        <form method="POST" style="display:flex;">
-                                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
-                                            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
-                                        </form>
+                                        <div class="action-buttons">
+                                            <form method="POST" action="./adjustEventHours.php">
+                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
+                                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
+                                                <input type="hidden" name="nav" value="viewEventSignUps">
+                                                <button type="submit" class="action-btn adjust-btn">Adjust Hours</button>
+                                            </form>
 
+                                            <form method="POST">
+                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
+                                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
+                                                <input type="hidden" name="action" value="remove">
+                                                <button type="submit" class="action-btn remove-btn" onclick="return confirm('Are you sure you want to remove this user?');">
+                                                    Remove
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -223,44 +146,13 @@ $access_level = $_SESSION['access_level'];
                 </table>
             </div>
         <?php else: ?>
+            <div class="empty-state">
+                <p>No one has signed up for this event yet.</p>
+            </div>
         <?php endif; ?>
+    </div>
+</div>
 
-        <a class="button cancel" href="index.php">Return to Dashboard</a>
-    </main>
-
-    <div id="resolution-confirmation-wrapper" class="modal-content hidden">
-    <div class="modal-content">
-        <p>Would you like to approve or reject this sign-up request?</p>
-            <button onclick="showApprove()" class="button success">Approve</button>
-            <button onclick="showReject()" class="button danger">Reject</button>
-            <button onclick="document.getElementById('resolution-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
-    <div id="approve-confirmation-wrapper" class="modal-content hidden">
-    <div class="modal-content">
-        <p>Are you sure you want to approve this sign-up request?</p>
-        <p>This action cannot be undone</p>
-        <form method="post" action="approveSignup.php">
-                        <input type="submit" value="Approve" class="button success">
-                        <input type="hidden" name="id" value="<?= $_REQUEST['id'] ?>">
-                        <input type="hidden" name="user_id" value="<?=$signup->getUserID()?>">
-                        <input type="hidden" name="notes" value="<?=$signup->getNote()?>">
-        </form>
-        <button onclick="document.getElementById('approve-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
-    <div id="reject-confirmation-wrapper" class="modal-content hidden">
-    <div class="modal-content">
-        <p>Are you sure you want to reject this sign-up request?</p>
-        <p>This action cannot be undone</p>
-        <form method="post" action="rejectSignup.php">
-                        <input type="submit" value="Reject" class="button danger">
-                        <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
-                        <input type="hidden" name="user_id" value="<?=$signup->getUserID()?>">
-                        <input type="hidden" name="notes" value="<?=$signup->getNote()?>">
-        </form>
-        <button onclick="document.getElementById('reject-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
+<?php include 'footer.php'; ?>
 </body>
 </html>
