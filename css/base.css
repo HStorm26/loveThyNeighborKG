@@ -929,7 +929,7 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: white;
+    color: var(--main-color);
 }
 
 /* form.signup-form a:hover {
