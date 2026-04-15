@@ -139,28 +139,21 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
             </form>
         </div>
         <form action="createEmail.php" method="POST" id="email-selection-form">
+            <div id="hidden-selected-users"></div>
             <div class="selection-bar">
-    <div class="selection-info" id="selection-count">
-        0 users selected
-    </div>
-    <div class="selection-actions">
-        <button type="button" id="select-all-users-btn" class="email-btn">
-        <i class="fas fa-users"></i>
-        Select All Users
-        </button>
-    </div>
-
-    <div class="selection-actions">
-        <button type="submit" class="email-btn">
-            <i class="fas fa-envelope"></i>
-            Email Selected
-        </button>
-    </div>
-
-    <button type="button" onclick="clearSelections()" class="clear-btn">
-        Clear Selection
-    </button>
-</div>
+                <div class="selection-info" id="selection-count">
+                    0 users selected
+                </div>
+                <div class="selection-actions">
+                    <button type="submit" class="email-btn">
+                        <i class="fas fa-envelope"></i>
+                        Email Selected
+                    </button>
+                    <button type="button" onclick="clearSelections()" class="clear-btn">
+                        Clear Selection
+                    </button>
+                </div>
+            </div>
         <!-- Table -->
         <div class="table-card">
             <table>
@@ -274,14 +267,27 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const STORAGE_KEY = 'selectedUserIds';
     const userCheckboxes = document.querySelectorAll('input[name="selected_users[]"]');
     const selectAll = document.getElementById('select-all');
     const selectionCount = document.getElementById('selection-count');
     const emailForm = document.getElementById('email-selection-form');
-    const selectAllUsersButton = document.getElementById('select-all-users-btn');
+    const hiddenSelectedUsers = document.getElementById('hidden-selected-users');
+
+    function getStoredSelections() {
+        try {
+            return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveStoredSelections(ids) {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
 
     function updateSelectionCount() {
-        const count = Array.from(userCheckboxes).filter((checkbox) => checkbox.checked).length;
+        const count = getStoredSelections().length;
 
         if (!selectionCount) return;
 
@@ -294,6 +300,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function syncCheckboxesFromStorage() {
+        const selectedIds = getStoredSelections();
+
+        userCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = selectedIds.includes(checkbox.value);
+        });
+    }
+
     function syncSelectAllState() {
         if (selectAll && userCheckboxes.length > 0) {
             selectAll.checked = Array.from(userCheckboxes).every((checkbox) => checkbox.checked);
@@ -302,6 +316,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     userCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
+            let selectedIds = getStoredSelections();
+
+            if (checkbox.checked) {
+                if (!selectedIds.includes(checkbox.value)) {
+                    selectedIds.push(checkbox.value);
+                }
+            } else {
+                selectedIds = selectedIds.filter((id) => id !== checkbox.value);
+            }
+
+            saveStoredSelections(selectedIds);
             syncSelectAllState();
             updateSelectionCount();
         });
@@ -309,28 +334,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (selectAll) {
         selectAll.addEventListener('change', function () {
+            let selectedIds = getStoredSelections();
+
             userCheckboxes.forEach(function (checkbox) {
                 checkbox.checked = selectAll.checked;
-            });
-            updateSelectionCount();
-        });
-    }
 
-    if (selectAllUsersButton) {
-        selectAllUsersButton.addEventListener('click', function () {
-            userCheckboxes.forEach(function (checkbox) {
-                checkbox.checked = true;
+                if (selectAll.checked) {
+                    if (!selectedIds.includes(checkbox.value)) {
+                        selectedIds.push(checkbox.value);
+                    }
+                } else {
+                    selectedIds = selectedIds.filter((id) => id !== checkbox.value);
+                }
             });
-            syncSelectAllState();
+
+            saveStoredSelections(selectedIds);
             updateSelectionCount();
         });
     }
 
     if (emailForm) {
         emailForm.addEventListener('submit', function (event) {
-            const selectedIds = Array.from(userCheckboxes)
-                .filter((checkbox) => checkbox.checked)
-                .map((checkbox) => checkbox.value);
+            const selectedIds = getStoredSelections();
 
             if (selectedIds.length === 0) {
                 event.preventDefault();
@@ -338,18 +363,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            userCheckboxes.forEach(function (checkbox) {
-                checkbox.disabled = !checkbox.checked;
+            hiddenSelectedUsers.innerHTML = '';
+            selectedIds.forEach(function (id) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_users[]';
+                input.value = id;
+                hiddenSelectedUsers.appendChild(input);
             });
         });
     }
 
+    syncCheckboxesFromStorage();
     syncSelectAllState();
     updateSelectionCount();
 });
 </script>
 <script>
 function clearSelections() {
+    sessionStorage.removeItem('selectedUserIds');
+
     document.querySelectorAll('input[name="selected_users[]"]').forEach(function (checkbox) {
         checkbox.checked = false;
     });
@@ -363,6 +396,11 @@ function clearSelections() {
 
     if (selectionCount) {
         selectionCount.textContent = '0 users selected';
+    }
+
+    const hiddenSelectedUsers = document.getElementById('hidden-selected-users');
+    if (hiddenSelectedUsers) {
+        hiddenSelectedUsers.innerHTML = '';
     }
 }
 </script>
