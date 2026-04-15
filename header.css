@@ -97,14 +97,17 @@
     text-align: left;
 }
 .main-title {
-    font-size: 27px;
+    /*font-size: 27px;*/
+    font-size: 42px;
     color: rgb(0, 74, 173);
     margin: 0;
     font-weight: bold;
+    letter-spacing: 0.2em;
 }
 
 .sub-title {
-    font-size: 55px;
+    /*font-size: 55px;*/
+    font-size: 27px;
     color: rgb(0, 74, 173);
     margin: 0;
     font-weight: bold;
