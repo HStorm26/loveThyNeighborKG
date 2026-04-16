@@ -43,8 +43,14 @@
                 $_SESSION['f_name'] = $user->get_first_name();
                 $_SESSION['l_name'] = $user->get_last_name();
 
-                
-                $_SESSION['type'] = 'admin';
+                $type = $user->get_access_level();
+                if($type == 2){
+                  $_SESSION['type'] = 'admin';
+                }
+                else if($type == 1){
+                  $_SESSION['type'] = 'volunteer';
+                }
+                unset($type);
                 $_SESSION['_id'] = $user->get_id();
                 
                  //hard code root privileges

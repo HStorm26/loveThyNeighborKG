@@ -149,9 +149,13 @@ function sign_up_for_event($eventID, $account_name, $role, $notes) {
 function check_if_signed_up($eventID, $userID) {
     // look up event+user pair
     $connection = connect();
-    $query1 = "SELECT * FROM dbeventpersons WHERE eventID = '$eventID' and userID = '$userID'";
-    $result1 = mysqli_query($connection, $query1);
+    $query1 = "SELECT * FROM dbeventpersons WHERE eventID = ? AND userID = ?";
+    $stmt = mysqli_prepare($connection, $query1);
+    mysqli_stmt_bind_param($stmt, "ss", $eventID, $userID);
+    mysqli_stmt_execute($stmt);
+    $result1 = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result1);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
 
     // check if a row was returned
@@ -210,17 +214,13 @@ function fetch_pending($eventID) {
 
 
 function remove_user_from_event($event_id, $user_id) {    
-    $query = "DELETE FROM dbeventpersons WHERE eventID LIKE '$event_id' AND userID LIKE '$user_id'";
+    $query = "DELETE FROM dbeventpersons WHERE eventID = ? AND userID = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $event_id, $user_id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
-    //If true email user 
-    /*if ($result == TRUE) if we want to email users that they've been taken off the list we need to update emailHandler so they can do that.
-    {
-        emailHandler($event_id, $user_id, 1, "Removed from event because TEST");
-        
-    }*/
     return $result;
 }
 
@@ -250,16 +250,20 @@ function remove_user_from_event($event_id, $user_id) {
 // Return true if the event has already ended -Brooke
 function is_archived($eventID) {
     $con = connect();
-    $eventID = (int)$eventID;
 
-    $query = "SELECT archived FROM dbevents WHERE id = '" . $eventID . "'";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT archived FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result || mysqli_num_rows($result) === 0) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     } 
     $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     $archived = (int)$row['archived'];
@@ -284,9 +288,12 @@ function archive_old_events(){
  * Mark an event as archived in the DB by setting the 'archived' column to 'yes'.
  */
 function archive_event($id) {
-    $con=connect();
-    $query = "UPDATE dbevents SET archived = 1 WHERE id = '" . $id . "'";
-    $result = mysqli_query($con, $query);
+    $con = connect();
+    $query = "UPDATE dbevents SET archived = 1 WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $result;
 }
@@ -295,9 +302,12 @@ function archive_event($id) {
  * Mark an event as not archived in the DB by setting the 'archived' column to 'no'.
  */
 function unarchive_event($id) {
-    $con=connect();
-    $query = "UPDATE dbevents SET archived = 0 WHERE id = '" . $id . "'";
-    $result = mysqli_query($con,$query);
+    $con = connect();
+    $query = "UPDATE dbevents SET archived = 0 WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $result;
 }
@@ -311,30 +321,25 @@ function unarchive_event($id) {
  */
 
 function remove_event($id) {
-    $con=connect();
-    $query = 'SELECT * FROM dbevents WHERE id = "' . $id . '"';
-    $result = mysqli_query($con,$query);
+    $con = connect();
+    $query = 'SELECT * FROM dbevents WHERE id = ?';
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if ($result == null || mysqli_num_rows($result) == 0) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
-    $query = 'DELETE FROM dbevents WHERE id = "' . $id . '"';
-    $result = mysqli_query($con,$query);
-
-
-    /* WIP writing code to remove event registrations for events that are cancelled. 
-    (Cleans up database from un-needed entries)
-
-    $query = 'SELECT * FROM dbeventpersons WHERE id = "' . $id . '"';
-    $result = mysqli_query($con,$query);
-
-    if ($result != null || mysqli_num_rows($result) != 0){
-        $query = 'DELETE FROM dbeventpersons WHERE id = "' . $id . '"';
-        $result = mysqli_query($con,$query);
-    }
     
-    */
-
+    $query = 'DELETE FROM dbevents WHERE id = ?';
+    $stmt2 = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt2, "i", $id);
+    $result = mysqli_stmt_execute($stmt2);
+    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($stmt2);
     mysqli_close($con);
     return true;
 }
@@ -346,23 +351,29 @@ function remove_event($id) {
  */
 
 function retrieve_event($id) {
-    $con=connect();
-    $query = "SELECT * FROM dbevents WHERE id = '" . $id . "'";
-    $result = mysqli_query($con,$query);
+    $con = connect();
+    $query = "SELECT * FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (mysqli_num_rows($result) !== 1) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
     $result_row = mysqli_fetch_assoc($result);
-    // var_dump($result_row);
     $theEvent = make_an_event($result_row);
-//    mysqli_close($con);
+    mysqli_stmt_close($stmt);
     return $theEvent;
 }
 
 function retrieve_event2($id) {
-    $con=connect();
-    $query = "SELECT * FROM dbevents WHERE id = '" . $id . "'";
+    $con = connect();
+    $query = "SELECT * FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
     $result = mysqli_query($con,$query);
     if (mysqli_num_rows($result) !== 1) {
         mysqli_close($con);
