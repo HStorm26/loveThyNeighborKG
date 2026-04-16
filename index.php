@@ -169,50 +169,95 @@
     </section>
   
     <section class="dashboard-layout">
-      <div class="section-box soft-blue">
-        <h2>Top 10 Volunteers</h2>
-        <p class="muted">Ranked by total volunteer hours</p>
+      <!-- The left side -->
+      <div class="dashboard-column"> 
+        <div class="section-box soft-blue">
+            <h2>My Scheduled Events</h2>
+            <p class="muted">Events you are already signed up for.</p>
 
-        <div class="leaderboard">
-          <?php
-          $reportData = [];
-          $reportData = calcTop10();
-          $total = count($reportData);
+            <div class="event-item">
+              <strong>Food Pantry Distribution</strong><br>
+              <span>April 10, 2026 • 9:00 AM – 12:00 PM</span><br>
+              <span class="status green">Registered</span>
+            </div>
 
-          for ($i = 0; $i < $total; $i++):
-            $rankClass = "";
-            if ($i == 0) $rankClass = "gold";
-            elseif ($i == 1) $rankClass = "silver";
-            elseif ($i == 2) $rankClass = "bronze";
-          ?>
-            <div class="leader-row <?php echo $rankClass; ?>">
+            <div class="event-item">
+              <strong>Clothing Closet Help</strong><br>
+              <span>April 16, 2026 • 11:00 AM – 1:00 PM</span><br>
+              <span class="status green">Registered</span>
+            </div>
 
-            <span class="rank">
-              <?php if ($i < 3): ?>
-                <i class="fas fa-trophy trophy-icon"></i>
-              <?php endif; ?>
-              <?php echo $i + 1; ?>
-            </span>
-
-            <span class="name">
-              <?php
-              echo htmlspecialchars(
-                ($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')
-              );
-              ?>
-            </span>
-
-            <span class="hours">
-              <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
-            </span>
+            <div class="event-item">
+              <strong>Weekend Cleanup</strong><br>
+              <span>April 20, 2026 • 8:30 AM – 10:30 AM</span><br>
+              <span class="status green">Registered</span>
+            </div>
           </div>
-          <?php endfor; ?>
-        </div>
-      </div>
+        <div class="section-box soft-blue">
+          <h2>Top 10 Volunteers</h2>
+          <p class="muted">Ranked by total volunteer hours</p>
 
-      <div class="right-column">
-        <div class="section-box soft-maroon">
-          <h2>Alerts</h2>
+          <div class="leaderboard">
+            <?php
+            $reportData = [];
+            $reportData = calcTop10();
+            $total = count($reportData);
+            ?>
+            <div class="leaderboard-split">
+              <div class="leaderboard-column">
+                <?php for ($i = 0; $i < min(5, $total); $i++):
+                  $rankClass = "";
+                  if ($i == 0) $rankClass = "gold";
+                  elseif ($i == 1) $rankClass = "silver";
+                  elseif ($i == 2) $rankClass = "bronze";
+                ?>
+                  <div class="leader-row <?php echo $rankClass; ?>">
+
+                    <span class="rank">
+                      <?php if ($i < 3): ?>
+                        <i class="fas fa-trophy trophy-icon"></i>
+                      <?php endif; ?>
+                      <?php echo $i + 1; ?>
+                    </span>
+
+                    <span class="name">
+                      <?php
+                      echo htmlspecialchars(
+                        ($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')
+                      );
+                      ?>
+                    </span>
+
+                    <span class="hours">
+                      <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
+                    </span>
+                  </div>
+                <?php endfor; ?>
+              </div>
+
+              <div class="leaderboard-column">
+                  <?php for ($i = 5; $i < min(10, $total); $i++): ?>
+                    <div class="leader-row">
+                      <span class="rank"><?php echo $i + 1; ?></span>
+
+                      <span class="name">
+                        <?php echo htmlspecialchars(($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')); ?>
+                      </span>
+
+                      <span class="hours">
+                        <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
+                      </span>
+                    </div>
+                  <?php endfor; ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-column right-column">
+          <div class="section-box soft-maroon">
+            <h2>Alerts</h2>
 
           <div class="alert-item">
             <strong>Food Lion Pickup event canceled due to weather</strong><br>

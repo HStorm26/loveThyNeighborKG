@@ -570,6 +570,6 @@ for i in range (len(list)):
 
 # 2147483647 is the max val for the id of role and event, and I made those in the AddLifetimeHours.sql
 for i in range (len(list)):
-    print ("(\"" + list[i][0] + "\"" + ", " + "2147483647" + ", " + "2147483647" + ", " + "'1999-01-01 00:00:00'" + ", " + "DATE_ADD('1999-01-01 00:00:00', INTERVAL " + str(list[i][1]) + " MINUTE)),")
+    print ("(\"" + list[i][0] + "\"" + ", " + "100" + ", " + "100" + ", " + "'1999-01-01 00:00:00'" + ", " + "DATE_ADD('1999-01-01 00:00:00', INTERVAL " + str(list[i][1]) + " MINUTE)),")
 
 

@@ -1,4 +1,3 @@
-<!-- This looks really, really great!  -Thomas -->
 <?php
 date_default_timezone_set('America/New_York');
 require_once('database/dbPersons.php');
@@ -144,7 +143,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['viewoveralleventskg.php'] = 0;
         $permission_array['adjusteventhours.php'] = 2;
         $permission_array['viewallreports.php'] = 2;
-        $permission_array['kioskviewOverallEventsKG.php'] = 4;
+        $permission_array['KioskviewOverallEventsKG.php'] = 4;
         $permission_array['totalhoursreport.php'] = 2;
         $permission_array['topvolunteersreport.php'] = 2;
         // LOWERCASE
@@ -199,6 +198,10 @@ if (date("H:i:s") > "18:19:59") {
                     </div>
 
                     <div class="header-nav">
+                        <a href="calendar.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'calendar.php' ? 'active' : '' ?>">
+                        Calendar
+                        </a>
                         <a href="index.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
                         Dashboard
@@ -213,6 +216,12 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
+                        
+                        <a href="viewMyUpcomingEvents.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewMyUpcomingEvents.php' ? 'active' : '' ?>">
+                        Signed-Up
+                        </a>
+
                         <a href="createEmail.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'createEmail.php' ? 'active' : '' ?>">
                         Email
@@ -225,8 +234,8 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'inbox.php' ? 'active' : '' ?>">
                         Notification
                         </a>
-                        <a href="kioskviewOverallEventsKG.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'kioskviewOverallEventsKG.php' ? 'active' : '' ?>">
+                        <a href="KioskviewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'KioskviewOverallEventsKG.php' ? 'active' : '' ?>">
                         Kiosk
                         </a>
                         
