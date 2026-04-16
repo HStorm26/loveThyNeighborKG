@@ -1531,3 +1531,21 @@ function get_total_vol_hours($dateFrom, $dateTo) {
             }
     }
     */
+//If archived is 1, set to 0. If archived is 0, set to 1.
+function toggleArchiveStatus($id){
+    $con = connect();
+    $query = "UPDATE dbpersons SET archived = 1 - archived WHERE id = ?";
+    $stmt = $con->prepare($query);
+    
+    if (!$stmt) {
+        die("Prepare failed: " . $con->error);
+    }
+    
+    $stmt->bind_param("s", $id);
+    $result = $stmt->execute();
+    
+    $stmt->close();
+    mysqli_close($con);
+    
+    return $result;
+}
