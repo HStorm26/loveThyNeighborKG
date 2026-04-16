@@ -147,6 +147,7 @@ $totalInactive = count($inactiveVolunteers);
             <table class="report-table">
                 <thead>
                     <tr>
+                        <th style="width: 20%;">User ID</th>
                         <th style="width: 30%;">First Name</th>
                         <th style="width: 30%;">Last Name</th>
                         <th style="width: 40%;">Last Participation Date</th>
@@ -155,12 +156,13 @@ $totalInactive = count($inactiveVolunteers);
                 <tbody>
                     <?php foreach ($inactiveVolunteers as $volunteer): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($volunteer[0] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($volunteer[0]); ?></td>
                             <td><?php echo htmlspecialchars($volunteer[1] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($volunteer[2] ?? ''); ?></td>
                             <td>
                                 <?php
-                                    echo !empty($volunteer[2])
-                                        ? htmlspecialchars($volunteer[2])
+                                    echo !empty($volunteer[3])
+                                        ? htmlspecialchars($volunteer[3])
                                         : 'No participation on record';
                                 ?>
                             </td>
