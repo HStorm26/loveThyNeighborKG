@@ -31,6 +31,14 @@ if (!$con) {
 }
 require_once('database/dbPersons.php');
 
+// Handle AJAX archive requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id']) && !isset($_POST['selected_users'])) {
+    toggleArchiveStatus($_POST['archive_id']);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true]);
+    exit();
+}
+
 // To be able to search and also to navigate through the pages
 $search = $_GET['search'] ?? '';
 // for attribute grouping
@@ -193,11 +201,14 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                             <td class="actions">
                                 <a href="viewProfile.php?id=<?php echo urlencode($user['id']); ?>" class="view-btn">View</a>
                                 <a href="editProfile.php?id=<?php echo urlencode($user['id']); ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="archive-btn">Archive</a> <!-- When you wire this up, make sure it goes through 
-                                                                            a POST request with a CSRF token, not a simple GET ?archive=id. 
-                                                                            Otherwise anyone can trick an admin into archiving users 
-                                                                            via a crafted link.-->
-                                                                            
+                                <!-- screw whoever told me "jUsT wIrE iT uP" when the button is INSIDE A FORM -->
+                                <!-- i spent thirty minutes trying to figure out why the hidden form wouldn't work -->
+                                <!-- you made me use JS you heathen -->
+                                <?php if (!empty($user['archived']) && $user['archived'] == 1): ?>
+                                    <a href="#" class="archive-btn" onclick="archiveUser(this, '<?php echo htmlspecialchars($user['id']); ?>'); return false;">Unarchive</a>
+                                <?php else: ?>
+                                    <a href="#" class="archive-btn" onclick="if(confirm('Are you sure you want to archive this user?')){archiveUser(this, '<?php echo htmlspecialchars($user['id']); ?>');}; return false;">Archive</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endif; ?>
@@ -403,6 +414,26 @@ function clearSelections() {
     if (hiddenSelectedUsers) {
         hiddenSelectedUsers.innerHTML = '';
     }
+}
+
+function archiveUser(button, userId) {
+    const formData = new FormData();
+    formData.append('archive_id', userId);
+    
+    fetch('viewOverallUsersKG.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = 'viewOverallUsersKG.php';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.location.href = 'viewOverallUsersKG.php';
+    });
 }
 </script>
 </body>
