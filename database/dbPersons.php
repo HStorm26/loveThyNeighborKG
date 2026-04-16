@@ -797,10 +797,37 @@ function searchUsers($query) {
         return $result;
     }
     
-    function update_status($id, $new_status){
-        $con=connect();
-        $query = 'UPDATE dbpersons SET status = "' . $new_status . '" WHERE id = "' . $id . '"';
-        $result = mysqli_query($con,$query);
+    function update_status($id, $new_status = null){
+        $con = connect();
+
+        if ($new_status === null) {
+            $statusStmt = $con->prepare('SELECT status FROM dbpersons WHERE id = ? AND id != "vmsroot" AND id != "vmskiosk" AND id != "SuperAdmin"');
+            if (!$statusStmt) {
+                mysqli_close($con);
+                return false;
+            }
+            $statusStmt->bind_param('s', $id);
+            $statusStmt->execute();
+            $statusStmt->bind_result($currentStatus);
+            if (!$statusStmt->fetch()) {
+                $statusStmt->close();
+                mysqli_close($con);
+                return false;
+            }
+            $statusStmt->close();
+
+            $new_status = (strcasecmp(trim($currentStatus), 'Inactive') === 0) ? 'Active' : 'Inactive';
+        }
+
+        $archivedValue = ($new_status === 'Inactive') ? 1 : 0;
+        $stmt = $con->prepare('UPDATE dbpersons SET status = ?, archived = ? WHERE id = ?');
+        if (!$stmt) {
+            mysqli_close($con);
+            return false;
+        }
+        $stmt->bind_param('sis', $new_status, $archivedValue, $id);
+        $result = $stmt->execute();
+        $stmt->close();
         mysqli_close($con);
         return $result;
     }
