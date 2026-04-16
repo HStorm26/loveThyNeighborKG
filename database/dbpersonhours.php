@@ -183,3 +183,11 @@ function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime)
     mysqli_close($con);
     return false;
 }
+function getActiveUsers(){
+    $con = connect();
+    $query = "SELECT DISTINCT `personID` FROM `dbpersonhours` join `dbevents` on `dbpersonhours`.`eventID` = `dbevents`.`id` where `dbevents`.`date` >= CURDATE()";    
+    $result = mysqli_query($con,$query);
+    mysqli_close($con);
+    return $result;
+    }
+    

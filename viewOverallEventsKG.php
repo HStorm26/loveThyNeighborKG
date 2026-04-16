@@ -1,6 +1,6 @@
-<!-- Brooke did this page -->
-<!-- It is the event hub for the admins -->
 <?php
+/* Brooke did this page */
+/* It is the event hub for the admins */
 session_start();
 // Added
 ini_set("display_errors", 1);
@@ -47,12 +47,14 @@ if(isset($_GET['archive'])){
     header("Location: ./viewOverallEventsKG.php");
     exit();
 }
+require_once('database/dbEvents.php');
 // Search and filter values
 $search = trim($_GET['search'] ?? '');
 $search_by = $_GET['search_by'] ?? 'all';
 $status = $_GET['status'] ?? 'all';
 $date_from = $_GET['date_from'] ?? '';
 $date_to = $_GET['date_to'] ?? '';
+$archive_past_events=auto_Archive();
 
 // Whitelist search_by
 $allowed_search_by = ['all', 'name', 'date', 'location'];

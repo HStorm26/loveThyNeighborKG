@@ -3,7 +3,8 @@ session_start();
 // Added
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
-
+/*<!-- Brooke did this page -->
+<!-- It is the user hub for the admins -->*/
 $loggedIn = false;
 $accessLevel = 0;
 $username = null;
@@ -138,31 +139,22 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                 <?php endif; ?>
             </form>
         </div>
-        <div id="hidden-selected-users"></div>
-
-        <form action="composeEmail.php" method="POST">
+        <form action="createEmail.php" method="POST" id="email-selection-form">
+            <div id="hidden-selected-users"></div>
             <div class="selection-bar">
-    <div class="selection-info" id="selection-count">
-        0 users selected
-    </div>
-    <div class="selection-actions">
-        <button type="submit" name="email_mode" value="all" class="email-btn">
-        <i class="fas fa-users"></i>
-        Select All Users
-        </button>
-    </div>
-
-    <div class="selection-actions">
-        <button type="submit" class="email-btn">
-            <i class="fas fa-envelope"></i>
-            Email Selected
-        </button>
-    </div>
-
-    <button type="button" onclick="clearSelections()" class="clear-btn">
-        Clear Selection
-    </button>
-</div>
+                <div class="selection-info" id="selection-count">
+                    0 users selected
+                </div>
+                <div class="selection-actions">
+                    <button type="submit" class="email-btn">
+                        <i class="fas fa-envelope"></i>
+                        Email Selected
+                    </button>
+                    <button type="button" onclick="clearSelections()" class="clear-btn">
+                        Clear Selection
+                    </button>
+                </div>
+            </div>
         <!-- Table -->
         <div class="table-card">
             <table>
@@ -277,17 +269,16 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const STORAGE_KEY = 'selectedUserIds';
-
     const userCheckboxes = document.querySelectorAll('input[name="selected_users[]"]');
     const selectAll = document.getElementById('select-all');
     const selectionCount = document.getElementById('selection-count');
-    const emailForm = document.querySelector('form[action="composeEmail.php"]');
-    const hiddenContainer = document.getElementById('hidden-selected-users');
+    const emailForm = document.getElementById('email-selection-form');
+    const hiddenSelectedUsers = document.getElementById('hidden-selected-users');
 
     function getStoredSelections() {
         try {
             return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || [];
-        } catch (e) {
+        } catch (error) {
             return [];
         }
     }
@@ -297,8 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateSelectionCount() {
-        const selectedIds = getStoredSelections();
-        const count = selectedIds.length;
+        const count = getStoredSelections().length;
 
         if (!selectionCount) return;
 
@@ -311,38 +301,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function syncPageCheckboxesWithStorage() {
+    function syncCheckboxesFromStorage() {
         const selectedIds = getStoredSelections();
 
         userCheckboxes.forEach(function (checkbox) {
             checkbox.checked = selectedIds.includes(checkbox.value);
         });
-
-        if (selectAll && userCheckboxes.length > 0) {
-            const allChecked = Array.from(userCheckboxes).every(cb => cb.checked);
-            selectAll.checked = allChecked;
-        }
     }
 
-    function handleCheckboxChange(checkbox) {
-        let selectedIds = getStoredSelections();
-
-        if (checkbox.checked) {
-            if (!selectedIds.includes(checkbox.value)) {
-                selectedIds.push(checkbox.value);
-            }
-        } else {
-            selectedIds = selectedIds.filter(id => id !== checkbox.value);
+    function syncSelectAllState() {
+        if (selectAll && userCheckboxes.length > 0) {
+            selectAll.checked = Array.from(userCheckboxes).every((checkbox) => checkbox.checked);
         }
-
-        saveStoredSelections(selectedIds);
-        syncPageCheckboxesWithStorage();
-        updateSelectionCount();
     }
 
     userCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-            handleCheckboxChange(checkbox);
+            let selectedIds = getStoredSelections();
+
+            if (checkbox.checked) {
+                if (!selectedIds.includes(checkbox.value)) {
+                    selectedIds.push(checkbox.value);
+                }
+            } else {
+                selectedIds = selectedIds.filter((id) => id !== checkbox.value);
+            }
+
+            saveStoredSelections(selectedIds);
+            syncSelectAllState();
+            updateSelectionCount();
         });
     });
 
@@ -358,42 +345,64 @@ document.addEventListener('DOMContentLoaded', function () {
                         selectedIds.push(checkbox.value);
                     }
                 } else {
-                    selectedIds = selectedIds.filter(id => id !== checkbox.value);
+                    selectedIds = selectedIds.filter((id) => id !== checkbox.value);
                 }
             });
 
             saveStoredSelections(selectedIds);
-            syncPageCheckboxesWithStorage();
             updateSelectionCount();
         });
     }
 
     if (emailForm) {
-        emailForm.addEventListener('submit', function () {
+        emailForm.addEventListener('submit', function (event) {
             const selectedIds = getStoredSelections();
 
-            if (hiddenContainer) {
-                hiddenContainer.innerHTML = '';
-
-                selectedIds.forEach(function (id) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'selected_users[]';
-                    input.value = id;
-                    hiddenContainer.appendChild(input);
-                });
+            if (selectedIds.length === 0) {
+                event.preventDefault();
+                alert('Select at least one user before emailing.');
+                return;
             }
+
+            hiddenSelectedUsers.innerHTML = '';
+            selectedIds.forEach(function (id) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_users[]';
+                input.value = id;
+                hiddenSelectedUsers.appendChild(input);
+            });
         });
     }
 
-    syncPageCheckboxesWithStorage();
+    syncCheckboxesFromStorage();
+    syncSelectAllState();
     updateSelectionCount();
 });
 </script>
 <script>
 function clearSelections() {
     sessionStorage.removeItem('selectedUserIds');
-    location.reload();
+
+    document.querySelectorAll('input[name="selected_users[]"]').forEach(function (checkbox) {
+        checkbox.checked = false;
+    });
+
+    const selectAll = document.getElementById('select-all');
+    const selectionCount = document.getElementById('selection-count');
+
+    if (selectAll) {
+        selectAll.checked = false;
+    }
+
+    if (selectionCount) {
+        selectionCount.textContent = '0 users selected';
+    }
+
+    const hiddenSelectedUsers = document.getElementById('hidden-selected-users');
+    if (hiddenSelectedUsers) {
+        hiddenSelectedUsers.innerHTML = '';
+    }
 }
 </script>
 </body>
