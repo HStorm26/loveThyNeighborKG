@@ -65,15 +65,32 @@ function getInactiveVolunteers()
 {
 // var_dump(date('Y-m-d', strtotime('-1 year')));
     $con = connect();
-    $querey = "SELECt p.first_name, p.last_name, DATE_FORMAT(max(h.end_time), '%Y-%m-%d') FROM `dbpersons` as `p` left join `dbpersonhours` as `h` on p.id = h.personID WHERE p.id NOT IN ( SELECT DISTINCT(h.personID) FROM dbpersonhours as h where h.end_time >= ? ) GROUP BY p.first_name, p.last_name;";
+    $querey = "SELECt p.id, p.first_name, p.last_name, DATE_FORMAT(max(h.end_time), '%Y-%m-%d') 
+                FROM `dbpersons` AS `p` 
+                LEFT JOIN `dbpersonhours` AS `h` ON p.id = h.personID 
+                WHERE p.id NOT IN ( SELECT DISTINCT(h.personID) FROM dbpersonhours as h where h.end_time >= ? ) 
+                GROUP BY p.id, p.first_name, p.last_name
+                ORDER BY MAX(h.end_time) IS NULL, MAX(h.end_time) DESC;";
+
+   //-----------------------------------------------
+    //Similar query, but with no username included
+    //-----------------------------------------------
+   /* $querey = "SELECt p.first_name, p.last_name, DATE_FORMAT(max(h.end_time), '%Y-%m-%d') 
+                FROM `dbpersons` as `p` left join 
+                `dbpersonhours` as `h` on p.id = h.personID 
+                WHERE p.id NOT IN ( SELECT DISTINCT(h.personID) FROM dbpersonhours as h where h.end_time >= ? ) 
+                GROUP BY p.first_name, p.last_name
+                ORDER BY MAX(h.end_time) IS NULL, MAX(h.end_time) DESC;";
+    */
     $stmt = $con->prepare($querey);
-    $stmt->bind_param('s',date('Y-m-d', strtotime('-1 year')));
+    $oneyearago = date('Y-m-d', strtotime('-1 year'));
+    $stmt->bind_param('s',$oneyearago);
     $stmt->execute();
-    $stmt->bind_result($f,$l,$d);
+    $stmt->bind_result($id, $f,$l,$d); //added $id
     $rows = [];
     while ($stmt->fetch())
     {
-        $rows[] = [$f,$l,$d];
+        $rows[] = [$id, $f,$l,$d];
     }
     $con->close();
     return $rows;
