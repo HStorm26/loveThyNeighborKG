@@ -10,6 +10,21 @@
         //die();
     }
 
+    // Check if the user is logged in
+    if (!isset($_SESSION['_id']) || empty($_SESSION['_id'])) {
+        header('Location: login.php');
+        exit();
+    }
+
+    // Check for appropriate access level
+    if ($_SESSION['access_level'] < 1) {
+        header('Location: index.php');
+        exit();
+    }
+
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+
     // Redirect to current month
     if (!isset($_GET['month'])) {
         $month = date("Y-m-d");
@@ -59,6 +74,7 @@
         <script src="js/calendar.js"></script>
         <script src="js/view-switcher.js" defer></script>
         <title>Events Calendar | Love Thy Neighbor Community Food Pantry</title>
+        <!-- <link rel="stylesheet" href="css/calendar.css"> -->
         <style>.happy-toast { margin: 0 1rem 1rem 1rem; }</style>
     </head>
     <body>
