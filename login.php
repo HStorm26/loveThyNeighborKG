@@ -148,7 +148,7 @@
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
             </div>
             <div class="flex justify-between items-center mb-4">
-              <a href="#" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
+              <a href="forgotPassword.php" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
               <a href="https://www.kgfood.org/" class="text-[rgb(0,74,173)] text-sm hover:underline">Love Thy Neighbor Website</a>
             </div>
             <button class="cursor-pointer w-full bg-[rgb(0,74,173)] hover:bg-[rgb(203,37,26)] text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
