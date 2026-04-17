@@ -4,6 +4,7 @@ ini_set("display_errors", 1);
 error_reporting(E_ALL);
 
 require_once(__DIR__ . '/database/dbinfo.php');
+require_once(__DIR__ . '/include/input-validation.php');
 
 function ensurePasswordResetTable(mysqli $conn): void {
     $sql = "
@@ -54,11 +55,11 @@ if ($tokenHash !== '') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
-
+    $SecurePasswordResult = isSecurePassword($password);
     if (!$validRequest) {
         $message = 'This reset link is invalid or has expired.';
-    } elseif (strlen($password) < 8) {
-        $message = 'Password must be at least 8 characters long.';
+    } elseif ($SecurePasswordResult === false) {
+        $message = 'Password must be at least 8 characters long, have at least one uppercase letter, one lowercase letter, and one number.';
     } elseif ($password !== $confirmPassword) {
         $message = 'Passwords do not match.';
     } else {
