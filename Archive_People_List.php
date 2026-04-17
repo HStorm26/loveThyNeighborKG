@@ -29,6 +29,7 @@ $currentDate = date('F j, Y');
 $message = '';
 $searchValue = isset($_REQUEST['search']) ? trim($_REQUEST['search']) : '';
 $searchQuery = '';
+
 if ($searchValue !== '') {
     $escapedSearch = mysqli_real_escape_string($con, $searchValue);
     $searchTerm = "%$escapedSearch%";
@@ -43,37 +44,71 @@ $archivedOffset = ($archivedPage - 1) * $perPage;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $archiveAction = isset($_POST['archive_action']) ? trim($_POST['archive_action']) : '';
+
     if ($archiveAction === 'archive_all') {
         $oneYearAgo = date('Y-m-d H:i:s', strtotime('-1 year'));
-        $archiveQuery = "UPDATE dbpersons SET status = 'Inactive', archived = 1 WHERE (status = 'Active' OR status IS NULL)";
-        if ($searchValue !== '') {
-            $archiveQuery .= $searchQuery;
-        }
-        $archiveQuery .= " AND id NOT IN (SELECT DISTINCT personID FROM dbpersonhours WHERE COALESCE(end_time, start_time) >= '$oneYearAgo')";
-        $result = mysqli_query($con, $archiveQuery);
-        if ($result) {
-            $affected = mysqli_affected_rows($con);
-            $message = $affected > 0 ? "Archived $affected user(s) with no activity in the past year." : 'No active users matched the criteria.';
+
+        $idsToArchive = [];
+        $archiveListQuery = "
+            SELECT id
+            FROM dbpersons
+            WHERE (status = 'Active' OR status IS NULL)
+            $searchQuery
+            AND id NOT IN (
+                SELECT DISTINCT personID
+                FROM dbpersonhours
+                WHERE COALESCE(end_time, start_time) >= '$oneYearAgo'
+            )
+        ";
+
+        $archiveListResult = mysqli_query($con, $archiveListQuery);
+
+        if ($archiveListResult) {
+            while ($row = mysqli_fetch_assoc($archiveListResult)) {
+                $idsToArchive[] = $row['id'];
+            }
+            mysqli_free_result($archiveListResult);
+
+            $archivedCount = 0;
+            foreach ($idsToArchive as $personId) {
+                if (archive_volunteer($personId, 'Inactive')) {
+                    $archivedCount++;
+                }
+            }
+
+            $message = $archivedCount > 0
+                ? "Archived $archivedCount user(s) with no activity in the past year."
+                : 'No active users matched the criteria.';
         } else {
             $message = 'Unable to archive users. Please try again.';
         }
     } elseif ($archiveAction === 'unarchive_all') {
-        $unarchiveQuery = "UPDATE dbpersons SET status = 'Active', archived = 0 WHERE status = 'Inactive'";
-        if ($searchValue !== '') {
-            $unarchiveQuery .= $searchQuery;
-        }
-        $result = mysqli_query($con, $unarchiveQuery);
-        if ($result) {
-            $affected = mysqli_affected_rows($con);
-            $message = $affected > 0 ? "Unarchived $affected user(s)." : 'No archived users matched the request.';
+        $idsToRestore = [];
+        $restoreListQuery = "SELECT id FROM dbpersons WHERE status = 'Inactive'$searchQuery";
+        $restoreListResult = mysqli_query($con, $restoreListQuery);
+
+        if ($restoreListResult) {
+            while ($row = mysqli_fetch_assoc($restoreListResult)) {
+                $idsToRestore[] = $row['id'];
+            }
+            mysqli_free_result($restoreListResult);
+
+            $restoredCount = 0;
+            foreach ($idsToRestore as $personId) {
+                if (archive_volunteer($personId, 'Active')) {
+                    $restoredCount++;
+                }
+            }
+
+            $message = $restoredCount > 0 ? "Unarchived $restoredCount user(s)." : 'No archived users matched the request.';
         } else {
             $message = 'Unable to unarchive users. Please try again.';
         }
     } elseif (isset($_POST['archive_id'])) {
         $archiveId = trim($_POST['archive_id']);
         $archiveAction = isset($_POST['archive_action']) ? trim($_POST['archive_action']) : '';
+
         if ($archiveId !== '') {
-            $archiveId = mysqli_real_escape_string($con, $archiveId);
             if ($archiveAction === 'check_year') {
                 $stmt = $con->prepare("SELECT MAX(COALESCE(end_time, start_time)) AS last_time FROM dbpersonhours WHERE personID = ?");
                 if ($stmt) {
@@ -82,9 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bind_result($lastTime);
                     $stmt->fetch();
                     $stmt->close();
+
                     $oneYearAgo = date('Y-m-d H:i:s', strtotime('-1 year'));
                     if (empty($lastTime) || $lastTime < $oneYearAgo) {
-                        if (update_status($archiveId, 'Inactive')) {
+                        if (archive_volunteer($archiveId, 'Inactive')) {
                             $message = 'User had no volunteer activity in the past year and was archived.';
                         } else {
                             $message = 'Unable to archive the user after checking volunteer history.';
@@ -96,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = 'Unable to verify volunteer history. Please try again.';
                 }
             } else {
-                if (update_status($archiveId)) {
+                if (archive_volunteer($archiveId)) {
                     $message = 'User status switched successfully.';
                 } else {
                     $message = 'Unable to update the user status. Please try again.';
@@ -114,6 +150,7 @@ if ($countResult) {
     $activeCount = intval($countRow['cnt']);
     mysqli_free_result($countResult);
 }
+
 $activePageCount = max(1, ceil($activeCount / $perPage));
 if ($activePage > $activePageCount) {
     $activePage = $activePageCount;
@@ -131,6 +168,7 @@ if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $archivePeople[] = $row;
     }
+    mysqli_free_result($result);
 }
 
 $inactiveCount = 0;
@@ -141,6 +179,7 @@ if ($countResult) {
     $inactiveCount = intval($countRow['cnt']);
     mysqli_free_result($countResult);
 }
+
 $archivedPageCount = max(1, ceil($inactiveCount / $perPage));
 if ($archivedPage > $archivedPageCount) {
     $archivedPage = $archivedPageCount;
@@ -158,6 +197,7 @@ if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $archivedPeople[] = $row;
     }
+    mysqli_free_result($result);
 }
 
 $totalCount = $activeCount + $inactiveCount;
@@ -438,14 +478,13 @@ mysqli_close($con);
         <div class="message-box"><?php echo htmlspecialchars($message); ?></div>
     <?php endif; ?>
 
-<section class="search-section">
+    <section class="search-section">
         <form method="get" class="search-form">
             <label for="search" class="sr-only">Search users</label>
             <input id="search" type="search" name="search" value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Search by name, email, or username">
             <button type="submit">Search</button>
         </form>
     </section>
-
 
     <section class="archive-section">
         <div class="table-card">
@@ -505,6 +544,7 @@ mysqli_close($con);
                     </tbody>
                 </table>
             </div>
+
             <?php if ($activePageCount > 1): ?>
                 <div class="pagination">
                     <?php if ($activePage > 1): ?>
@@ -577,6 +617,7 @@ mysqli_close($con);
                     </tbody>
                 </table>
             </div>
+
             <?php if ($archivedPageCount > 1): ?>
                 <div class="pagination">
                     <?php if ($archivedPage > 1): ?>
