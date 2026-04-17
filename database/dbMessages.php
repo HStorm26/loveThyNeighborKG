@@ -83,15 +83,21 @@ function get_user_unread_count($userID) {
 }
 
 function get_message_by_id($id) {
-    $query = "select * from dbmessages where id='$id'";
+    $query = "SELECT * FROM dbmessages WHERE id = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
 
     $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     if ($row == null) {
         return null;
@@ -235,26 +241,35 @@ function message_all_users_prio($from, $title, $body, $prio) {
     return true;
 }
 function delete_message($id) {
-    $query = "delete from dbmessages where id='$id'";
+    $query = "DELETE FROM dbmessages WHERE id = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
+
 function delete_all_messages_for_user($userId) {
-    $query = "DELETE FROM dbmessages WHERE recipientID = '$userId'";
+    $query = "DELETE FROM dbmessages WHERE recipientID = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userId);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
+
 function delete_messages_by_ids($ids, $userID) {
     $ids_str = implode(',', array_map('intval', $ids));
-    $query = "DELETE FROM dbmessages WHERE recipientID='$userID' AND id IN ($ids_str)";
+    $query = "DELETE FROM dbmessages WHERE recipientID = ? AND id IN ($ids_str)";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
-    return boolval($result);
+    return $result;
 }

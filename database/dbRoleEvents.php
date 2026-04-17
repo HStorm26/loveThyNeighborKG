@@ -12,16 +12,19 @@ include_once('dbinfo.php');
 function addRoleToEvent($eventID, $roleID, $capacity, $notes = "") {
     $con = connect();
 
-    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity, notes) VALUES ('$eventID', '$roleID', '$capacity', '$notes')";
-
-    $result = mysqli_query($con, $query);
+    $query = "INSERT INTO dbroleevents (eventID, roleID, capacity, notes) VALUES (?, ?, ?, ?)";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "iis", $eventID, $roleID, $capacity, $notes);
+    $result = mysqli_stmt_execute($stmt);
 
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return null;
     }
 
     mysqli_commit($con);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return true;
 }
@@ -75,9 +78,12 @@ function getRolesForEvent($eventID) {
                 FROM dbroleevents re 
                 JOIN dbroles r 
                 ON re.roleID = r.role_id     
-                WHERE re.eventID = '$eventID'";
+                WHERE re.eventID = ?";
 
-    $result = mysqli_query($con, $query);
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     $theRoleEvents = array();
 
@@ -94,6 +100,7 @@ function getRolesForEvent($eventID) {
         $theRoleEvents[] = $roleEvent;
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     return $theRoleEvents;

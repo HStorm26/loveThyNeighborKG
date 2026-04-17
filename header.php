@@ -146,10 +146,6 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['KioskviewOverallEventsKG.php'] = 4;
         $permission_array['totalhoursreport.php'] = 2;
         $permission_array['topvolunteersreport.php'] = 2;
-        $permission_array['hourcategoryreport.php'] = 2;
-        $permission_array['uniquevolunteerreport.php'] = 2;
-        $permission_array['inactivevolunteersreport.php'] = 2;
-        $permission_array['serviceletterreport.php'] = 2;
         // LOWERCASE
 
 
@@ -220,7 +216,11 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
-                        
+                        <a href="Archive_People_List.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'Archive_People_List.php' ? 'active' : '' ?>">
+                        Archive
+                        </a>
+
                         <a href="viewMyUpcomingEvents.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'viewMyUpcomingEvents.php' ? 'active' : '' ?>">
                         Signed-Up

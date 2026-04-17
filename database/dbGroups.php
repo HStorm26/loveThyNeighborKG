@@ -30,14 +30,24 @@ function add_group($group) {
  */
 function remove_group($group_name) {
     $con = connect();
-    $query = 'SELECT * FROM dbgroups WHERE group_name = "' . $group_name . '"';
-    $result = mysqli_query($con, $query);
+    $query = 'SELECT * FROM dbgroups WHERE group_name = ?';
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $group_name);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if ($result == null || mysqli_num_rows($result) == 0) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
-    $query = 'DELETE FROM dbgroups WHERE group_name = "' . $group_name . '"';
-    $result = mysqli_query($con, $query);
+    
+    $query = 'DELETE FROM dbgroups WHERE group_name = ?';
+    $stmt2 = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt2, "s", $group_name);
+    $result = mysqli_stmt_execute($stmt2);
+    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($stmt2);
     mysqli_close($con);
     return $result ? true : false;
 }
@@ -48,14 +58,20 @@ function remove_group($group_name) {
  */
 function retrieve_group($group_name) {
     $con = connect();
-    $query = "SELECT * FROM dbgroups WHERE group_name = '" . $group_name . "'";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbgroups WHERE group_name = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $group_name);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (mysqli_num_rows($result) !== 1) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
     $result_row = mysqli_fetch_assoc($result);
     $theGroup = new Group($result_row['group_name'], $result_row['color_level']);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $theGroup;
 }
