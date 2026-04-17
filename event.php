@@ -9,6 +9,21 @@
         //die();
     }
 
+    // Check if the user is logged in
+    if (!isset($_SESSION['_id']) || empty($_SESSION['_id'])) {
+        header('Location: login.php');
+        exit();
+    }
+
+    // Check for appropriate access level
+    if ($_SESSION['access_level'] < 1) {
+        header('Location: index.php');
+        exit();
+    }
+
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+
     require_once('include/input-validation.php');
     $args = sanitize($_GET);
     $displayUpdateMessage = false;
