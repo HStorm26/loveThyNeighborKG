@@ -54,6 +54,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
 
     background: #eef5ff;
     border: 1px solid #d5e5ff;
@@ -66,6 +68,13 @@ body {
 .selection-info {
     font-weight: bold;
     color: rgb(0, 74, 173);
+}
+
+.selection-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
 }
 
 /* export button */
@@ -85,12 +94,28 @@ body {
 
 /* clear button */
 .clear-btn {
-    background: #e9eef5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
     border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
+    padding: 12px 20px;
+    border-radius: 12px;
     font-weight: bold;
+    font-size: 15px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 14px rgba(21, 128, 61, 0.2);
+}
+
+.clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(21, 128, 61, 0.28);
+}
+
+.clear-btn:active {
+    transform: scale(0.97);
 }
 
 .email-btn {
