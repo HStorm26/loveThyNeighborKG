@@ -172,3 +172,53 @@ function hoursPerRoleAllTime($roles)
     $con->close();
     return $rows;
 }
+
+function hoursPerRoleWithDateRange($roles, $sd, $ed)
+// $roles is to be an array of role ids as ints
+// $sd and $ed are datetime strings
+// returns a 2d array in the format [[$r(str role),$h(int hours),$m(int minutes)]....]
+{
+    if (!is_array($roles) || count($roles) === 0) {
+        return [];
+    }
+
+    for ($i = 0; $i < sizeof($roles); $i++) {
+        if (!is_int($roles[$i])) {
+            return [];
+        }
+    }
+
+    $placeholders = implode(',', array_fill(0, count($roles), '?'));
+
+    $con = connect();
+    $querey = "SELECT 
+                    r.role,
+                    COALESCE(SUM(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)), 0) as `m`
+               FROM `dbroles` as `r`
+               LEFT JOIN `dbpersonhours` as `h`
+                    ON h.roleID = r.role_id
+                    AND h.start_time >= ?
+                    AND h.end_time < ?
+               WHERE r.role_id IN ($placeholders)
+               GROUP BY r.role, r.role_id
+               ORDER BY m DESC";
+
+    $stmt = $con->prepare($querey);
+
+    $types = 'ss' . str_repeat('i', count($roles));
+    $params = array_merge([$sd, $ed], $roles);
+
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $stmt->bind_result($r, $tm);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $h = intdiv((int)$tm, 60);
+        $m = ((int)$tm % 60);
+        $rows[] = [$r, $h, $m];
+    }
+
+    $con->close();
+    return $rows;
+}

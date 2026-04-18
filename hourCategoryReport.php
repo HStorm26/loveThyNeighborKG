@@ -11,9 +11,26 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
     die();
 }
 
+require_once('database/dbinfo.php');
+
 // Initialize date variables so warnings do not occur
 $sdate = $_POST['sdate'] ?? '';
 $edate = $_POST['edate'] ?? '';
+
+$selectedRoles = $_POST['roles'] ?? [];
+
+// Fetch all roles for checkbox options
+$roles = [];
+$con = connect();
+$querey = "SELECT role_id, role FROM dbroles ORDER BY role_id ASC";
+$stmt = $con->prepare($querey);
+$stmt->execute();
+$stmt->bind_result($roleId, $roleName);
+
+while ($stmt->fetch()) {
+    $roles[] = [$roleId, $roleName];
+}
+$con->close();
 ?>
 
 <!DOCTYPE html>
@@ -26,10 +43,6 @@ $edate = $_POST['edate'] ?? '';
     <?php require_once('header.php'); ?>
 </head>
 <body>
-    <!-- These probably are not needed here yet, but leaving them is fine -->
-    <?php require_once('database/dbEvents.php'); ?>
-    <?php require_once('database/dbPersons.php'); ?>
-
     <div class="center-header">
         <h1 style="color:black;">Generate Hour Category Report</h1>
     </div>
@@ -43,7 +56,7 @@ $edate = $_POST['edate'] ?? '';
     <main>
         <div class="main-content-box">
             <form method="POST" action="processHourCategoryReport.php">
-                
+
                 <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
                     <div class="Start date">
                         <label for="sdate">* Start Date </label>
@@ -57,14 +70,40 @@ $edate = $_POST['edate'] ?? '';
                 </div>
 
                 <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-                    <label for="format" style="font-weight: 600;">File Format-</span>
-                    <span style="color: #000; ">PDF (.pdf)</span>
+                    <p style="font-weight: 600; margin-bottom: 0.75rem;">* Select Hour Categories</p>
+
+                    <div style="margin-bottom: 0.75rem;">
+                        <label>
+                            <input type="checkbox" id="check_all_roles">
+                            Check All
+                        </label>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, minmax(180px, 1fr)); gap: 0.5rem 1rem;">
+                        <?php foreach ($roles as $role): ?>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    class="role-checkbox"
+                                    name="roles[]"
+                                    value="<?php echo htmlspecialchars($role[0]); ?>"
+                                    <?php echo in_array((string)$role[0], array_map('strval', $selectedRoles), true) ? 'checked' : ''; ?>
+                                >
+                                <?php echo htmlspecialchars($role[1]); ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
+                    <label for="format" style="font-weight: 600;">File Format-</label>
+                    <span style="color: #000;">PDF (.pdf)</span>
                     <input type="hidden" name="format" id="format" value="pdf">
                 </div>
 
                 <div style="text-align: center; margin-top: 2rem;">
-                    <input type="hidden" value="<?php echo $_SESSION['_id']; ?>" name="admin" id="admin">
-                    <input type="hidden" value="<?php echo date("d-M-Y H:i:s e"); ?>" name="time" id="time">
+                    <input type="hidden" value="<?php echo htmlspecialchars($_SESSION['_id']); ?>" name="admin" id="admin">
+                    <input type="hidden" value="<?php echo htmlspecialchars(date("d-M-Y H:i:s e")); ?>" name="time" id="time">
                     <input type="submit" value="Generate Report" class="button generate-btn">
                 </div>
             </form>
@@ -74,10 +113,28 @@ $edate = $_POST['edate'] ?? '';
             <a href="index.php" class="button" style="display: inline-block; text-decoration: none; width: 41%;">Return to Dashboard</a>
         </div>
     </main>
+
+    <script>
+        const checkAllBox = document.getElementById('check_all_roles');
+        const roleCheckboxes = document.querySelectorAll('.role-checkbox');
+
+        function syncCheckAllState() {
+            const allChecked = Array.from(roleCheckboxes).length > 0 &&
+                Array.from(roleCheckboxes).every(cb => cb.checked);
+            checkAllBox.checked = allChecked;
+        }
+
+        checkAllBox.addEventListener('change', function () {
+            roleCheckboxes.forEach(cb => {
+                cb.checked = checkAllBox.checked;
+            });
+        });
+
+        roleCheckboxes.forEach(cb => {
+            cb.addEventListener('change', syncCheckAllState);
+        });
+
+        syncCheckAllState();
+    </script>
 </body>
 </html>
-
-   
-</body>
-</html>
-
