@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Added
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
 
@@ -11,7 +10,7 @@ $username = null;
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
-    $username = $_SESSION['_id']; // Username is stored here
+    $username = $_SESSION['_id'];
 }
 
 // Require admin privileges
@@ -19,31 +18,31 @@ if ($accessLevel < 1) {
     header('Location: login.php');
     die();
 }
-//End of added
 
-// Create database connection HERE (so everything in this file can use it)
-include_once('database/dbinfo.php'); 
-$con=connect(); 
+include_once('database/dbinfo.php');
+$con = connect();
 
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }
+
 require_once('database/dbPersons.php');
 
-// To be able to search and also to navigate through the pages
+// Search / filter values
 $search = $_GET['search'] ?? '';
-// for attribute grouping
 $search_by = $_GET['search_by'] ?? 'all';
 $status = $_GET['status'] ?? 'all';
 $per_page = 10;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $per_page;
 
-// Event date filter params
-$event_date = $_GET['event_date'] ?? '';
-$event_id   = $_GET['event_id']   ?? '';
+// Shared date range values
+$sdate = $_GET['sdate'] ?? '';
+$edate = $_GET['edate'] ?? '';
 
-// Get the number of users that fit the query for pagination
+$event_date = $_GET['event_date'] ?? '';
+$event_id   = $_GET['event_id'] ?? '';
+
 $total_users = getUserCount($search, $search_by, $status, $event_id);
 $total_pages = max(1, ceil($total_users / $per_page));
 
@@ -55,29 +54,90 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php require_once('database/dbPersons.php'); ?>
-    <title>Love Thy Neighbor | Generate Service Letters</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="layoutInfo.css">
+<?php require_once('database/dbPersons.php'); ?>
+<title>Love Thy Neighbor | Generate Service Letters</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="layoutInfo.css">
+<style>
+    .date-card {
+        margin-bottom: 1.5rem;
+    }
 
+    .date-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: end;
+    }
 
+    .date-form-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 180px;
+    }
 
+    .date-form-group label {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+
+    .date-form-group input[type="date"] {
+        padding: 8px;
+    }
+
+    .service-letter-action-form {
+        margin: 0;
+    }
+
+    .service-letter-action-form .report-btn {
+        display: inline-block;
+        text-align: center;
+    }
+</style>
 </head>
 
 <body>
 <?php include('header.php'); ?>
 <div class="page">
-
-    <!-- Main -->
     <div class="main">
+
+    <div class="filter-card">
+        <form method="GET" action="serviceLetterReport.php">
+
+            <!-- Keep existing filters when applying date -->
+            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+            <input type="hidden" name="search_by" value="<?php echo htmlspecialchars($search_by); ?>">
+            <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
+            <input type="hidden" name="page" value="1">
+
+            <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
+                <div class="Start date">
+                    <label for="sdate">* Start Date </label>
+                    <input type="date" id="sdate" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>" required>
+                </div>
+
+                <div class="End date">
+                    <label for="edate">* End Date </label>
+                    <input type="date" id="edate" name="edate" value="<?php echo htmlspecialchars($edate); ?>" required>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button type="submit" class="button">Apply Date Range</button>
+            </div>
+
+        </form>
+    </div>
 
         <div class="page-header">
             <h1>Users</h1>
         </div>
 
-        <!-- Status Filters + Attribute Selection -->
         <div class="filter-card">
-            <form class="filter-form" method="GET" action="serviceLetterReport.php">                
+            <form class="filter-form" method="GET" action="serviceLetterReport.php">
+                <input type="hidden" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>">
+                <input type="hidden" name="edate" value="<?php echo htmlspecialchars($edate); ?>">
+
                 <select name="search_by">
                     <option value="all" <?php echo ($search_by === 'all' ? 'selected' : ''); ?>>All</option>
                     <option value="name" <?php echo ($search_by === 'name' ? 'selected' : ''); ?>>Name</option>
@@ -94,24 +154,10 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     <option value="archived" <?php echo ($status === 'archived' ? 'selected' : ''); ?>>Archived</option>
                 </select>
 
-
-
                 <button type="submit">Filter</button>
             </form>
-
-            
         </div>
-        
 
-       
-            <div class="selection-bar">
-
-    
-
-
-    
-</div>
-        <!-- Table -->
         <div class="table-card">
             <table>
                 <thead>
@@ -143,7 +189,12 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                                 <?php endif; ?>
                             </td>
                             <td class="action">
-                                <a href="processServiceLetterReport.php?target_id=<?php echo urlencode($user['id']); ?>" class="report-btn">Generate Report</a>                                                                         
+                                <form method="GET" action="processServiceLetterReport.php" class="service-letter-action-form">
+                                    <input type="hidden" name="target_id" value="<?php echo htmlspecialchars($user['id']); ?>">
+                                    <input type="hidden" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>">
+                                    <input type="hidden" name="edate" value="<?php echo htmlspecialchars($edate); ?>">
+                                    <button type="submit" class="report-btn">Generate Report</button>
+                                </form>
                             </td>
                         </tr>
                         <?php endif; ?>
@@ -154,58 +205,48 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     </tr>
                 <?php endif; ?>
                 </tbody>
-                
             </table>
-            </form>
         </div>
 
         <div class="pagination-container">
             <div class="pagination">
-                <!-- previous button -->
                 <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" 
-                    class="page-btn">Previous</a>
+                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&sdate=<?php echo urlencode($sdate); ?>&edate=<?php echo urlencode($edate); ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" class="page-btn">Previous</a>
                 <?php endif; ?>
 
-                <!-- ALWAYS show first page -->
                 <?php $window = 2; ?>
-                    <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
+                <a href="?page=1&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&sdate=<?php echo urlencode($sdate); ?>&edate=<?php echo urlencode($edate); ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
+                   class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
 
-                <!-- LEFT ELLIPSIS RAH -->
                 <?php if ($page > $window + 2): ?>
                     <span class="page-btn">...</span>
                 <?php endif; ?>
 
-                <!-- middle pages -->
-                <?php 
+                <?php
                 $start = max(2, $page - $window);
                 $end = min($total_pages - 1, $page + $window);
 
                 for ($i = $start; $i <= $end; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
-                    <?php echo $i; ?>
+                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&sdate=<?php echo urlencode($sdate); ?>&edate=<?php echo urlencode($edate); ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
+                       class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
-                <!-- RIGHT ELLIPSIS RAH -->
                 <?php if ($page < $total_pages - ($window + 1)): ?>
                     <span class="page-btn">...</span>
                 <?php endif; ?>
 
-                <!-- ALWAYS show last page [ assuming if more than 1 page] -->
                 <?php if ($total_pages > 1): ?>
-                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
-                    class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
-                    <?php echo $total_pages; ?>
+                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&sdate=<?php echo urlencode($sdate); ?>&edate=<?php echo urlencode($edate); ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>"
+                       class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
+                        <?php echo $total_pages; ?>
                     </a>
                 <?php endif; ?>
 
-                <!-- next button -->
                 <?php if ($page < $total_pages): ?>
-                            <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" class="page-btn">Next</a>
-                <?php endif; ?>   
+                    <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo $search_by; ?>&status=<?php echo $status; ?>&sdate=<?php echo urlencode($sdate); ?>&edate=<?php echo urlencode($edate); ?>&event_date=<?php echo urlencode($event_date); ?>&event_id=<?php echo urlencode($event_id); ?>" class="page-btn">Next</a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

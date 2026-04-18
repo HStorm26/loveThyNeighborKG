@@ -222,3 +222,81 @@ function hoursPerRoleWithDateRange($roles, $sd, $ed)
     $con->close();
     return $rows;
 }
+
+// ------------------------------------------
+// functions for service letter report
+// ------------------------------------------
+
+function getVolunteerNameById($id)
+// returns array in format [string first_name, string last_name]
+// returns ['', ''] if not found
+{
+    $con = connect();
+    $querey = "SELECT first_name, last_name FROM dbpersons WHERE id = ?";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $stmt->bind_result($f, $l);
+
+    $row = ['', ''];
+    while ($stmt->fetch())
+    {
+        $row = [$f, $l];
+    }
+
+    $con->close();
+    return $row;
+}
+
+function getVolunteerServiceHoursForDateRange($id, $sd, $ed)
+// returns array in format [int total_minutes, int volunteer_days]
+{
+    $con = connect();
+    $querey = "SELECT 
+                    COALESCE(SUM(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)), 0) as total_minutes,
+                    COUNT(DISTINCT DATE(h.start_time)) as volunteer_days
+               FROM dbpersonhours as h
+               WHERE h.personID = ?
+                 AND h.start_time >= ?
+                 AND h.start_time < ?";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('sss', $id, $sd, $ed);
+    $stmt->execute();
+    $stmt->bind_result($tm, $vd);
+
+    $row = [0, 0];
+    while ($stmt->fetch())
+    {
+        $row = [(int)$tm, (int)$vd];
+    }
+
+    $con->close();
+    return $row;
+}
+
+function getVolunteerRolesForDateRange($id, $sd, $ed)
+// returns array in format [string role, string role, ...]
+{
+    $con = connect();
+    $querey = "SELECT DISTINCT r.role
+               FROM dbpersonhours as h
+               LEFT JOIN dbroles as r ON h.roleID = r.role_id
+               WHERE h.personID = ?
+                 AND h.start_time >= ?
+                 AND h.start_time < ?
+                 AND r.role IS NOT NULL
+               ORDER BY r.role ASC";
+    $stmt = $con->prepare($querey);
+    $stmt->bind_param('sss', $id, $sd, $ed);
+    $stmt->execute();
+    $stmt->bind_result($role);
+
+    $rows = [];
+    while ($stmt->fetch())
+    {
+        $rows[] = $role;
+    }
+
+    $con->close();
+    return $rows;
+}
