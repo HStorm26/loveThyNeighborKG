@@ -101,6 +101,11 @@ if (!empty($sdate) && !empty($edate)) {
             background-color: #f2f2f2;
         }
 
+        .report-footnote {
+            margin-top: 0.3in;
+            font-size: 13px;
+        }
+
         .no-results {
             margin-top: 0.3in;
             padding: 12px;
@@ -152,8 +157,11 @@ if (!empty($sdate) && !empty($edate)) {
         </div>
 
         <div class="report-summary">
-            <strong>Total unique volunteers:</strong> <?php echo (int)$totalUnique; ?>
+            <strong>Total unique volunteers:</strong> <?php echo (int)$totalUnique; ?><br>
+            <br>
+            <i>* indicates participation before May 1 2026. All events before then count as one combined event.</i>
         </div>
+        
 
         <?php if ($totalUnique > 0): ?>
             <table class="report-table">
@@ -171,11 +179,23 @@ if (!empty($sdate) && !empty($edate)) {
                             <td><?php echo htmlspecialchars($volunteer[0] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($volunteer[1] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($volunteer[2] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($volunteer[3] ?? '0'); ?></td>
+                            <td>
+                                <?php
+                                    $eventCount = (int)($volunteer[3] ?? 0);
+                                    $hasPreMayFlag = !empty($volunteer[4]);
+
+                                    echo htmlspecialchars((string)$eventCount);
+                                    if ($hasPreMayFlag) {
+                                        echo '*';
+                                    }
+                                ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            
         <?php else: ?>
             <div class="no-results">
                 No volunteers were found for the selected date range.

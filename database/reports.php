@@ -40,24 +40,38 @@ function countUniqueVolunteersForDateRange($sd,$ed)
     return $num;
 }
 function volunteerUniqueEventsForDateRange($sd,$ed)
-// returns a 2d array in the format [[string id, string first, string last, int events partisipated in]...]
+// returns a 2d array in the format [[string id, string first, string last, int events participated in, int before_may]...]
 {
     $con = connect();
-    $querey = "SELECT p.id, p.first_name, p.last_name, count(h.eventID) as `m` 
-                FROM `dbpersonhours` as `h` 
-                left join `dbpersons` as `p` on h.personID = p.id 
-                WHERE h.start_time >= ? AND h.start_time < ? 
-                GROUP BY p.id, p.first_name, p.last_name
+
+    $querey = "SELECT 
+                    p.id,
+                    p.first_name,
+                    p.last_name,
+                    COUNT(h.eventID) as `m`,
+                    EXISTS (
+                        SELECT 1
+                        FROM `dbpersonhours` as `h2`
+                        WHERE h2.personID = h.personID
+                          AND h2.start_time < '2026-05-01'
+                    ) as before_may
+                FROM `dbpersonhours` as `h`
+                LEFT JOIN `dbpersons` as `p` on h.personID = p.id
+                WHERE h.start_time >= ? AND h.start_time < ?
+                GROUP BY h.personID, p.id, p.first_name, p.last_name
                 ORDER BY m DESC";
+
     $stmt = $con->prepare($querey);
     $stmt->bind_param('ss',$sd,$ed);
     $stmt->execute();
-    $stmt->bind_result($id,$f,$l,$e);
+    $stmt->bind_result($id,$f,$l,$e,$beforeMay);
+
     $rows = [];
     while ($stmt->fetch())
     {
-        $rows[] = [$id,$f,$l,$e];
+        $rows[] = [$id,$f,$l,$e,$beforeMay];
     }
+
     $con->close();
     return $rows;
 }
