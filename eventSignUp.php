@@ -1,13 +1,11 @@
 <?php
-    //- Brooke did this page for Love Thy Neighbor KG (Sign up)
-    // Make session information accessible, allowing us to associate
-    // data with the logged-in user.
     session_cache_expire(30);
     session_start();
 
     require_once('include/input-validation.php');
     require_once('database/dbEvents.php');
     require_once('database/dbPersons.php');
+    require_once('database/dbRoles.php');
     require_once('database/dbRoleEvents.php');
 
     $loggedIn = false;
@@ -24,7 +22,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $args = sanitize($_POST, null);
 
-        $required = array("event-name", "account-name", "roleID");
+        $required = array("event-name", "account-name", "roleID", "event_id");
   
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
@@ -33,9 +31,14 @@
 
         $name = htmlspecialchars_decode($args['event-name']);
         $account_name = htmlspecialchars_decode($args['account-name']);
-        $role = isset($args['role']) ? $args['role'] : '';
-        $notes = '';
-        $id = sign_up_for_event($name, $account_name, $role, $notes); 
+        $roleID = isset($args['roleID']) ? $args['roleID'] : 0;
+        $event_id = isset($args['event_id']) ? (int)$args['event_id'] : 0;
+        $notes = isset($args['notes']) ? trim($args['notes']) : '';
+
+        $id = sign_up_for_event($name, $account_name, $roleID, $notes); 
+        if ($id) {
+        addPersonRoleToEvent($account_name, $roleID, $event_id);
+        }
         if (!$id) {
             header('Location: eventFailure.php');
             exit();
@@ -83,6 +86,7 @@
 
     // Get the roles for this particular event -Brooke
     $roles = getRolesForEvent($event_id);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -132,30 +136,35 @@
                         </thead>
 
                         <tbody>
-                            <?php foreach ($roles as $role): ?>
-                            <tr>
-                                <td class="role-select">
-                                    <input
-                                        type="radio"
-                                        name="roleID"
-                                        value="<?php echo (int)$role['roleID']; ?>"
-                                        required
-                                    >
-                                </td>
+                        <?php foreach ($roles as $role): ?>
+                        <tr>
+                            <?php
+                            $capacity = isset($role['capacity']) ? (int)$role['capacity'] : 0;
+                            $remaining = isset($role['remaining_spots']) ? (int)$role['remaining_spots'] : $capacity;
+                            ?>
+                            <td>
+                                <input
+                                    type="radio"
+                                    name="roleID"
+                                    value="<?php echo (int)($role['roleID'] ?? 0); ?>"
+                                    <?php echo ($remaining <= 0) ? 'disabled' : ''; ?>
+                                    required
+                                >
+                            </td>
 
-                                <td class="role-name">
-                                    <?php echo htmlspecialchars($role['role_name'] ?? ''); ?>
-                                </td>
-
-                                <td class="role-capacity">
-                                    <?php echo (int)($role['capacity'] ?? 0); ?> spots available
-                                </td>
-
-                                <td class="role-description">
-                                    <?php echo htmlspecialchars($role['role_description'] ?? ''); ?>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
+                            <td><?php echo htmlspecialchars($role['role_name']); ?></td>
+                            <!-- <td><?php echo htmlspecialchars($role['shift_group']); ?></td> -->
+                            <td class="role-capacity">
+                                <?php
+                                    $capacity = isset($role['capacity']) ? (int)$role['capacity'] : 0;
+                                    $remaining = isset($role['remaining_spots']) ? (int)$role['remaining_spots'] : $capacity;
+                                    echo $remaining . '/' . $capacity . ' spots left';
+                                ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($role['role_description']); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                        </tbody>
                         </tbody>
                     </table>
                 </div>    
