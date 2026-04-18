@@ -40,18 +40,23 @@ function countUniqueVolunteersForDateRange($sd,$ed)
     return $num;
 }
 function volunteerUniqueEventsForDateRange($sd,$ed)
-// returns a 2d array in the format [[string first, string last, int events partisipated in]...]
+// returns a 2d array in the format [[string id, string first, string last, int events partisipated in]...]
 {
     $con = connect();
-    $querey = "SELECt p.first_name, p.last_name, count(h.eventID) as `m` FROM `dbpersonhours` as `h` left join `dbpersons` as `p` on h.personID = p.id WHERE h.start_time >= ? AND h.start_time < ? GROUP BY h.personID order by m desc";
+    $querey = "SELECT p.id, p.first_name, p.last_name, count(h.eventID) as `m` 
+                FROM `dbpersonhours` as `h` 
+                left join `dbpersons` as `p` on h.personID = p.id 
+                WHERE h.start_time >= ? AND h.start_time < ? 
+                GROUP BY p.id, p.first_name, p.last_name
+                ORDER BY m DESC";
     $stmt = $con->prepare($querey);
     $stmt->bind_param('ss',$sd,$ed);
     $stmt->execute();
-    $stmt->bind_result($f,$l,$e);
+    $stmt->bind_result($id,$f,$l,$e);
     $rows = [];
     while ($stmt->fetch())
     {
-        $rows[] = [$f,$l,$e];
+        $rows[] = [$id,$f,$l,$e];
     }
     $con->close();
     return $rows;
