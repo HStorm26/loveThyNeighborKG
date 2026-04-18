@@ -71,39 +71,101 @@ function updateNotesForRoleEvent($notes,$roleID,$eventID)
 // ===== might need to change to accommodate dbRoles better? =====
 //
 // for now, grabs the eventID, roleID, cap, & role description
+// function getRolesForEvent($eventID) {
+//     $con = connect();
+//     // role_id is coming from dbroles.sql
+//     $query = "SELECT re.eventID, re.roleID, re.capacity, r.role, r.role_description
+//                 FROM dbroleevents re 
+//                 JOIN dbroles r 
+//                 ON re.roleID = r.role_id     
+//                 WHERE re.eventID = ?";
+
+//     $stmt = mysqli_prepare($con, $query);
+//     mysqli_stmt_bind_param($stmt, "i", $eventID);
+//     mysqli_stmt_execute($stmt);
+//     $result = mysqli_stmt_get_result($stmt);
+
+//     $theRoleEvents = array();
+
+//     while ($resultRow = mysqli_fetch_assoc($result)) {
+//         $roleEvent = array(
+//             "eventID" => $resultRow['eventID'],
+//             "roleID" => $resultRow['roleID'],
+//             "capacity" => $resultRow['capacity'],
+//             "role_name" => $resultRow['role'],
+//             "role_description" => $resultRow['role_description']
+//             //"currentSignups" => $resultRow['currentSignups']
+//         );
+
+//         $theRoleEvents[] = $roleEvent;
+//     }
+
+//     mysqli_stmt_close($stmt);
+//     mysqli_close($con);
+
+//     return $theRoleEvents;
+// }
+
 function getRolesForEvent($eventID) {
     $con = connect();
-    // role_id is coming from dbroles.sql
-    $query = "SELECT re.eventID, re.roleID, re.capacity, r.role, r.role_description
-                FROM dbroleevents re 
-                JOIN dbroles r 
-                ON re.roleID = r.role_id     
-                WHERE re.eventID = ?";
 
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_bind_param($stmt, "i", $eventID);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $stmt = $con->prepare("
+        SELECT
+            re.eventID AS eventID,
+            re.roleID AS roleID,
+            re.capacity AS capacity,
 
-    $theRoleEvents = array();
+            r.role AS role_name,
+            r.role_description AS role_description,
+            r.shift_group AS shift_group,
 
-    while ($resultRow = mysqli_fetch_assoc($result)) {
-        $roleEvent = array(
-            "eventID" => $resultRow['eventID'],
-            "roleID" => $resultRow['roleID'],
-            "capacity" => $resultRow['capacity'],
-            "role_name" => $resultRow['role'],
-            "role_description" => $resultRow['role_description']
-            //"currentSignups" => $resultRow['currentSignups']
-        );
+            COUNT(pr.person_id) AS current_signups,
+            (re.capacity - COUNT(pr.person_id)) AS remaining_spots
 
-        $theRoleEvents[] = $roleEvent;
+        FROM dbroleevents re
+
+        JOIN dbroles r
+            ON re.roleID = r.role_id
+
+        LEFT JOIN person_roles pr
+            ON pr.event_id = re.eventID
+            AND pr.role_id = re.roleID
+
+        WHERE re.eventID = ?
+
+        GROUP BY
+            re.eventID,
+            re.roleID,
+            re.capacity,
+            r.role,
+            r.role_description,
+            r.shift_group
+
+        ORDER BY
+            r.shift_group,
+            r.role
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return [];
     }
 
-    mysqli_stmt_close($stmt);
+    $stmt->bind_param("i", $eventID);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $roles = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $roles[] = $row;
+    }
+
+    $stmt->close();
     mysqli_close($con);
 
-    return $theRoleEvents;
+    return $roles;
 }
 
 
