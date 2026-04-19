@@ -25,6 +25,81 @@ if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }
 
+function buildArchivePageUrl($activePage, $archivedPage, $searchValue)
+{
+    $params = [
+        'active_page' => $activePage,
+        'archived_page' => $archivedPage,
+    ];
+
+    if ($searchValue !== '') {
+        $params['search'] = $searchValue;
+    }
+
+    return '?' . http_build_query($params);
+}
+
+function renderArchivePagination($currentPage, $totalPages, $activePage, $archivedPage, $searchValue, $pageKey)
+{
+    if ($totalPages <= 1) {
+        return;
+    }
+
+    $window = 2;
+
+    echo '<div class="pagination-container"><div class="pagination">';
+
+    if ($currentPage > 1) {
+        $prevActive = $pageKey === 'active_page' ? $currentPage - 1 : $activePage;
+        $prevArchived = $pageKey === 'archived_page' ? $currentPage - 1 : $archivedPage;
+        echo '<a href="' . htmlspecialchars(buildArchivePageUrl($prevActive, $prevArchived, $searchValue), ENT_QUOTES, 'UTF-8') . '" class="page-btn">Previous</a>';
+    }
+
+    $firstPageUrl = buildArchivePageUrl(
+        $pageKey === 'active_page' ? 1 : $activePage,
+        $pageKey === 'archived_page' ? 1 : $archivedPage,
+        $searchValue
+    );
+    echo '<a href="' . htmlspecialchars($firstPageUrl, ENT_QUOTES, 'UTF-8') . '" class="page-btn ' . ($currentPage === 1 ? 'active' : '') . '">1</a>';
+
+    if ($currentPage > $window + 2) {
+        echo '<span class="page-btn ellipsis">...</span>';
+    }
+
+    $start = max(2, $currentPage - $window);
+    $end = min($totalPages - 1, $currentPage + $window);
+
+    for ($i = $start; $i <= $end; $i++) {
+        $pageUrl = buildArchivePageUrl(
+            $pageKey === 'active_page' ? $i : $activePage,
+            $pageKey === 'archived_page' ? $i : $archivedPage,
+            $searchValue
+        );
+        echo '<a href="' . htmlspecialchars($pageUrl, ENT_QUOTES, 'UTF-8') . '" class="page-btn ' . ($i === $currentPage ? 'active' : '') . '">' . $i . '</a>';
+    }
+
+    if ($currentPage < $totalPages - ($window + 1)) {
+        echo '<span class="page-btn ellipsis">...</span>';
+    }
+
+    if ($totalPages > 1) {
+        $lastPageUrl = buildArchivePageUrl(
+            $pageKey === 'active_page' ? $totalPages : $activePage,
+            $pageKey === 'archived_page' ? $totalPages : $archivedPage,
+            $searchValue
+        );
+        echo '<a href="' . htmlspecialchars($lastPageUrl, ENT_QUOTES, 'UTF-8') . '" class="page-btn ' . ($currentPage === $totalPages ? 'active' : '') . '">' . $totalPages . '</a>';
+    }
+
+    if ($currentPage < $totalPages) {
+        $nextActive = $pageKey === 'active_page' ? $currentPage + 1 : $activePage;
+        $nextArchived = $pageKey === 'archived_page' ? $currentPage + 1 : $archivedPage;
+        echo '<a href="' . htmlspecialchars(buildArchivePageUrl($nextActive, $nextArchived, $searchValue), ENT_QUOTES, 'UTF-8') . '" class="page-btn">Next</a>';
+    }
+
+    echo '</div></div>';
+}
+
 $currentDate = date('F j, Y');
 $message = '';
 $searchValue = isset($_REQUEST['search']) ? trim($_REQUEST['search']) : '';
@@ -36,7 +111,7 @@ if ($searchValue !== '') {
     $searchQuery = " AND (first_name LIKE '$searchTerm' OR last_name LIKE '$searchTerm' OR email LIKE '$searchTerm' OR id LIKE '$searchTerm')";
 }
 
-$perPage = 25;
+$perPage = 10;
 $activePage = isset($_GET['active_page']) ? max(1, intval($_GET['active_page'])) : 1;
 $archivedPage = isset($_GET['archived_page']) ? max(1, intval($_GET['archived_page'])) : 1;
 $activeOffset = ($activePage - 1) * $perPage;
@@ -50,14 +125,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $idsToArchive = [];
         $archiveListQuery = "
-            SELECT id
-            FROM dbpersons
-            WHERE (status = 'Active' OR status IS NULL)
-            $searchQuery
-            AND id NOT IN (
-                SELECT DISTINCT personID
-                FROM dbpersonhours
-                WHERE COALESCE(end_time, start_time) >= '$oneYearAgo'
+            SELECT p.id
+            FROM dbpersons AS p
+            WHERE (p.status = 'Active' OR p.status IS NULL)
+            " . str_replace(
+                ['first_name', 'last_name', 'email', 'id'],
+                ['p.first_name', 'p.last_name', 'p.email', 'p.id'],
+                $searchQuery
+            ) . "
+            AND NOT EXISTS (
+                SELECT 1
+                FROM dbpersonhours AS h
+                WHERE h.personID COLLATE utf8mb4_unicode_ci = p.id COLLATE utf8mb4_unicode_ci
+                AND COALESCE(h.end_time, h.start_time) >= '$oneYearAgo'
             )
         ";
 
@@ -216,226 +296,7 @@ mysqli_close($con);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="css/dashboard.css">
-
-    <style>
-        .archive-page .archive-section {
-            margin-top: 24px;
-        }
-
-        .archive-page .table-card {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .archive-page .table-card h2 {
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-
-        .archive-page .table-card .muted {
-            margin-bottom: 18px;
-            color: #666;
-        }
-
-        .archive-page .message-box {
-            margin: 16px 0 24px 0;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: #e8f8e8;
-            border: 1px solid #b8e2b8;
-            color: #1a5d30;
-            font-weight: 600;
-        }
-
-        .archive-page .table-wrap {
-            overflow-x: auto;
-        }
-
-        .archive-page table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .archive-page th,
-        .archive-page td {
-            text-align: left;
-            padding: 14px 12px;
-            border-bottom: 1px solid #e9e9e9;
-        }
-
-        .archive-page th {
-            font-weight: 700;
-            color: #333;
-            background: #fafafa;
-        }
-
-        .archive-page tr:last-child td {
-            border-bottom: none;
-        }
-
-        .archive-page .no-data {
-            padding: 24px;
-            text-align: center;
-            color: #666;
-        }
-
-        .archive-page .action-btn {
-            padding: 8px 14px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: inherit;
-            transition: transform 0.15s ease, opacity 0.15s ease;
-        }
-
-        .archive-page .action-btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.95;
-        }
-
-        .archive-page .archive-page-action-form {
-            min-width: 0;
-            max-width: 100%;
-        }
-
-        .archive-page .action-btn {
-            white-space: normal;
-            word-break: break-word;
-            min-width: 0;
-            max-width: 100%;
-            padding: 10px 16px;
-        }
-
-        .archive-page .archive-btn {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .archive-page .unarchive-btn {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .archive-page .status-pill {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .archive-page .status-active {
-            background: #e7f5ff;
-            color: #0b5ed7;
-        }
-
-        .archive-page .status-inactive {
-            background: #f1f3f5;
-            color: #495057;
-        }
-
-        .archive-page .pagination {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .archive-page .pagination a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1px solid #ddd;
-            background: #fff;
-            color: #333;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .archive-page .search-section {
-            margin-top: 28px;
-            margin-bottom: 24px;
-        }
-
-        .archive-page .search-form {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .archive-page .search-form input[type="search"] {
-            flex: 1 1 320px;
-            min-width: 220px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            border: 1px solid #d8d8d8;
-            font-size: 1rem;
-        }
-
-        .archive-page .search-form button {
-            padding: 12px 18px;
-            border-radius: 14px;
-            border: none;
-            background: #0b5ed7;
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .archive-page .search-form button:hover {
-            background: #094bb5;
-        }
-
-        .archive-page .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
-            margin-top: 28px;
-        }
-
-        .archive-page .card {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 14px;
-            min-height: 160px;
-        }
-
-        .archive-page .card h3 {
-            margin: 0;
-        }
-
-        .archive-page .card p {
-            margin: 0;
-            font-size: 1.65rem;
-            font-weight: 700;
-        }
-
-        .archive-page .card i {
-            font-size: 1.5rem;
-        }
-
-        .archive-page .pagination a.active {
-            background: #f0f0f0;
-            border-color: #bbb;
-        }
-
-        .archive-page .pagination a:hover {
-            background: #f8f8f8;
-        }
-    </style>
+    <link rel="stylesheet" href="layoutInfo.css">
 </head>
 
 <body class="archive-page">
@@ -488,12 +349,12 @@ mysqli_close($con);
 
     <section class="archive-section">
         <div class="table-card">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div class="archive-page-header">
                 <div>
                     <h2>Active Users</h2>
                     <p class="muted">Use this table to archive currently active volunteers and admins.</p>
                 </div>
-                <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="archive-page-action-form" style="margin:0;">
+                <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="archive-page-action-form">
                     <input type="hidden" name="archive_action" value="archive_all">
                     <input type="hidden" name="search" value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>">
                     <button type="submit" class="action-btn archive-btn" onclick="return confirm('Archive all active users that have not volunteered in the past year?');">Archive All Users Who Haven't Volunteered in Over a Year</button>
@@ -505,6 +366,7 @@ mysqli_close($con);
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Username</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Type</th>
@@ -517,12 +379,13 @@ mysqli_close($con);
                             <?php foreach ($archivePeople as $person): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($person['first_name'] . ' ' . $person['last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($person['id']); ?></td>
                                     <td><?php echo htmlspecialchars($person['email']); ?></td>
                                     <td><?php echo htmlspecialchars($person['phone_number']); ?></td>
                                     <td><?php echo htmlspecialchars($person['type']); ?></td>
-                                    <td><span class="status-pill status-active">Active</span></td>
+                                    <td><span class="badge active">Active</span></td>
                                     <td>
-                                        <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="margin:0;">
+                                        <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="archive-page-action-form">
                                             <input type="hidden" name="archive_id" value="<?php echo htmlspecialchars($person['id'], ENT_QUOTES, 'UTF-8'); ?>">
                                             <input type="hidden" name="archive_action" value="check_year">
                                             <input type="hidden" name="search" value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>">
@@ -538,35 +401,23 @@ mysqli_close($con);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td class="no-data" colspan="6">No active users found.</td>
+                                <td class="no-data" colspan="7">No active users found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
-            <?php if ($activePageCount > 1): ?>
-                <div class="pagination">
-                    <?php if ($activePage > 1): ?>
-                        <a href="?active_page=<?php echo $activePage - 1; ?>&archived_page=<?php echo $archivedPage; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>">Prev</a>
-                    <?php endif; ?>
-                    <?php for ($i = 1; $i <= $activePageCount; $i++): ?>
-                        <a href="?active_page=<?php echo $i; ?>&archived_page=<?php echo $archivedPage; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>" class="<?php echo $i === $activePage ? 'active' : ''; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
-                    <?php if ($activePage < $activePageCount): ?>
-                        <a href="?active_page=<?php echo $activePage + 1; ?>&archived_page=<?php echo $archivedPage; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>">Next</a>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
+            <?php renderArchivePagination($activePage, $activePageCount, $activePage, $archivedPage, $searchValue, 'active_page'); ?>
         </div>
 
         <div class="table-card">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div class="archive-page-header">
                 <div>
                     <h2>Archived Users</h2>
                     <p class="muted">Use this table to restore users who are currently inactive.</p>
                 </div>
-                <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="margin:0;">
+                <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="archive-page-action-form">
                     <input type="hidden" name="archive_action" value="unarchive_all">
                     <input type="hidden" name="search" value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>">
                     <button type="submit" class="action-btn unarchive-btn" onclick="return confirm('Unarchive all archived users?');">Unarchive All</button>
@@ -578,6 +429,7 @@ mysqli_close($con);
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Username</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Type</th>
@@ -590,12 +442,13 @@ mysqli_close($con);
                             <?php foreach ($archivedPeople as $person): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($person['first_name'] . ' ' . $person['last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($person['id']); ?></td>
                                     <td><?php echo htmlspecialchars($person['email']); ?></td>
                                     <td><?php echo htmlspecialchars($person['phone_number']); ?></td>
                                     <td><?php echo htmlspecialchars($person['type']); ?></td>
-                                    <td><span class="status-pill status-inactive">Inactive</span></td>
+                                    <td><span class="badge archived">Inactive</span></td>
                                     <td>
-                                        <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="margin:0;">
+                                        <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="archive-page-action-form">
                                             <input type="hidden" name="archive_id" value="<?php echo htmlspecialchars($person['id'], ENT_QUOTES, 'UTF-8'); ?>">
                                             <input type="hidden" name="archive_action" value="toggle">
                                             <input type="hidden" name="search" value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>">
@@ -611,26 +464,14 @@ mysqli_close($con);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td class="no-data" colspan="6">No archived users found.</td>
+                                <td class="no-data" colspan="7">No archived users found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
-            <?php if ($archivedPageCount > 1): ?>
-                <div class="pagination">
-                    <?php if ($archivedPage > 1): ?>
-                        <a href="?active_page=<?php echo $activePage; ?>&archived_page=<?php echo $archivedPage - 1; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>">Prev</a>
-                    <?php endif; ?>
-                    <?php for ($i = 1; $i <= $archivedPageCount; $i++): ?>
-                        <a href="?active_page=<?php echo $activePage; ?>&archived_page=<?php echo $i; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>" class="<?php echo $i === $archivedPage ? 'active' : ''; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
-                    <?php if ($archivedPage < $archivedPageCount): ?>
-                        <a href="?active_page=<?php echo $activePage; ?>&archived_page=<?php echo $archivedPage + 1; ?><?php echo $searchValue !== '' ? '&search=' . urlencode($searchValue) : ''; ?>">Next</a>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
+            <?php renderArchivePagination($archivedPage, $archivedPageCount, $activePage, $archivedPage, $searchValue, 'archived_page'); ?>
         </div>
     </section>
 
