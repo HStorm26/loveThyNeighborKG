@@ -46,7 +46,12 @@ foreach ($allMembers as $member) {
 // get events for drop down
 // ------------------------
 
-$allEvents = get_all_events_sorted_by_date_not_archived();
+$allEvents = array_values(array_filter(
+    get_all_events_sorted_by_date_not_archived(),
+    static function ($event) {
+        return !is_archived($event->getID());
+    }
+));
 
 
 
@@ -233,8 +238,11 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])
 
     if ($recipientsType === 'events' && !empty($eventID))
         {
-            $recipientIDs = getEventParticipants((int)$eventID);
-            
+            if (is_archived((int)$eventID)) {
+                $submissionMessage = "<div class='error-toast'>Archived events cannot be used for participant emails.</div>";
+            } else {
+                $recipientIDs = getEventParticipants((int)$eventID);
+            }
         }
 
     // ------------------------------------------------------
@@ -276,7 +284,9 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])
     // ------------------------------------------------------
     else if ($action === 'send') {
 
-        if (empty($subject)) {
+        if (!empty($submissionMessage)) {
+            // Keep the archived-event validation message set above.
+        } else if (empty($subject)) {
             $submissionMessage = "<div class='error-toast'>Email Subject is required.</div>";
         } else {
 
