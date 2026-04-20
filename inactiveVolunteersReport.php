@@ -65,6 +65,3 @@ $edate = $_POST['edate'] ?? '';
 </body>
 </html>
 
-   
-</body>
-</html>
