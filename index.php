@@ -25,6 +25,7 @@
         die("Database connection failed: " . mysqli_connect_error());
     }
         
+    include_once('database/dbEvents.php');
     include_once('database/dbPersons.php');
     include_once('database/dbpersonhours.php');
     include_once('domain/Person.php');
@@ -76,6 +77,35 @@
     $displayHours = number_format($quarterHours, 2, '.', '');
     $displayHours = rtrim(rtrim($displayHours, '0'), '.');
 
+    function formatDashboardHours($hours) {
+        $roundedHours = round($hours * 4) / 4;
+        $formattedHours = number_format($roundedHours, 2, '.', '');
+        return rtrim(rtrim($formattedHours, '0'), '.');
+    }
+
+    $now = new DateTime('now', new DateTimeZone('America/New_York'));
+    $weekStart = (clone $now)->modify('monday this week')->setTime(0, 0, 0);
+    $weekEnd = (clone $weekStart)->modify('+1 week');
+    $monthStart = (clone $now)->modify('first day of this month')->setTime(0, 0, 0);
+    $monthEnd = (clone $monthStart)->modify('+1 month');
+    $yearStart = (clone $now)->setDate((int)$now->format('Y'), 1, 1)->setTime(0, 0, 0);
+    $yearEnd = (clone $yearStart)->modify('+1 year');
+
+    $weekToDateHours = formatDashboardHours(calcTotalHoursForRange($weekStart->format('Y-m-d H:i:s'), $weekEnd->format('Y-m-d H:i:s')));
+    $monthToDateHours = formatDashboardHours(calcTotalHoursForRange($monthStart->format('Y-m-d H:i:s'), $monthEnd->format('Y-m-d H:i:s')));
+    $yearToDateHours = formatDashboardHours(calcTotalHoursForRange($yearStart->format('Y-m-d H:i:s'), $yearEnd->format('Y-m-d H:i:s')));
+    $scheduledEvents = fetch_user_upcoming_signups($personId, 'ASC', 3);
+
+    // inactive users
+    $inactiveCount = 0;
+    $searchQuery = '';
+    $countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'$searchQuery";
+    $countResult = mysqli_query($con, $countQuery);
+    if ($countResult) {
+        $countRow = mysqli_fetch_assoc($countResult);
+        $inactiveCount = intval($countRow['cnt']);
+        mysqli_free_result($countResult);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -132,25 +162,25 @@
       <div class="card soft-red">
         <i class="fa-solid fa-calendar-week icon-red"></i>
         <h3>Week-to-Date Hours</h3>
-        <p>126</p>
+        <p><?= htmlspecialchars($weekToDateHours) ?></p>
       </div>
 
       <div class="card soft-yellow">
         <i class="fa-solid fa-calendar-days icon-yellow"></i>
         <h3>Month-to-Date Hours</h3>
-        <p>524</p>
+        <p><?= htmlspecialchars($monthToDateHours) ?></p>
       </div>
 
       <div class="card soft-blue">
         <i class="fa-solid fa-calendar-check icon-blue"></i>
         <h3>Year-to-Date Hours</h3>
-        <p>1,560</p>
+        <p><?= htmlspecialchars($yearToDateHours) ?></p>
       </div>
 
       <div class="card soft-green">
         <i class="fa-solid fa-user-clock icon-green"></i>
-        <h3>Newly Inactive Volunteers</h3>
-        <p>3</p>
+        <h3>Inactive Volunteers</h3>
+        <p><?= $inactiveCount ?></p>
       </div>
     </section>
 
@@ -174,24 +204,29 @@
         <div class="section-box soft-blue">
             <h2>My Scheduled Events</h2>
             <p class="muted">Events you are already signed up for.</p>
-
-            <div class="event-item">
-              <strong>Food Pantry Distribution</strong><br>
-              <span>April 10, 2026 • 9:00 AM – 12:00 PM</span><br>
-              <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-              <strong>Clothing Closet Help</strong><br>
-              <span>April 16, 2026 • 11:00 AM – 1:00 PM</span><br>
-              <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-              <strong>Weekend Cleanup</strong><br>
-              <span>April 20, 2026 • 8:30 AM – 10:30 AM</span><br>
-              <span class="status green">Registered</span>
-            </div>
+            <?php if (!empty($scheduledEvents)): ?>
+              <?php foreach ($scheduledEvents as $event): ?>
+                <div class="event-item">
+                  <strong><?= htmlspecialchars($event['name']) ?></strong><br>
+                  <span>
+                    <?= htmlspecialchars(date('F j, Y', strtotime($event['date']))) ?>
+                    <?php
+                      $start = !empty($event['startTime']) ? date('g:i A', strtotime($event['startTime'])) : null;
+                      $end = !empty($event['endTime']) ? date('g:i A', strtotime($event['endTime'])) : null;
+                      if ($start || $end):
+                    ?>
+                      • <?= htmlspecialchars($start && $end ? $start . ' - ' . $end : $start) ?>
+                    <?php endif; ?>
+                  </span><br>
+                  <span class="status green">Registered</span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="event-item">
+                <strong>No scheduled events</strong><br>
+                <span>You are not currently signed up for any upcoming events.</span>
+              </div>
+            <?php endif; ?>
           </div>
         <div class="section-box soft-blue">
           <h2>Top 10 Volunteers</h2>
@@ -341,24 +376,29 @@
         <div class="section-box soft-blue">
             <h2>My Scheduled Events</h2>
             <p class="muted">Events you are already signed up for.</p>
-
-            <div class="event-item">
-                <strong>Food Pantry Distribution</strong><br>
-                <span>April 10, 2026 • 9:00 AM – 12:00 PM</span><br>
-                <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Clothing Closet Help</strong><br>
-                <span>April 16, 2026 • 11:00 AM – 1:00 PM</span><br>
-                <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Weekend Cleanup</strong><br>
-                <span>April 20, 2026 • 8:30 AM – 10:30 AM</span><br>
-                <span class="status green">Registered</span>
-            </div>
+            <?php if (!empty($scheduledEvents)): ?>
+              <?php foreach ($scheduledEvents as $event): ?>
+                <div class="event-item">
+                    <strong><?= htmlspecialchars($event['name']) ?></strong><br>
+                    <span>
+                        <?= htmlspecialchars(date('F j, Y', strtotime($event['date']))) ?>
+                        <?php
+                            $start = !empty($event['startTime']) ? date('g:i A', strtotime($event['startTime'])) : null;
+                            $end = !empty($event['endTime']) ? date('g:i A', strtotime($event['endTime'])) : null;
+                            if ($start || $end):
+                        ?>
+                            • <?= htmlspecialchars($start && $end ? $start . ' - ' . $end : $start) ?>
+                        <?php endif; ?>
+                    </span><br>
+                    <span class="status green">Registered</span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="event-item">
+                  <strong>No scheduled events</strong><br>
+                  <span>You are not currently signed up for any upcoming events.</span>
+              </div>
+            <?php endif; ?>
         </div>
 
         <div class="section-box soft-yellow">

@@ -50,43 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch events the user is signed up for
-function fetch_user_signups($user_id, $sortDirection) {
-    $connection = connect();
-
-    $query = "
-        SELECT 
-            e.id,
-            e.name,
-            e.date,
-            e.startTime,
-            e.endTime,
-            e.location,
-            GROUP_CONCAT(DISTINCT r.role ORDER BY r.role SEPARATOR ', ') AS roles
-        FROM dbevents e
-        INNER JOIN dbeventpersons ep ON e.id = ep.eventID
-        LEFT JOIN dbroleevents re ON e.id = re.eventID
-        LEFT JOIN dbroles r ON re.roleID = r.role_id
-        WHERE ep.userID = '$user_id' AND ep.attended = 0
-        GROUP BY e.id, e.name, e.date, e.startTime, e.endTime, e.location
-        ORDER BY e.date $sortDirection
-    ";
-
-    $result = mysqli_query($connection, $query);
-
-    if (!$result) {
-        die('Query failed: ' . mysqli_error($connection));
-    }
-
-    $events = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $events[] = $row;
-    }
-
-    mysqli_close($connection);
-    return $events;
-}
-
 // Fetch event name by ID
 function fetch_event_name($event_id) {
     $connection = connect();
@@ -104,7 +67,7 @@ function fetch_event_name($event_id) {
 }
 
 
-$upcoming_events = fetch_user_signups($user_id, $sortDirection);
+$upcoming_events = fetch_user_upcoming_signups($user_id, $sortDirection);
 
 ?>
 
