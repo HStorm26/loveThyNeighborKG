@@ -168,6 +168,97 @@ function getRolesForEvent($eventID) {
     return $roles;
 }
 
+function getRoleForEvent($eventID, $roleID) {
+    $con = connect();
+
+    $stmt = $con->prepare("
+        SELECT
+            re.eventID AS eventID,
+            re.roleID AS roleID,
+            re.capacity AS capacity,
+            r.role AS role_name,
+            r.role_description AS role_description,
+            r.shift_group AS shift_group,
+            COUNT(pr.person_id) AS current_signups,
+            (re.capacity - COUNT(pr.person_id)) AS remaining_spots
+        FROM dbroleevents re
+        JOIN dbroles r
+            ON re.roleID = r.role_id
+        LEFT JOIN person_roles pr
+            ON pr.event_id = re.eventID
+            AND pr.role_id = re.roleID
+        WHERE re.eventID = ? AND re.roleID = ?
+        GROUP BY
+            re.eventID,
+            re.roleID,
+            re.capacity,
+            r.role,
+            r.role_description,
+            r.shift_group
+        LIMIT 1
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return null;
+    }
+
+    $stmt->bind_param("ii", $eventID, $roleID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : null;
+
+    $stmt->close();
+    mysqli_close($con);
+
+    return $row;
+}
+
+function addPersonRoleToEvent($personID, $roleID, $eventID) {
+    $con = connect();
+
+    $check = $con->prepare("
+        SELECT 1
+        FROM person_roles
+        WHERE person_id = ? AND role_id = ? AND event_id = ?
+        LIMIT 1
+    ");
+
+    if (!$check) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $check->bind_param("sii", $personID, $roleID, $eventID);
+    $check->execute();
+    $result = $check->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $check->close();
+        mysqli_close($con);
+        return true;
+    }
+
+    $check->close();
+
+    $stmt = $con->prepare("
+        INSERT INTO person_roles (person_id, role_id, event_id)
+        VALUES (?, ?, ?)
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("sii", $personID, $roleID, $eventID);
+    $ok = $stmt->execute();
+
+    $stmt->close();
+    mysqli_close($con);
+
+    return $ok;
+}
 
 // grabs capacity from given role-event
 function getRoleEventCapacity($eventID, $roleID) {
@@ -245,4 +336,106 @@ function save_event_roles($eventID, $roles) {
 
     mysqli_close($connection);
 }
+
+function personAlreadyHasRoleForEvent($personID, $roleID, $eventID) {
+    $con = connect();
+
+    $stmt = $con->prepare("
+        SELECT 1
+        FROM person_roles
+        WHERE person_id = ? AND role_id = ? AND event_id = ?
+        LIMIT 1
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("sii", $personID, $roleID, $eventID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $exists = $result && $result->num_rows > 0;
+
+    $stmt->close();
+    mysqli_close($con);
+
+    return $exists;
+}
+
+function personHasShiftGroupForEvent($personID, $eventID, $shift_group) {
+    $con = connect();
+
+    $stmt = $con->prepare("
+        SELECT 1
+        FROM person_roles pr
+        JOIN dbroles r ON pr.role_id = r.role_id
+        WHERE pr.person_id = ? AND pr.event_id = ? AND r.shift_group = ?
+        LIMIT 1
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("sis", $personID, $eventID, $shift_group);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $exists = $result && $result->num_rows > 0;
+
+    $stmt->close();
+    mysqli_close($con);
+
+    return $exists;
+}
+
+function removePersonRolesFromEvent($personID, $eventID) {
+    $con = connect();
+
+    $stmt = $con->prepare("
+        DELETE FROM person_roles
+        WHERE person_id = ? AND event_id = ?
+    ");
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
+    }
+
+    $stmt->bind_param("si", $personID, $eventID);
+    $ok = $stmt->execute();
+
+    $stmt->close();
+    mysqli_close($con);
+
+    return $ok;
+}
+
+function getRolesForPersonEvent($personID, $eventID)
+{
+    $con = connect();
+
+    $stmt = $con->prepare("
+        SELECT r.role
+        FROM person_roles pr
+        JOIN dbroles r ON pr.role_id = r.role_id
+        WHERE pr.person_id = ?
+        AND pr.event_id = ?
+    ");
+
+    $stmt->bind_param("si", $personID, $eventID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $roles = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $roles[] = $row['role'];
+    }
+
+    $con->close();
+    return $roles;
+}
+
 ?>

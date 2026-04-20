@@ -39,23 +39,23 @@ function update_role_description($role_id, $role_description) {
 // 
 // I tried to make the names as intuitive as possible
 // ------------------------------------
-function getRolesForPersonEvent($personId, $eventId)
-// this returns the roleID, not the name.
-{
+// function getRolesForPersonEvent($personId, $eventId)
+// // this returns the roleID, not the name.
+// {
     
-    $con = connect();
-    $stmt = $con->prepare("SELECT `role_id` FROM `person_roles` WHERE `person_id` = ? AND `event_id` = ?");
-    $stmt->bind_param("si", $personId, $eventId);
-    $stmt->execute();
-    $stmt->bind_result($row);
-    $rows = [];
-    while ($stmt->fetch())
-        {
-            $rows[] = $row;
-        }
-    $con->close();
-    return $rows;
-}
+//     $con = connect();
+//     $stmt = $con->prepare("SELECT `role_id` FROM `person_roles` WHERE `person_id` = ? AND `event_id` = ?");
+//     $stmt->bind_param("si", $personId, $eventId);
+//     $stmt->execute();
+//     $stmt->bind_result($row);
+//     $rows = [];
+//     while ($stmt->fetch())
+//         {
+//             $rows[] = $row;
+//         }
+//     $con->close();
+//     return $rows;
+// }
 function getRolesForPerson($personID)
 //this will return an array of the uniquie roles that a person has done
 {
@@ -83,63 +83,61 @@ function getRolesForPerson($personID)
 //     $con->close();
 // }
 
-function addPersonRoleToEvent($personID, $roleID, $eventID) {
-    $con = connect();
+// function addPersonRoleToEvent($personID, $roleID, $eventID) {
+//     $con = connect();
 
-    /* check if already exists */
-    $check = $con->prepare("
-        SELECT 1
-        FROM person_roles
-        WHERE person_id = ? AND role_id = ? AND event_id = ?
-        LIMIT 1
-    ");
+//     $check = $con->prepare("
+//         SELECT 1
+//         FROM person_roles
+//         WHERE person_id = ? AND role_id = ? AND event_id = ?
+//         LIMIT 1
+//     ");
 
-    if (!$check) {
-        mysqli_close($con);
-        return false;
-    }
+//     if (!$check) {
+//         mysqli_close($con);
+//         return false;
+//     }
 
-    $check->bind_param("sii", $personID, $roleID, $eventID);
-    $check->execute();
-    $result = $check->get_result();
+//     $check->bind_param("sii", $personID, $roleID, $eventID);
+//     $check->execute();
+//     $result = $check->get_result();
 
-    if ($result && $result->num_rows > 0) {
-        $check->close();
-        mysqli_close($con);
-        return true; // already signed up, no crash
-    }
+//     if ($result && $result->num_rows > 0) {
+//         $check->close();
+//         mysqli_close($con);
+//         return true;
+//     }
 
-    $check->close();
+//     $check->close();
 
-    /* insert */
-    $stmt = $con->prepare("
-        INSERT INTO person_roles (person_id, role_id, event_id)
-        VALUES (?, ?, ?)
-    ");
+//     $stmt = $con->prepare("
+//         INSERT INTO person_roles (person_id, role_id, event_id)
+//         VALUES (?, ?, ?)
+//     ");
 
-    if (!$stmt) {
-        mysqli_close($con);
-        return false;
-    }
+//     if (!$stmt) {
+//         mysqli_close($con);
+//         return false;
+//     }
 
-    $stmt->bind_param("sii", $personID, $roleID, $eventID);
-    $ok = $stmt->execute();
+//     $stmt->bind_param("sii", $personID, $roleID, $eventID);
+//     $ok = $stmt->execute();
 
-    $stmt->close();
-    mysqli_close($con);
+//     $stmt->close();
+//     mysqli_close($con);
 
-    return $ok;
-}
+//     return $ok;
+// }
 
-function removePersonRoleFromEvent($personID,$roleID,$eventID)
-// no return, just removes
-{
-    $con = connect();
-    $stmt = $con->prepare("DELETE FROM `person_roles` WHERE `person_id` = ? AND `role_id` = ? AND `event_id` = ?");
-    $stmt->bind_param("sii", $personID,$roleID,$eventID);
-    $stmt->execute();
-    $con->close();
-}
+// function removePersonRoleFromEvent($personID,$roleID,$eventID)
+// // no return, just removes
+// {
+//     $con = connect();
+//     $stmt = $con->prepare("DELETE FROM `person_roles` WHERE `person_id` = ? AND `role_id` = ? AND `event_id` = ?");
+//     $stmt->bind_param("sii", $personID,$roleID,$eventID);
+//     $stmt->execute();
+//     $con->close();
+// }
 
 function getPersonsForRoleEvent($roleID,$eventID)
 // this returns the personID

@@ -81,7 +81,7 @@ if (isset($_SESSION['_id'])) {
         require_once('database/dbMessages.php');
         require_once('database/dbPersons.php');
         require_once('include/output.php');
-
+            
         $newMessages = get_user_unread_messages($userID);
         $oldMessages = get_user_read_messages($userID);
         $allMessages = array_merge($newMessages, $oldMessages);
