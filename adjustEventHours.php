@@ -59,8 +59,10 @@
             }
             if($pmTime){
                 $newTime = (int) substr($startTime, 0, 2);
-                $newTime += 12;
-                $startTime = $newTime . substr($startTime, 2, 3);
+                if($newTime !== 12){
+                    $newTime += 12;
+                    $startTime = $newTime . substr($startTime, 2, 3);
+                }
             }
 
             $endTime = $_POST['end_time'];
@@ -74,8 +76,10 @@
             }
             if($pmTime){
                 $newTime = (int) substr($endTime, 0, 2);
-                $newTime += 12;
-                $endTime = $newTime . substr($endTime, 2, 3);
+                if($newTime !== 12){
+                    $newTime += 12;
+                    $endTime = $newTime . substr($endTime, 2, 3);
+                }
             }
             $startTime = $date . ' ' . $startTime . ':00';
             $endTime = $date . ' ' . $endTime . ':00';

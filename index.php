@@ -17,7 +17,6 @@
         die();
     }
 
-    // Create database connection HERE (so everything in this file can use it)
     include_once('database/dbinfo.php'); 
     $con = connect(); 
 
@@ -25,6 +24,7 @@
         die("Database connection failed: " . mysqli_connect_error());
     }
         
+    include_once('database/dbEvents.php');
     include_once('database/dbPersons.php');
     include_once('database/dbpersonhours.php');
     include_once('domain/Person.php');
@@ -33,6 +33,7 @@
     $person = false;
     $personId = '';
     $registeredEvents = 0;
+    $UpcomingEvents = retrieve_event3();
 
     if (isset($_SESSION['_id']) && $_SESSION['_id'] !== '') {
         $person = retrieve_person($_SESSION['_id']);
@@ -46,12 +47,10 @@
     $personId = $person->get_id();
     $notRoot = $personId != 'vmsroot';
 
-    // For the counts for total volunteers and total admins and total people
     $volunteers = getVolunteerCount($con);
     $admins = getAdminCount();
     $total = getTotalUsers($con);
 
-    // Registered events for volunteer dashboard
     $stmt = $con->prepare("
         SELECT COUNT(DISTINCT eventID) AS registered_events
         FROM dbpersonhours
@@ -70,12 +69,129 @@
         $stmt->close();
     }
 
-    // Display volunteer hours in quarter-hour increments
     $hoursValue = calcPersonHours($personId) / 60;
     $quarterHours = round($hoursValue * 4) / 4;
     $displayHours = number_format($quarterHours, 2, '.', '');
     $displayHours = rtrim(rtrim($displayHours, '0'), '.');
 
+    function formatDashboardHours($hours) {
+        $roundedHours = round($hours * 4) / 4;
+        $formattedHours = number_format($roundedHours, 2, '.', '');
+        return rtrim(rtrim($formattedHours, '0'), '.');
+    }
+
+    function safeHtml($value) {
+        if (is_array($value)) {
+            $value = implode(', ', array_map(function ($item) {
+                return is_scalar($item) ? (string)$item : '';
+            }, $value));
+        }
+        return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
+    }
+
+    function normalizeEvent($event) {
+        $normalized = [
+            'name' => '',
+            'date' => '',
+            'startTime' => '',
+            'endTime' => '',
+            'status' => ''
+        ];
+
+        if (is_array($event)) {
+            $normalized['name'] = (string)($event['name'] ?? '');
+            $normalized['date'] = (string)($event['date'] ?? '');
+            $normalized['startTime'] = (string)($event['startTime'] ?? '');
+            $normalized['endTime'] = (string)($event['endTime'] ?? '');
+            $normalized['status'] = (string)($event['status'] ?? '');
+        } elseif (is_object($event)) {
+            $normalized['name'] = method_exists($event, 'get_name') ? (string)$event->get_name() : '';
+            $normalized['date'] = method_exists($event, 'get_date') ? (string)$event->get_date() : '';
+            $normalized['startTime'] = method_exists($event, 'get_startTime') ? (string)$event->get_startTime() : '';
+            $normalized['endTime'] = method_exists($event, 'get_endTime') ? (string)$event->get_endTime() : '';
+        } else {
+            $normalized['name'] = (string)$event;
+        }
+
+        return $normalized;
+    }
+
+    function formatEventDate($dateValue) {
+        if (empty($dateValue)) {
+            return '';
+        }
+
+        $timestamp = strtotime($dateValue);
+        if ($timestamp === false) {
+            return '';
+        }
+
+        return date('F j, Y', $timestamp);
+    }
+
+    function formatEventTimeRange($startTime, $endTime) {
+        $start = '';
+        $end = '';
+
+        if (!empty($startTime)) {
+            $startTs = strtotime($startTime);
+            if ($startTs !== false) {
+                $start = date('g:i A', $startTs);
+            }
+        }
+
+        if (!empty($endTime)) {
+            $endTs = strtotime($endTime);
+            if ($endTs !== false) {
+                $end = date('g:i A', $endTs);
+            }
+        }
+
+        if ($start && $end) {
+            return $start . ' - ' . $end;
+        }
+
+        if ($start) {
+            return $start;
+        }
+
+        if ($end) {
+            return $end;
+        }
+
+        return '';
+    }
+
+    $now = new DateTime('now', new DateTimeZone('America/New_York'));
+    $weekStart = (clone $now)->modify('monday this week')->setTime(0, 0, 0);
+    $weekEnd = (clone $weekStart)->modify('+1 week');
+    $monthStart = (clone $now)->modify('first day of this month')->setTime(0, 0, 0);
+    $monthEnd = (clone $monthStart)->modify('+1 month');
+    $yearStart = (clone $now)->setDate((int)$now->format('Y'), 1, 1)->setTime(0, 0, 0);
+    $yearEnd = (clone $yearStart)->modify('+1 year');
+
+    $weekToDateHours = formatDashboardHours(calcTotalHoursForRange($weekStart->format('Y-m-d H:i:s'), $weekEnd->format('Y-m-d H:i:s')));
+    $monthToDateHours = formatDashboardHours(calcTotalHoursForRange($monthStart->format('Y-m-d H:i:s'), $monthEnd->format('Y-m-d H:i:s')));
+    $yearToDateHours = formatDashboardHours(calcTotalHoursForRange($yearStart->format('Y-m-d H:i:s'), $yearEnd->format('Y-m-d H:i:s')));
+    $scheduledEvents = fetch_user_upcoming_signups($personId, 'ASC', 3);
+
+    if (!is_array($UpcomingEvents)) {
+        $UpcomingEvents = [];
+    }
+
+    if (!is_array($scheduledEvents)) {
+        $scheduledEvents = [];
+    }
+  
+    $inactiveCount = 0;
+    $searchQuery = '';
+    $countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'$searchQuery";
+    $countResult = mysqli_query($con, $countQuery);
+    if ($countResult) {
+        $countRow = mysqli_fetch_assoc($countResult);
+        $inactiveCount = intval($countRow['cnt']);
+        mysqli_free_result($countResult);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +206,6 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <title>Dashboard | Love Thy Neighbor Community Food Pantry Volunteer Management</title>
  
-<!--BEGIN TEST, UPLOAD AND NOTIFICATIONS CHANGED-->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const extraInfo = document.querySelector(".extra-info");
@@ -100,7 +215,7 @@
         });
 
         function toggleInfo(event) {
-            event.stopPropagation(); // Prevents triggering the main button click
+            event.stopPropagation();
             let info = event.target.nextElementSibling;
             if (!info) return;
             let isVisible = info.style.maxHeight !== "0px";
@@ -108,10 +223,8 @@
             event.target.innerText = isVisible ? "↓" : "↑";
         }
     </script>
-<!--END TEST-->
 </head>
 
-<!-- ONLY SUPER ADMIN WILL SEE THIS -->    <!-- This is not true, admin and super admin can see it (2 = admin, 3 = super admin) ;( -Brooke -->
 <?php if ($_SESSION['access_level'] >= 2): ?>
 <body>
 <?php require 'header.php';?>
@@ -124,7 +237,7 @@
       </div>
 
       <div class="date-box">
-        <i class="fa-solid fa-calendar-days"></i> <?php echo htmlspecialchars($currentDate); ?>
+        <i class="fa-solid fa-calendar-days"></i> <?php echo safeHtml($currentDate); ?>
       </div>
     </section>
 
@@ -132,25 +245,25 @@
       <div class="card soft-red">
         <i class="fa-solid fa-calendar-week icon-red"></i>
         <h3>Week-to-Date Hours</h3>
-        <p>126</p>
+        <p><?= safeHtml($weekToDateHours) ?></p>
       </div>
 
       <div class="card soft-yellow">
         <i class="fa-solid fa-calendar-days icon-yellow"></i>
         <h3>Month-to-Date Hours</h3>
-        <p>524</p>
+        <p><?= safeHtml($monthToDateHours) ?></p>
       </div>
 
       <div class="card soft-blue">
         <i class="fa-solid fa-calendar-check icon-blue"></i>
         <h3>Year-to-Date Hours</h3>
-        <p>1,560</p>
+        <p><?= safeHtml($yearToDateHours) ?></p>
       </div>
 
       <div class="card soft-green">
         <i class="fa-solid fa-user-clock icon-green"></i>
-        <h3>Newly Inactive Volunteers</h3>
-        <p>3</p>
+        <h3>Inactive Volunteers</h3>
+        <p><?= safeHtml($inactiveCount) ?></p>
       </div>
     </section>
 
@@ -158,41 +271,47 @@
       <div class="card soft-orange">
         <i class="fa-solid fa-users icon-orange"></i>
         <h3>Volunteer Count</h3>
-        <p><?= $volunteers ?></p>
+        <p><?= safeHtml($volunteers) ?></p>
       </div>
 
       <div class="card soft-maroon">
         <i class="fa-solid fa-user-shield icon-maroon"></i>
         <h3>Admin Count</h3>
-        <p><?= $admins ?></p>
+        <p><?= safeHtml($admins) ?></p>
       </div>
     </section>
   
     <section class="dashboard-layout">
-      <!-- The left side -->
       <div class="dashboard-column"> 
         <div class="section-box soft-blue">
             <h2>My Scheduled Events</h2>
             <p class="muted">Events you are already signed up for.</p>
-
-            <div class="event-item">
-              <strong>Food Pantry Distribution</strong><br>
-              <span>April 10, 2026 • 9:00 AM – 12:00 PM</span><br>
-              <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-              <strong>Clothing Closet Help</strong><br>
-              <span>April 16, 2026 • 11:00 AM – 1:00 PM</span><br>
-              <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-              <strong>Weekend Cleanup</strong><br>
-              <span>April 20, 2026 • 8:30 AM – 10:30 AM</span><br>
-              <span class="status green">Registered</span>
-            </div>
+            <?php if (!empty($scheduledEvents)): ?>
+              <?php foreach ($scheduledEvents as $event): ?>
+                <?php
+                    $eventData = normalizeEvent($event);
+                    $formattedDate = formatEventDate($eventData['date']);
+                    $timeRange = formatEventTimeRange($eventData['startTime'], $eventData['endTime']);
+                ?>
+                <div class="event-item">
+                  <strong><?= safeHtml($eventData['name']) ?></strong><br>
+                  <span>
+                    <?= safeHtml($formattedDate) ?>
+                    <?php if ($timeRange !== ''): ?>
+                      • <?= safeHtml($timeRange) ?>
+                    <?php endif; ?>
+                  </span><br>
+                  <span class="status green">Registered</span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="event-item">
+                <strong>No scheduled events</strong><br>
+                <span>You are not currently signed up for any upcoming events.</span>
+              </div>
+            <?php endif; ?>
           </div>
+
         <div class="section-box soft-blue">
           <h2>Top 10 Volunteers</h2>
           <p class="muted">Ranked by total volunteer hours</p>
@@ -222,14 +341,14 @@
 
                     <span class="name">
                       <?php
-                      echo htmlspecialchars(
+                      echo safeHtml(
                         ($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')
                       );
                       ?>
                     </span>
 
                     <span class="hours">
-                      <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
+                      <?php echo safeHtml($reportData[$i][2] ?? '0'); ?> hrs
                     </span>
                   </div>
                 <?php endfor; ?>
@@ -241,11 +360,11 @@
                       <span class="rank"><?php echo $i + 1; ?></span>
 
                       <span class="name">
-                        <?php echo htmlspecialchars(($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')); ?>
+                        <?php echo safeHtml(($reportData[$i][0] ?? '') . ' ' . ($reportData[$i][1] ?? '')); ?>
                       </span>
 
                       <span class="hours">
-                        <?php echo htmlspecialchars($reportData[$i][2] ?? '0'); ?> hrs
+                        <?php echo safeHtml($reportData[$i][2] ?? '0'); ?> hrs
                       </span>
                     </div>
                   <?php endfor; ?>
@@ -275,25 +394,47 @@
           </div>
         </div>
 
-        <div class="section-box soft-orange">
-          <h2>Upcoming Events</h2>
-          <div class="event-item">
-            <strong>Food Pantry Distribution</strong>
-            <p class="muted">May 1 • 9:00 AM - 1:00 PM</p>
-            <span class="status green">Open</span>
-          </div>
+        <div class="section-box soft-yellow">
+    <h2>Upcoming Events</h2>
+    <p class="muted">Available events you can sign up for.</p>
 
-          <div class="event-item">
-            <strong>Walmart Pickup</strong>
-            <p class="muted">May 3 • 10:00 AM - 1:00 PM</p>
-            <span class="status green">Open</span>
-          </div>
-          <div class="event-item">
-            <strong>School Food Drive</strong>
-            <p class="muted">May 6 • 9:00 AM - 1:00 PM</p>
-            <span class="status green">Open</span>
-          </div>
+    <?php if (!empty($UpcomingEvents) && is_array($UpcomingEvents)): ?>
+        <?php foreach ($UpcomingEvents as $event): ?>
+            <?php
+                $eventName = $event['name'] ?? '';
+                $eventDate = $event['date'] ?? '';
+                $startTime = $event['startTime'] ?? '';
+                $endTime = $event['endTime'] ?? '';
 
+                $formattedDate = !empty($eventDate) ? date('F j, Y', strtotime($eventDate)) : '';
+
+                $start = !empty($startTime) ? date('g:i A', strtotime($startTime)) : '';
+                $end = !empty($endTime) ? date('g:i A', strtotime($endTime)) : '';
+
+                $dateTimeLine = $formattedDate;
+                if ($start && $end) {
+                    $dateTimeLine .= ' • ' . $start . ' - ' . $end;
+                } elseif ($start) {
+                    $dateTimeLine .= ' • ' . $start;
+                } elseif ($end) {
+                    $dateTimeLine .= ' • ' . $end;
+                }
+            ?>
+            <div class="event-item">
+                <strong><?= htmlspecialchars($eventName) ?></strong><br>
+                <span><?= htmlspecialchars($dateTimeLine) ?></span><br>
+                <span class="status yellow">Open for Signup</span>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="event-item">
+            <strong>No upcoming events</strong><br>
+            <span>There are no upcoming events available right now.</span>
+        </div>
+    <?php endif; ?>
+</div>
+</div>
+<br>
         </div>
       </div>
 
@@ -313,12 +454,12 @@
 
     <section class="welcome-banner">
         <div>
-            <h1>Welcome back, <?php echo htmlspecialchars($_SESSION['f_name'] ?? 'Volunteer'); ?>!</h1>
+            <h1>Welcome back, <?php echo safeHtml($_SESSION['f_name'] ?? 'Volunteer'); ?>!</h1>
             <p>Here is a quick look at your hours, registered events, schedule, and upcoming opportunities.</p>
         </div>
 
         <div class="date-box">
-          <i class="fa-solid fa-calendar-days"></i> <?php echo htmlspecialchars($currentDate); ?>
+          <i class="fa-solid fa-calendar-days"></i> <?php echo safeHtml($currentDate); ?>
       </div>
     </section>
 
@@ -326,13 +467,13 @@
         <div class="card soft-blue">
             <i class="fa-solid fa-clock icon-blue"></i>
             <h3>Total Volunteer Hours</h3>
-            <p><?php echo htmlspecialchars($displayHours); ?></p>
+            <p><?php echo safeHtml($displayHours); ?></p>
         </div>
 
         <div class="card soft-green">
             <i class="fa-solid fa-calendar-check icon-green"></i>
             <h3>Registered Events</h3>
-            <p><?php echo htmlspecialchars((string)$registeredEvents); ?></p>
+            <p><?php echo safeHtml((string)$registeredEvents); ?></p>
         </div>
     </section>
 
@@ -341,47 +482,60 @@
         <div class="section-box soft-blue">
             <h2>My Scheduled Events</h2>
             <p class="muted">Events you are already signed up for.</p>
-
-            <div class="event-item">
-                <strong>Food Pantry Distribution</strong><br>
-                <span>April 10, 2026 • 9:00 AM – 12:00 PM</span><br>
-                <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Clothing Closet Help</strong><br>
-                <span>April 16, 2026 • 11:00 AM – 1:00 PM</span><br>
-                <span class="status green">Registered</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Weekend Cleanup</strong><br>
-                <span>April 20, 2026 • 8:30 AM – 10:30 AM</span><br>
-                <span class="status green">Registered</span>
-            </div>
+            <?php if (!empty($scheduledEvents)): ?>
+              <?php foreach ($scheduledEvents as $event): ?>
+                <?php
+                    $eventData = normalizeEvent($event);
+                    $formattedDate = formatEventDate($eventData['date']);
+                    $timeRange = formatEventTimeRange($eventData['startTime'], $eventData['endTime']);
+                ?>
+                <div class="event-item">
+                    <strong><?= safeHtml($eventData['name']) ?></strong><br>
+                    <span>
+                        <?= safeHtml($formattedDate) ?>
+                        <?php if ($timeRange !== ''): ?>
+                            • <?= safeHtml($timeRange) ?>
+                        <?php endif; ?>
+                    </span><br>
+                    <span class="status green">Registered</span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="event-item">
+                  <strong>No scheduled events</strong><br>
+                  <span>You are not currently signed up for any upcoming events.</span>
+              </div>
+            <?php endif; ?>
         </div>
 
         <div class="section-box soft-yellow">
             <h2>Upcoming Events</h2>
             <p class="muted">Available events you can sign up for.</p>
 
-            <div class="event-item">
-                <strong>Donation Sorting</strong><br>
-                <span>April 12, 2026 • 1:00 PM – 3:00 PM</span><br>
-                <span class="status yellow">Open for Signup</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Community Meal Prep</strong><br>
-                <span>April 15, 2026 • 10:00 AM – 1:00 PM</span><br>
-                <span class="status yellow">Open for Signup</span>
-            </div>
-
-            <div class="event-item">
-                <strong>Food Drive Support</strong><br>
-                <span>April 18, 2026 • 9:00 AM – 11:00 AM</span><br>
-                <span class="status yellow">Open for Signup</span>
-            </div>
+            <?php if (!empty($UpcomingEvents)): ?>
+              <?php foreach ($UpcomingEvents as $event): ?>
+                <?php
+                    $eventData = normalizeEvent($event);
+                    $formattedDate = formatEventDate($eventData['date']);
+                    $timeRange = formatEventTimeRange($eventData['startTime'], $eventData['endTime']);
+                ?>
+                <div class="event-item">
+                    <strong><?= safeHtml($eventData['name']) ?></strong><br>
+                    <span>
+                        <?= safeHtml($formattedDate) ?>
+                        <?php if ($timeRange !== ''): ?>
+                            • <?= safeHtml($timeRange) ?>
+                        <?php endif; ?>
+                    </span><br>
+                    <span class="status yellow">Open for Signup</span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="event-item">
+                  <strong>No upcoming events</strong><br>
+                  <span>There are no upcoming events available right now.</span>
+              </div>
+            <?php endif; ?>
         </div>
 
         <div class="section-box soft-maroon">

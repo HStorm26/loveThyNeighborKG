@@ -224,6 +224,58 @@ function remove_user_from_event($event_id, $user_id) {
     return $result;
 }
 
+function fetch_user_upcoming_signups($user_id, $sortDirection = 'ASC', $limit = null) {
+    $connection = connect();
+    $normalizedSortDirection = strtoupper($sortDirection) === 'DESC' ? 'DESC' : 'ASC';
+
+    $query = "
+        SELECT
+            e.id,
+            e.name,
+            e.date,
+            e.startTime,
+            e.endTime,
+            e.location,
+            GROUP_CONCAT(DISTINCT r.role ORDER BY r.role SEPARATOR ', ') AS roles
+        FROM dbevents e
+        INNER JOIN dbeventpersons ep ON e.id = ep.eventID
+        LEFT JOIN dbroleevents re ON e.id = re.eventID
+        LEFT JOIN dbroles r ON re.roleID = r.role_id
+        WHERE ep.userID = ? AND ep.attended = 0
+        GROUP BY e.id, e.name, e.date, e.startTime, e.endTime, e.location
+        ORDER BY e.date $normalizedSortDirection, e.startTime $normalizedSortDirection";
+
+    if ($limit !== null) {
+        $query .= " LIMIT ?";
+    }
+
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return [];
+    }
+
+    if ($limit !== null) {
+        mysqli_stmt_bind_param($stmt, "si", $user_id, $limit);
+    } else {
+        mysqli_stmt_bind_param($stmt, "s", $user_id);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $events = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $events[] = $row;
+        }
+    }
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($connection);
+    return $events;
+}
+
 
 
 /* @@@ Thomas's work! */
@@ -383,6 +435,31 @@ function retrieve_event2($id) {
 //    var_dump($result_row);
     return $result_row;
 }
+
+function retrieve_event3() {
+    $con = connect();
+    $today = date('Y-m-d');
+    $now = date('H:i:s');
+
+    $query = "SELECT * FROM dbevents
+              WHERE archived = 0
+                AND (date > '$today' OR (date = '$today' AND endTime >= '$now'))
+              ORDER BY date ASC, startTime ASC";
+
+    $result = mysqli_query($con, $query);
+
+    $theEvents = array();
+
+    if ($result) {
+        while ($result_row = mysqli_fetch_assoc($result)) {
+            $theEvents[] = $result_row;
+        }
+    }
+
+    mysqli_close($con);
+    return $theEvents;
+}
+
 
 // not in use, may be useful for future iterations in changing how events are edited (i.e. change the remove and create new event process)
 function update_event_date($id, $new_event_date) {

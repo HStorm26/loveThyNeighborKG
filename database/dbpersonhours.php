@@ -105,6 +105,27 @@ function calcTop10()
     return $rows;
 }
 
+function calcTotalHoursForRange($startDateTime, $endDateTime)
+{
+    $con = connect();
+    $querey = "SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, `start_time`, `end_time`)), 0) FROM `dbpersonhours` WHERE `start_time` >= ? AND `start_time` < ? AND `end_time` IS NOT NULL";
+    $stmt = $con->prepare($querey);
+
+    if ($stmt) {
+        $stmt->bind_param("ss", $startDateTime, $endDateTime);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $minutes = $result->fetch_row();
+        $stmt->close();
+        $con->close();
+
+        return ((int)$minutes[0]) / 60;
+    }
+
+    mysqli_close($con);
+    return 0;
+}
+
 function roleHoursForDateRange($sd,$ed)
 {
     $con = connect();
