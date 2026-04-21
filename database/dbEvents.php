@@ -436,6 +436,31 @@ function retrieve_event2($id) {
     return $result_row;
 }
 
+function retrieve_event3() {
+    $con = connect();
+    $today = date('Y-m-d');
+    $now = date('H:i:s');
+
+    $query = "SELECT * FROM dbevents
+              WHERE archived = 0
+                AND (date > '$today' OR (date = '$today' AND endTime >= '$now'))
+              ORDER BY date ASC, startTime ASC";
+
+    $result = mysqli_query($con, $query);
+
+    $theEvents = array();
+
+    if ($result) {
+        while ($result_row = mysqli_fetch_assoc($result)) {
+            $theEvents[] = $result_row;
+        }
+    }
+
+    mysqli_close($con);
+    return $theEvents;
+}
+
+
 // not in use, may be useful for future iterations in changing how events are edited (i.e. change the remove and create new event process)
 function update_event_date($id, $new_event_date) {
 	$con=connect();
