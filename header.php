@@ -148,6 +148,9 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['topvolunteersreport.php'] = 2;
         $permission_array['archive_people_list.php'] = 2;
         $permission_array['uniquevolunteerreport.php'] = 2;
+        $permission_array['inactivevolunteersreport.php'] = 2;
+        $permission_array['hourcategoryreport.php'] = 2;
+        $permission_array['serviceletterreport.php'] = 2;
         // LOWERCASE
 
 
