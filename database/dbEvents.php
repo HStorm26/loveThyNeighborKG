@@ -34,31 +34,41 @@ function add_event($event) {
     // if (!$event instanceof Event)
     //     die("Error: add_event type mismatch");
     $con=connect();
-    $query = "SELECT * FROM dbevents WHERE id = '" . $event->getID() . "'";
-    $result = mysqli_query($con,$query);
+    $query = "SELECT * FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $event->getID());
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     //if there's no entry for this id, add it
     if ($result == null || mysqli_num_rows($result) == 0) {
-        mysqli_query($con,'INSERT INTO dbevents VALUES("' .
-                $event->getID() . '","' .
-                $event->getName() . '","' . 
-                //$event->getType() . '","' . 
-                $event->getStartDate() . '","' .
-                $event->getStartTime() . "," .
-                $event->getEndTime() . "," .
-                //$event->getEndDate() . "," .
-                $event->getDescription() . '","' .
-                $event->getCapacity() . "," .
-                $event->getLocation() . "," .
-                //$event->getAffiliation() . "," .
-                //$event->getBranch() . '","' . 
-                //$event->Access() . '","' . 
-                //$event->getCompleted() . "," .
-                //$event->getID() . "," .
-                $event->getArchived() .
-                '");');							
-        mysqli_close($con);
-        return true;
+        $insert_query = 'INSERT INTO dbevents VALUES(?, ?, ?, ?, ?, ?, ?, ?)';
+        $stmt_insert = mysqli_prepare($con, $insert_query);
+        mysqli_stmt_bind_param($stmt_insert, "issssiii",
+            $event->getID(),
+            $event->getName(),
+            $event->getStartDate(),
+            $event->getStartTime(),
+            $event->getEndTime(),
+            $event->getDescription(),
+            $event->getCapacity(),
+            $event->getArchived()
+        );
+        
+        if (mysqli_stmt_execute($stmt_insert)) {
+            mysqli_stmt_close($stmt_insert);
+            mysqli_stmt_close($stmt);
+            mysqli_close($con);
+            return true;
+        } else {
+            mysqli_stmt_close($stmt_insert);
+            mysqli_stmt_close($stmt);
+            mysqli_close($con);
+            return false;
+        }
     }
+    
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return false;
 }
@@ -101,42 +111,43 @@ function request_event_signup($event_name_str, $account_name, $role, $notes) {
 function sign_up_for_event($eventID, $account_name, $role, $notes) {
     $connection = connect();
     
-    // 1. ESCAPE INPUTS (Crucial for names like "Gwyneth's Gift")
-    // This prevents the SQL query from breaking on apostrophes
-    $safe_name = mysqli_real_escape_string($connection, $eventID);
-    $safe_account = mysqli_real_escape_string($connection, $account_name);
-    $safe_role = mysqli_real_escape_string($connection, $role);
-    $safe_notes = mysqli_real_escape_string($connection, $notes);
-
-    // 2. FETCH EVENT ID
-    // We use the 'safe_name' here.
-    $query1 = "SELECT id FROM dbevents WHERE name = '$safe_name'";
-    $result1 = mysqli_query($connection, $query1);
+    // Use prepared statement instead of escaping
+    $query1 = "SELECT id FROM dbevents WHERE id = ?";
+    $stmt1 = mysqli_prepare($connection, $query1);
+    mysqli_stmt_bind_param($stmt1, "i", $eventID);
+    mysqli_stmt_execute($stmt1);
+    $result1 = mysqli_stmt_get_result($stmt1);
     
-    // 3. CHECK IF EVENT EXISTS
-    // This check prevents the "Undefined variable" error by stopping if no event is found.
     if (!$result1 || mysqli_num_rows($result1) === 0) {
+        mysqli_stmt_close($stmt1);
         mysqli_close($connection);
-        return null; // Return failure safely
+        return null;
     }
 
     $row = mysqli_fetch_assoc($result1);
-    $value = $row['id']; // Now it is safe to get the ID
+    $value = $row['id'];
+    mysqli_stmt_close($stmt1);
    
-    // 4. CHECK FOR DUPLICATE SIGNUP
-    $query2 = "SELECT userID FROM dbeventpersons WHERE eventID = '$value' AND userID = '$safe_account'";
-    $result2 = mysqli_query($connection, $query2);
+    // Check for duplicate signup with prepared statement
+    $query2 = "SELECT userID FROM dbeventpersons WHERE eventID = ? AND userID = ?";
+    $stmt2 = mysqli_prepare($connection, $query2);
+    mysqli_stmt_bind_param($stmt2, "is", $value, $account_name);
+    mysqli_stmt_execute($stmt2);
+    $result2 = mysqli_stmt_get_result($stmt2);
     $row2 = mysqli_fetch_assoc($result2);
+    mysqli_stmt_close($stmt2);
 
     if ($row2) {
         // User already signed up
         mysqli_close($connection);
         return null;
     } else {       
-        // 5. INSERT SIGNUP
-        $query = "INSERT INTO dbeventpersons (eventID, userID, notes) VALUES ('$value', '$safe_account', '$safe_notes')";
-        $result = mysqli_query($connection, $query);
-        mysqli_commit($connection);
+        // Insert signup with prepared statement
+        $query = "INSERT INTO dbeventpersons (eventID, userID, notes) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, "iss", $value, $account_name, $notes);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return $value;
     }
@@ -776,17 +787,28 @@ function create_event($event) {
     $archived = 0;
     $query = "
         INSERT INTO dbevents (name, date, startTime, endTime, description, capacity, location, archived)
-        VALUES ('$name', '$date', '$startTime', '$endTime', '$description', $capacity, '$location', '$archived')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ";
     
-    $result = mysqli_query($connection, $query);
-    if (!$result) {
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
         echo mysqli_error($connection);
         mysqli_close($connection);
         return null;
     }
-    $id = mysqli_insert_id($connection);
     
+    mysqli_stmt_bind_param($stmt, "sssssisi", $name, $date, $startTime, $endTime, $description, $capacity, $location,  $archived);
+    $result = mysqli_stmt_execute($stmt);
+    
+    if (!$result) {
+        echo mysqli_error($connection);
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
+        return null;
+    }
+    
+    $id = mysqli_insert_id($connection);
+    mysqli_stmt_close($stmt);
     mysqli_commit($connection);
     mysqli_close($connection);
     return $id;

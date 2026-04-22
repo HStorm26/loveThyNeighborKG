@@ -7,15 +7,22 @@ date_default_timezone_set("America/New_York");
 
 function get_user_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID'
+              where recipientID=?
               order by prioritylevel desc";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -28,15 +35,22 @@ function get_user_messages($userID) {
 
 function get_user_unread_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID' AND wasread = 0
+              where recipientID=? AND wasread = 0
               order by time ASC";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -48,15 +62,22 @@ function get_user_unread_messages($userID) {
 }
 function get_user_read_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID' AND wasread = 1
+              where recipientID=? AND wasread = 1
               order by time ASC";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -69,15 +90,21 @@ function get_user_read_messages($userID) {
 
 function get_user_unread_count($userID) {
     $query = "select count(*) from dbmessages 
-        where recipientID='$userID' and wasRead=0";
+        where recipientID=? and wasRead=0";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
 
     $row = mysqli_fetch_row($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return intval($row[0]);
 }

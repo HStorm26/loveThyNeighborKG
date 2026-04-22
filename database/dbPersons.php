@@ -22,8 +22,11 @@ include_once(dirname(__FILE__) . '/../domain/Person.php');
  */
 function add_person($person) {
     $con = connect();
-    $query = "SELECT * FROM dbpersons WHERE id = '" . $person->get_id() . "'";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbpersons WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $person->get_id());
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) == 0) {
         $insert_query = 'INSERT INTO dbpersons (
@@ -32,37 +35,39 @@ function add_person($person) {
             emergency_contact_first_name, emergency_contact_phone, emergency_contact_relation,
             archived, password, contact_num, contact_method, type, status,
             photo_release, community_service, notes
-        ) VALUES ("' .
-            $person->get_id() . '","' .
-            $person->get_first_name() . '","' .
-            $person->get_last_name() . '","' .
-            $person->get_phone1() . '","' .
-            $person->get_email() . '","' .
-            $person->get_email_prefs() . '","' .
-            $person->get_birthday() . '","' .
-            $person->get_t_shirt_size() . '","' .
-            $person->get_state() . '","' .
-            $person->get_city() . '","' .
-            $person->get_street_address() . '","' .
-            $person->get_zip_code() . '","' .
-            $person->get_emergency_contact_first_name() . '","' .
-            $person->get_emergency_contact_phone() . '","' .
-            $person->get_emergency_contact_relation() . '","' .
-            $person->get_archived() . '","' .
-            $person->get_password() . '","' .
-            $person->get_contact_num() . '","' .
-            $person->get_contact_method() . '","' .
-            $person->get_type() . '","' .
-            $person->get_status() . '","' .
-            $person->get_photo_release() . '","' .
-            $person->get_community_service() . '","' .
-            $person->get_notes() . '");';
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        
+        $stmt_insert = mysqli_prepare($con, $insert_query);
+        mysqli_stmt_bind_param($stmt_insert, "sssssssssssssssisssssiis",
+            $person->get_id(),
+            $person->get_first_name(),
+            $person->get_last_name(),
+            $person->get_phone1(),
+            $person->get_email(),
+            $person->get_email_prefs(),
+            $person->get_birthday(),
+            $person->get_t_shirt_size(),
+            $person->get_state(),
+            $person->get_city(),
+            $person->get_street_address(),
+            $person->get_zip_code(),
+            $person->get_emergency_contact_first_name(),
+            $person->get_emergency_contact_phone(),
+            $person->get_emergency_contact_relation(),
+            $person->get_archived(),
+            $person->get_password(),
+            $person->get_contact_num(),
+            $person->get_contact_method(),
+            $person->get_type(),
+            $person->get_status(),
+            $person->get_photo_release(),
+            $person->get_community_service(),
+            $person->get_notes()
+        );
 
-        if (empty($insert_query)) {
-            die("Error: insert query is empty");
-        }
-
-        if (mysqli_query($con, $insert_query)) {
+        if (mysqli_stmt_execute($stmt_insert)) {
+            mysqli_stmt_close($stmt_insert);
+            mysqli_stmt_close($stmt);
             mysqli_close($con);
             return true;
         } else {
@@ -70,6 +75,7 @@ function add_person($person) {
         }
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return false;
 }
