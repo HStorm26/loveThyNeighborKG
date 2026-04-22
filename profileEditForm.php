@@ -11,15 +11,22 @@
         $id = $args['id'];
         $editingSelf = $id == $_SESSION['_id'];
         // Check to see if user is a lower-level manager here
-        if(isset($_POST['adminID'])){
-            setUserType($_POST['adminID'], "Admin");
-        }
-        if(isset($_POST['unAdminID'])){
-            setUserType($_POST['unAdminID'], "Volunteer");
-        }
     } else {
         $editingSelf = true;
         $id = $_SESSION['_id'];
+    }
+    if(isset($_POST['adminID'])){
+        $result = setUserType($_POST['adminID'], "Admin");
+        if (!$result) {
+            error_log("Failed to promote user " . $_POST['adminID'] . " to admin");
+        }
+    }
+    if(isset($_POST['unAdminID'])){
+        error_log('i need an error log');
+        $result = setUserType($_POST['unAdminID'], "Volunteer");
+        if (!$result) {
+            error_log("Failed to demote user " . $_POST['unAdminID'] . " to volunteer");
+        }
     }
 
     $person = retrieve_person($id);
