@@ -209,19 +209,25 @@
 
 <head>
     <?php 
-        require_once('universal.inc');
+        // require_once('universal.inc');
     ?>
-    <title>Love Thy Neighbor Community Food Pantry | <?php echo $event_info['name'] ?></title>
-    <link rel="stylesheet" href="event.css" type="text/css" />
+    <title><?php echo $event_info['name'] ?> | Love Thy Neighbor Community Food Pantry</title>
+    <!-- <link rel="stylesheet" href="event.css" type="text/css" /> -->
     <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
         <script src="js/event.js"></script>
     <?php endif ?>
+    <link rel="stylesheet" href="layoutInfo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
     <?php require_once('header.php') ?>
-    <h1>View Event</h1>
+    <div class="info-form">
+        <div class="page-wrapper">
+            <div class="info-card">
+                <div class="info-header">
+                    <h1>View Event</h1>
+                </div>
     <main class="event-info">
         <!-- Success notifications -->
         <?php if (isset($_GET['createSuccess'])): ?>
@@ -242,21 +248,21 @@
         <!--@@@ Thomas: if user clicked check in/out-->
         <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                if (isset($_POST['checking_in'])) {
-                    $personID = $_POST['personID'];
-                    $eventID = $_POST['eventID'];
-                    $timestamp = $_POST['timestamp'];
-                    check_in($personID, $eventID, $timestamp);
-                    echo "<div class='happy-toast'>You've checked in!</div>";
-                }
-                else if (isset($_POST['checking_out'])) {
-                    $personID = $_POST['personID'];
-                    $eventID = $_POST['eventID'];
-                    $timestamp = $_POST['timestamp'];
-                    check_out($personID, $eventID, $timestamp);
-                    echo "<div class='happy-toast'>You've checked out!</div>";
-                }
-                else if (isset($_POST['archiving'])) {
+                // if (isset($_POST['checking_in'])) {
+                //     $personID = $_POST['personID'];
+                //     $eventID = $_POST['eventID'];
+                //     $timestamp = $_POST['timestamp'];
+                //     check_in($personID, $eventID, $timestamp);
+                //     echo "<div class='happy-toast'>You've checked in!</div>";
+                // }
+                // else if (isset($_POST['checking_out'])) {
+                //     $personID = $_POST['personID'];
+                //     $eventID = $_POST['eventID'];
+                //     $timestamp = $_POST['timestamp'];
+                //     check_out($personID, $eventID, $timestamp);
+                //     echo "<div class='happy-toast'>You've checked out!</div>";
+                // }
+                if (isset($_POST['archiving'])) {
                     $eventID = $_POST['eventID'];
                     archive_event($eventID);
                     echo "<div class='happy-toast'>Event has been archived!</div>";
@@ -299,16 +305,6 @@
         <?php endif; ?>
 
         </h2>
-
-        
-
-
-
-
-
-
-        
-
                 <div id="table-wrapper">
             <table>
                 <tr>  
@@ -346,46 +342,17 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
 
-            <!-- @@@ Check-In and Check-Out Buttons by Thomas
-            <?php /*if (isset($user) && can_check_in($user->get_id(), $event_info))  : ?>
-                <form method="POST" action="">
-                    <input type="hidden" name="checking_in" value="1">
-                    <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
-                    <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
-                    <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
-                    <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                    <button type="submit" class="button success">Check-In</button>
-                </form>
-            <?php endif */?>
-
-            <?php /*if (isset($user) && can_check_out($user->get_id(), $event_info))  : ?>
-                <form method="POST" action="">
-                    <input type="hidden" name="checking_out" value="1">
-                    <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
-                    <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
-                    <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
-                    <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                    <button type="submit" class="button danger">Check-Out</button>
-                </form>
-            <?php endif */?> -->
-
-            <!-- end of Thomas's work-->
-
-            <?php /*if ($access_level < 2) : ?>
-                <?php if ($event_info["completed"] == "no") : ?>
-                    <button onclick="showCancelConfirmation()" class="button danger">Cancel My Sign-Up</button>
-                <?php endif ?>
-            <?php endif*/ ?>
-
             <form action="eventSignUp.php" method="get">
                 <input type="hidden" name="event_name" value="<?php echo htmlspecialchars($event_info['name']); ?>">
                 <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_info['id']); ?>">
-                <button type="submit" class="button primary">Sign Up!</button>
+                <div class="signup-btn">
+                    <button type="submit" id="submit" name="submit" value="send" class="signup-btn">Sign Up</button>
+                </div>
             </form>
             <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-
-                <a href="viewEventSignUps.php?id=<?php echo $id; ?>"class = "button signup">View Event Signups</a>
-
+            <div class="event-attendance-btn">
+                <a href="viewEventSignUps.php?id=<?php echo $id; ?>"class = "event-attendance-btn">Attendance</a>
+            </div>
                 <!-- Archive and Unarchive buttons by Thomas -->
 
                 <?php if (is_archived($event_info['id']))  : ?>
@@ -393,7 +360,9 @@
                         <input type="hidden" name="unarchiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <button type="submit" class="button">Unarchive</button>
+                        <div class="event-archive-btn">
+                            <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
+                        </div>  
                     </form>
 
                 <?php else : ?>
@@ -401,7 +370,9 @@
                         <input type="hidden" name="archiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <button type="submit" class="button">Archive</button>
+                        <div class="event-archive-btn">
+                            <button type="submit" class="event-archive-btn">Archive</button>
+                        </div>
                     </form>
 
                 <?php endif ?>
@@ -470,6 +441,9 @@
             <?php
         ?>
             <?php endif ?>
+            </div>
+            </div>
+            </div>
 
             
 
@@ -495,5 +469,6 @@
             };
         </script>
     </main>
+    <?php include 'footer.php'; ?>
 </body>
 </html>

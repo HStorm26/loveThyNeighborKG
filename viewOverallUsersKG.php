@@ -180,7 +180,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     <tbody>
                     <?php if (!empty($users)): ?>
                         <?php foreach ($users as $user): ?>
-                            <?php if ($user['id'] !== 'vmsroot' && $user['id'] !== 'vmsroot2'): ?>
+                            <?php if ($user['id'] !== 'vmsroot' && $user['id'] !== 'vmsroot2' && $user['id'] !== 'vmskiosk'): ?>
                             <tr>
                                 <td>
                                     <input type="checkbox" name="selected_users[]" value="<?php echo htmlspecialchars($user['id']); ?>">

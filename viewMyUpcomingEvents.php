@@ -17,6 +17,7 @@ if ($_SESSION['access_level'] < 1) {
 require_once('include/input-validation.php');
 require_once('database/dbEvents.php');
 require_once('database/dbPersons.php');
+require_once('database/dbRoleEvents.php');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -38,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($event_id) {
         $event_name = fetch_event_name($event_id);
+
+        removePersonRolesFromEvent($user_id, $event_id);
+
 
         if (remove_user_from_event($event_id, $user_id)) {
             require_once('database/dbMessages.php');
@@ -133,13 +137,13 @@ $upcoming_events = fetch_user_upcoming_signups($user_id, $sortDirection);
 
                             <td>
                                 <?php
-                                    if (!empty($event['roles'])) {
-                                        $roles = explode(', ', $event['roles']);
-                                        foreach ($roles as $role) {
+                                    $userRoles = getRolesForPersonEvent($user_id, $event['id']);
+                                    if (!empty($userRoles)) {
+                                        foreach ($userRoles as $role) {
                                             echo '<span class="role-pill">' . htmlspecialchars($role) . '</span>';
                                         }
                                     } else {
-                                        echo 'No role listed';
+                                        echo 'No role selected';
                                     }
                                 ?>
                             </td>
@@ -149,11 +153,15 @@ $upcoming_events = fetch_user_upcoming_signups($user_id, $sortDirection);
                                     Signed Up
                                 </span>
                             </td>
-
                             <td class="actions">
-                                <form method="POST" style="display:inline;">
+                                <form
+                                    method="POST"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Are you sure you want to cancel this event?');">
+
                                     <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                                    <button type="submit" class="cancel-btn" onclick="return confirm('Are you sure you want to cancel this event?');">
+
+                                    <button type="submit" class="cancel-btn">
                                         Cancel
                                     </button>
                                 </form>

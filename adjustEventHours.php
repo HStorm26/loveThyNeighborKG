@@ -45,6 +45,7 @@
             die();
         }
         $event = retrieve_event($args['event_id']);
+        //the time12hto24h is in js for whatever reason so i cant use it in php sections. i did it myself
         if($_POST['nav'] === 'adjustEventHours'){
             $date = $event->getStartDate();
             $startTime = $_POST['start_time'];
