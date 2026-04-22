@@ -1314,39 +1314,15 @@ function getUserType($id) {
 //set a user to be volunteer or admin.
 function setUserType($id, $type) {
     if ($type !== "Volunteer" && $type !== "Admin") {
-        error_log("setUserType: Invalid type '{$type}' for id '{$id}'");
         return 0;
     }
     $con = connect();
     $query = "UPDATE dbpersons SET type = ? WHERE id = ?";
     $stmt = mysqli_prepare($con, $query);
-    
-    if (!$stmt) {
-        error_log("setUserType: Prepare failed for id '{$id}': " . mysqli_error($con));
-        mysqli_close($con);
-        return 0;
-    }
-    
     mysqli_stmt_bind_param($stmt, "ss", $type, $id);
     $result = mysqli_stmt_execute($stmt);
-    
-    if (!$result) {
-        error_log("setUserType: Execute failed for id '{$id}', type '{$type}': " . mysqli_error($con));
-        mysqli_stmt_close($stmt);
-        mysqli_close($con);
-        return 0;
-    }
-    
-    $affected = mysqli_stmt_affected_rows($stmt);
     mysqli_stmt_close($stmt);
     mysqli_close($con);
-    
-    if ($affected === 0) {
-        error_log("setUserType: No rows updated for id '{$id}' (user may not exist)");
-        return 0;
-    }
-    
-    error_log("setUserType: Successfully updated id '{$id}' to type '{$type}'");
     return 1;
 }
 

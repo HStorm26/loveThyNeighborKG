@@ -16,17 +16,10 @@
         $id = $_SESSION['_id'];
     }
     if(isset($_POST['adminID'])){
-        $result = setUserType($_POST['adminID'], "Admin");
-        if (!$result) {
-            error_log("Failed to promote user " . $_POST['adminID'] . " to admin");
-        }
+        setUserType($_POST['adminID'], "Admin");
     }
     if(isset($_POST['unAdminID'])){
-        error_log('i need an error log');
-        $result = setUserType($_POST['unAdminID'], "Volunteer");
-        if (!$result) {
-            error_log("Failed to demote user " . $_POST['unAdminID'] . " to volunteer");
-        }
+        setUserType($_POST['unAdminID'], "Volunteer");
     }
 
     $person = retrieve_person($id);
