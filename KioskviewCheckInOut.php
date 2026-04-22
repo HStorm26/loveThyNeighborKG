@@ -30,16 +30,20 @@ if ($eventid <= 0) {
 $roles = get_roles();
 $rolesById = array();
 
-foreach ($roles as $role) {
-    $rolesById[(int)$role['role_id']] = $role;
+if (is_array($roles)) {
+    foreach ($roles as $role) {
+        if (is_array($role) && isset($role['role_id'])) {
+            $rolesById[(int)$role['role_id']] = $role;
+        }
+    }
 }
 
 $defaultRoleId = 0;
-if (!empty($roles)) {
+if (!empty($roles) && isset($roles[0]['role_id'])) {
     $defaultRoleId = (int)$roles[0]['role_id'];
 }
 
-$selectedWalkInRoleId = isset($_GET['roleid']) ? (int)$_GET['roleid'] : $defaultRoleId;
+$selectedWalkInRoleId = isset($_GET['roleID']) ? (int)$_GET['roleID'] : $defaultRoleId;
 
 if ($selectedWalkInRoleId <= 0 || !isset($rolesById[$selectedWalkInRoleId])) {
     $selectedWalkInRoleId = $defaultRoleId;
@@ -79,15 +83,15 @@ function findOpenCheckInRoleId($eventid, $personid)
     return $roleId;
 }
 
-function hasAnyOpenCheckInStatus($eventid, $personid)
-{
-    return findOpenCheckInRoleId($eventid, $personid) > 0;
-}
-
 function normalizeAssignedRoleIds($personid, $eventid)
 {
-    $assignedRoleIds = getRolesForPersonEvent($personid, $eventid);
     $normalized = array();
+
+    if (!function_exists('getRolesForPersonEvent')) {
+        return $normalized;
+    }
+
+    $assignedRoleIds = getRolesForPersonEvent($personid, $eventid);
 
     if (!is_array($assignedRoleIds)) {
         return $normalized;
@@ -114,7 +118,7 @@ function normalizeAssignedRoleIds($personid, $eventid)
 
 function getRoleNameFromMap($roleId, $rolesById)
 {
-    if ($roleId > 0 && isset($rolesById[$roleId])) {
+    if ($roleId > 0 && isset($rolesById[$roleId]) && isset($rolesById[$roleId]['role'])) {
         return $rolesById[$roleId]['role'];
     }
 
@@ -151,6 +155,39 @@ function getEffectiveRoleData($personid, $eventid, $walkInRoleId, $rolesById)
     );
 }
 
+function extractUsernameFromSearchResult($user)
+{
+    if (is_string($user)) {
+        return trim($user);
+    }
+
+    if (!is_array($user)) {
+        return '';
+    }
+
+    $possibleKeys = array(
+        'username',
+        '_id',
+        'id',
+        'personID',
+        'personid',
+        'userID',
+        'userid',
+        'email'
+    );
+
+    foreach ($possibleKeys as $key) {
+        if (isset($user[$key]) && is_scalar($user[$key])) {
+            $value = trim((string)$user[$key]);
+            if ($value !== '') {
+                return $value;
+            }
+        }
+    }
+
+    return '';
+}
+
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'search') {
     header('Content-Type: application/json');
 
@@ -167,10 +204,20 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'search') {
         $ajaxWalkInRoleId = $defaultRoleId;
     }
 
-    $usernames = searchUsers($query);
+    $searchResults = searchUsers($query);
     $payload = array();
 
-    foreach ($usernames as $username) {
+    if (!is_array($searchResults)) {
+        $searchResults = array();
+    }
+
+    foreach ($searchResults as $user) {
+        $username = extractUsernameFromSearchResult($user);
+
+        if ($username === '') {
+            continue;
+        }
+
         $effectiveRoleData = getEffectiveRoleData($username, $ajaxEventId, $ajaxWalkInRoleId, $rolesById);
 
         $payload[] = array(
@@ -195,6 +242,33 @@ include 'infoBox.php';
 <head>
     <title>Volunteer Check-In</title>
     <link href="css/normal_tw.css" rel="stylesheet">
+    <style>
+        .results-scroll-box {
+            max-height: 275px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .results-scroll-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-scroll-box thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .main-content-box {
+            background: #fff;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
 
@@ -243,7 +317,7 @@ include 'infoBox.php';
                 value="<?php echo htmlspecialchars($initialQuery); ?>"
             >
 
-            <div class="overflow-x-auto">
+            <div class="results-scroll-box">
                 <table class="w-full" id="results-table">
                     <thead class="bg-[#C9AB81] text-black">
                         <tr>
@@ -269,33 +343,12 @@ include 'infoBox.php';
     <div class="info-section">
         <p class="text-center text-gray-700">
             Don’t have an account?
-            <a href="QuickVolunteerRegister.php" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
+            <a href="QuickVolunteerRegister.php" id="signup-link" class="text-[rgb(203,37,26)] font-semibold hover:underline">Sign Up Now</a>
         </p>
     </div>
 </main>
 
 <script>
-document.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') {
-        e.preventDefault();
-        const userConfirmed = confirm('Are you sure you want to sign up for an account?');
-        if (userConfirmed) {
-            window.location.href = 'QuickVolunteerRegister.php';
-        }
-    }
-});
-
-window.addEventListener('popstate', function () {
-    const userConfirmed = confirm('Are you sure you want to sign up for an account?');
-    if (userConfirmed) {
-        window.location.href = 'QuickVolunteerRegister.php';
-    } else {
-        history.pushState(null, '', location.href);
-    }
-});
-
-window.history.pushState(null, '', window.location.href);
-
 function runSearch(query) {
     const resultsList = document.getElementById("search-results");
     const roleSelect = document.getElementById("role-select");
@@ -307,12 +360,25 @@ function runSearch(query) {
     }
 
     fetch(`KioskviewCheckInOut.php?ajax=search&query=${encodeURIComponent(query)}&id=<?php echo $eventid; ?>&roleid=${encodeURIComponent(selectedWalkInRoleId)}`)
-        .then(response => response.json())
-        .then(data => {
+        .then(response => response.text())
+        .then(text => {
+            let data = [];
+
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("Invalid JSON response:", text);
+                throw new Error("Invalid JSON response");
+            }
+
             resultsList.innerHTML = "";
 
+            if (!Array.isArray(data) || data.length === 0) {
+                return;
+            }
+
             data.forEach(item => {
-                const username = item.username;
+                const username = item.username || "";
                 const checkedIn = !!item.checked_in;
                 const roleId = parseInt(item.role_id, 10) || 0;
                 const roleName = item.role_name && item.role_name.length > 0 ? item.role_name : "No Role";
@@ -379,7 +445,9 @@ function runSearch(query) {
                 resultsList.appendChild(row);
             });
         })
-        .catch(error => console.error('Error fetching results:', error));
+        .catch(error => {
+            console.error("Error fetching results:", error);
+        });
 }
 
 document.getElementById("search-box").addEventListener("input", function () {
@@ -389,6 +457,16 @@ document.getElementById("search-box").addEventListener("input", function () {
 document.getElementById("role-select").addEventListener("change", function () {
     runSearch(document.getElementById("search-box").value.trim());
 });
+
+const signupLink = document.getElementById("signup-link");
+if (signupLink) {
+    signupLink.addEventListener("click", function (e) {
+        const userConfirmed = confirm("Are you sure you want to sign up for an account?");
+        if (!userConfirmed) {
+            e.preventDefault();
+        }
+    });
+}
 
 window.addEventListener("load", function () {
     const existingValue = document.getElementById("search-box").value.trim();
