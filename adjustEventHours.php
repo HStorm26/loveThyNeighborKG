@@ -83,7 +83,7 @@
             }
             $startTime = $date . ' ' . $startTime . ':00';
             $endTime = $date . ' ' . $endTime . ':00';
-            if(!adjustVolunteerHours($_POST['event_id'], $_POST['user_id'], $_POST['role_id'], $startTime, $endTime)){
+            if(!adjustVolunteerHours($args['event_id'], $args['user_id'], $args['role_id'], $startTime, $endTime)){
                 echo "Failed to update hours.";
             }
             else{
@@ -153,8 +153,7 @@
                                 <th>Clock Out Time</th>
                                 <th></th>
                             </tr>
-                        </thead> 
-                        <tbody>
+                        </thead>
                         <tbody>
                             <?php
                                 $query = "SELECT roleID, start_time, end_time FROM dbpersonhours WHERE personID = '" . $args['user_id'] . "' AND eventID = '" . $args['event_id'] . "'";
@@ -190,7 +189,7 @@
                                     </td>
                                 </tr>
                                 <input type="hidden" name="nav" value="adjustEventHours"/>
-                                <input type="hidden" name="user_id" value="<?php echo $_POST['user_id'];?>"/>
+                                <input type="hidden" name="user_id" value="<?php echo $args['user_id'];?>"/>
                                 <input type="hidden" name="role_id" value="<?php echo $role['roleID'];?>"/>
                                 <input type="hidden" name="event_id" value="<?php echo $role['eventID'];?>"/>
                                 </form>

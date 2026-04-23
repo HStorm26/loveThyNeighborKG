@@ -190,19 +190,25 @@ function getEventParticipants($eventid)
 function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime) 
 {
     $con = connect();
-    $querey = "UPDATE `dbpersonhours` SET `start_time` = ?, `end_time` = ? WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
-    $stmt = $con->prepare($querey);
-    if ($stmt)
-        {
-            $stmt->bind_param("ssisi", $startTime,$endTime,$eventid,$personid,$roleid);
-            $stmt->execute();
-            $success = $stmt->affected_rows >= 0;
-            $stmt->close();
-            mysqli_close($con);
-            return $success;
+    $query = "UPDATE `dbpersonhours` SET `start_time` = ?, `end_time` = ? WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
+    $stmt = $con->prepare($query);
+    if ($stmt){
+        $stmt->bind_param("ssisi", $startTime,$endTime,$eventid,$personid,$roleid);
+        $stmt->execute();
+        $success = $stmt->affected_rows > 0;
+        if(!$success){
+            $query = "INSERT INTO `dbpersonhours`(`personID`, `eventID`, `roleID`, `start_time`, `end_time`) VALUES ?, ?, ?, ?, ?";
+            $stmt = $con->prepare($query);
+            if($stmt){
+                $stmt->bind_param("siiss", $personid,$eventid,$roleid,$startTime,$endTime);
+                $stmt->execute();
+                $success = $stmt->affected_rows > 0;                
+            }
         }
+        $stmt->close();
+    }
     mysqli_close($con);
-    return false;
+    return $success;
 }
 function getActiveUsers(){
     $con = connect();
