@@ -182,7 +182,7 @@
                                                 <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
                                             </td>
                                             <td>
-                                                <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
+                                                <input type="text" id="end-time" name="end_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
                                             </td>
                                         <?php endif; ?>
                                     <td>
