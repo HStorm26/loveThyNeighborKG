@@ -52,17 +52,22 @@ body {
     width: 650px;
     margin: 40px auto;
 }
+.header-row {
+    display: flex;
+    align-items: center;   /* vertical alignment */
+    justify-content: center;
+    gap: 230px;
+    margin-bottom: 30px;
+}
 
 .logo {
-    display: block;
-    width: 120px;
-    margin: 0 auto 10px auto;
+    width: 180px;
 }
 
 .contact-info {
-    text-align: center;
-    font-size: 12px;
-    margin-bottom: 25px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: right;
 }
 
 .date {
@@ -91,12 +96,14 @@ p {
 <div class="letter-page">
 
     <!-- Your correct logo -->
-    <img src="images/LoveThyNeighbor_logo1_NoBackground.png" class="logo">
+   <div class="header-row">
+        <img src="images/LoveThyNeighbor_logo1_NoBackground.png" class="logo">
 
-    <div class="contact-info">
-        <div>www.kg-ltn.org</div>
-        <div>(540) 709-1130</div>
-        <div>10250 Kings Hwy, King George, VA</div>
+        <div class="contact-info">
+            <div>www.kg-ltn.org</div>
+            <div>(540) 709-1130</div>
+            <div>10250 Kings Hwy, King George, VA</div>
+        </div>
     </div>
 
     <div class="date"><strong><?php echo $today; ?></strong></div>
