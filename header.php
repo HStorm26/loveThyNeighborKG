@@ -1,6 +1,18 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/New_York');
 require_once('database/dbPersons.php');
+require_once('database/dbMessages.php');
+
+$userID = $_SESSION['_id'] ?? null;   // change this after print_r
+$unread_count = 0;
+
+if ($userID) {
+    $unread_count = get_user_unread_count($userID);
+}
+
 /*
  * Copyright 2013 by Allen Tucker. 
  * This program is part of RMHP-Homebase, which is free software.  It comes with 
@@ -151,6 +163,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['inactivevolunteersreport.php'] = 2;
         $permission_array['hourcategoryreport.php'] = 2;
         $permission_array['serviceletterreport.php'] = 2;
+        
+
         // LOWERCASE
 
 
@@ -242,6 +256,11 @@ if (date("H:i:s") > "18:19:59") {
                         <a href="inbox.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'inbox.php' ? 'active' : '' ?>">
                         Notification
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notif-badge">
+                                <?php echo $unread_count; ?>
+                            </span>
+                        <?php endif; ?>
                         </a>
                         <a href="KioskviewOverallEventsKG.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'KioskviewOverallEventsKG.php' ? 'active' : '' ?>">
