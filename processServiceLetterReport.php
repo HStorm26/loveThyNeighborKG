@@ -46,7 +46,7 @@ $today = date("F j, Y");
 <style>
 body {
     font-family: Arial, sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     color: #000;
     margin: 0;
 }
@@ -68,7 +68,7 @@ body {
 }
 
 .contact-info {
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
     text-align: right;
 }
@@ -90,6 +90,10 @@ p {
     width: 300px;
     border-bottom: 1px solid #000;
     margin-top: 30px;
+}
+.org-name {
+    margin-top: 30px;
+    font-weight: normal; /* or bold if you want it to stand out */
 }
 </style>
 </head>
@@ -130,6 +134,8 @@ p {
 
     <div class="line-below"></div>
     <div class="line-below"></div>
+
+    <p class="org-name">Love Thy Neighbor Food Pantry</p>
 
 </div>
 
