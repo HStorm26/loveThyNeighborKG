@@ -13,6 +13,9 @@ require_once('database/reports.php');
 
 $target_id = $_GET['target_id'] ?? null;
 $sdate = $_GET['sdate'] ?? '';
+if ($sdate < '2026-04-01') {
+    die("Start date cannot be before April 1, 2026.");
+}
 $edate = $_GET['edate'] ?? '';
 
 if (!$target_id || !$sdate || !$edate) {

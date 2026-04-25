@@ -141,6 +141,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     id="sdate" 
                     name="sdate" 
                     value="<?php echo htmlspecialchars($sdate); ?>" 
+                    min="2026-04-01"
                     required
                 >
 
