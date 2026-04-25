@@ -313,9 +313,13 @@ function get_community_service_volunteers_count($dateFrom, $dateTo) {
 /* Return true if a user is able to check out from a given event (they have already checked in) */
 function can_check_out($personID, $event_info) {
     $con = connect();
-    $query = "SELECT * FROM dbpersonhours WHERE personID = '" . $personID . "' AND eventID = '" . $event_info['id'] . "' AND end_time IS NULL";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbpersonhours WHERE personID = ? AND eventID = ? AND end_time IS NULL";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $personID, $event_info['id']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     if ($row) {
@@ -503,14 +507,17 @@ function make_a_person($result_row) {
 
 function getvolunteers_byevent($id) {
     $con = connect();
-    $query = 'SELECT * FROM dbeventpersons JOIN dbpersons WHERE eventID = "' . $id . '"' .
-        "AND dbeventpersons.userID = dbpersons.id";
-    $result = mysqli_query($con, $query);
+    $query = 'SELECT * FROM dbeventpersons JOIN dbpersons WHERE eventID = ? AND dbeventpersons.userID = dbpersons.id';
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $thePersons = array();
     while ($result_row = mysqli_fetch_assoc($result)) {
         $thePerson = make_a_person($result_row);
         $thePersons[] = $thePerson;
     }
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $thePersons;
 }
@@ -518,18 +525,22 @@ function getvolunteers_byevent($id) {
 // retrieve only those persons that match the criteria given in the arguments
 function getonlythose_dbPersons($type, $status, $name, $day, $shift, $venue) {
     $con = connect();
-    $query = "SELECT * FROM dbpersons WHERE type LIKE '%" . $type . "%'" .
-        " AND status LIKE '%" . $status . "%'" .
-        " AND (first_name LIKE '%" . $name . "%' OR last_name LIKE '%" . $name . "%')" .
-        " AND availability LIKE '%" . $day . "%'" .
-        " AND availability LIKE '%" . $shift . "%'" .
-        " ORDER BY last_name,first_name";
-    $result = mysqli_query($con, $query);
+    $type_pattern = "%" . $type . "%";
+    $status_pattern = "%" . $status . "%";
+    $name_pattern = "%" . $name . "%";
+    $day_pattern = "%" . $day . "%";
+    $shift_pattern = "%" . $shift . "%";
+    $query = "SELECT * FROM dbpersons WHERE type LIKE ? AND status LIKE ? AND (first_name LIKE ? OR last_name LIKE ?) AND availability LIKE ? AND availability LIKE ? ORDER BY last_name,first_name";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ssssss", $type_pattern, $status_pattern, $name_pattern, $name_pattern, $day_pattern, $shift_pattern);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $thePersons = array();
     while ($result_row = mysqli_fetch_assoc($result)) {
         $thePerson = make_a_person($result_row);
         $thePersons[] = $thePerson;
     }
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $thePersons;
 }
@@ -582,11 +593,11 @@ function get_people_for_export($attr, $first_name, $last_name, $type, $status, $
 //return an array of "last_name;first_name;hours"
 function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
     $con = connect();
-    $query = "SELECT first_name,last_name,hours,venue FROM dbpersons ";
-    $query .= " WHERE venue = '" . $venue . "'";
-    $query .= " AND last_name BETWEEN '" . $name_from . "' AND '" . $name_to . "'";
-    $query .= " ORDER BY last_name,first_name";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT first_name,last_name,hours,venue FROM dbpersons WHERE venue = ? AND last_name BETWEEN ? AND ? ORDER BY last_name,first_name";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "sss", $venue, $name_from, $name_to);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $thePersons = array();
     while ($result_row = mysqli_fetch_assoc($result)) {
         if ($result_row['hours'] != "") {
@@ -684,62 +695,75 @@ function update_person_required(
 }
 
 function find_users($name, $id, $phone, $zip, $type, $status) {
-    $where = 'where ';
     if (!($name || $id || $phone || $zip || $type || $status)) {
         return [];
     }
-    $first = true;
+    
+    $conditions = [];
+    $params = [];
+    $types = '';
+    
     if ($name) {
         if (strpos($name, ' ')) {
-            $name = explode(' ', $name, 2);
-            $firstName = $name[0];
-            $last = $name[1];
-            $where .= "first_name like '%$firstName%' and last_name like '%$last%'";
+            $name_parts = explode(' ', $name, 2);
+            $firstName = '%' . $name_parts[0] . '%';
+            $lastName = '%' . $name_parts[1] . '%';
+            $conditions[] = "first_name like ? and last_name like ?";
+            $params[] = $firstName;
+            $params[] = $lastName;
+            $types .= 'ss';
         } else {
-            $where .= "(first_name like '%$name%' or last_name like '%$name%')";
+            $name_pattern = '%' . $name . '%';
+            $conditions[] = "(first_name like ? or last_name like ?)";
+            $params[] = $name_pattern;
+            $params[] = $name_pattern;
+            $types .= 'ss';
         }
-        $first = false;
     }
     if ($id) {
-        if (!$first) {
-            $where .= ' and ';
-        }
-        $where .= "id like '%$id%'";
-        $first = false;
+        $id_pattern = '%' . $id . '%';
+        $conditions[] = "id like ?";
+        $params[] = $id_pattern;
+        $types .= 's';
     }
     if ($phone) {
-        if (!$first) {
-            $where .= ' and ';
-        }
-        $where .= "phone_number like '%$phone%'";
-        $first = false;
+        $phone_pattern = '%' . $phone . '%';
+        $conditions[] = "phone_number like ?";
+        $params[] = $phone_pattern;
+        $types .= 's';
     }
     if ($zip) {
-        if (!$first) {
-            $where .= ' and ';
-        }
-        $where .= "zip_code like '%$zip%'";
-        $first = false;
+        $zip_pattern = '%' . $zip . '%';
+        $conditions[] = "zip_code like ?";
+        $params[] = $zip_pattern;
+        $types .= 's';
     }
     if ($type) {
-        if (!$first) {
-            $where .= ' and ';
-        }
-        $where .= "type='$type'";
-        $first = false;
+        $conditions[] = "type=?";
+        $params[] = $type;
+        $types .= 's';
     }
     if ($status) {
-        if (!$first) {
-            $where .= ' and ';
-        }
-        $where .= "status='$status'";
-        $first = false;
+        $conditions[] = "status=?";
+        $params[] = $status;
+        $types .= 's';
     }
-
-    $query = "select * from dbpersons $where order by last_name, first_name";
+    
+    $where_clause = implode(' and ', $conditions);
+    $query = "select * from dbpersons where " . $where_clause . " order by last_name, first_name";
+    
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    
+    if ($params) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+    
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return [];
     }
@@ -751,6 +775,7 @@ function find_users($name, $id, $phone, $zip, $type, $status) {
         }
         $persons[] = make_a_person($row);
     }
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $persons;
 }
@@ -824,15 +849,16 @@ function fetch_no_shows() {
 
 function get_events_attended_by($personID) {
     $today = date("Y-m-d");
-    $query = "select * from dbeventpersons, dbevents
-                  where userID='$personID' and eventID=id
-                  and date<='$today' and attended=1
-                  order by date asc";
+    $query = "select * from dbeventpersons, dbevents where userID=? and dbevents.id=dbeventpersons.eventID and date<=? and attended=1 order by date asc";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $personID, $today);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if ($result) {
         require_once('include/time.php');
         $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         foreach ($rows as &$row) {
             $row['duration'] = calculateHourDuration($row['startTime'], $row['endTime']);
@@ -840,6 +866,7 @@ function get_events_attended_by($personID) {
         unset($row);
         return $rows;
     } else {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return [];
     }
@@ -847,15 +874,19 @@ function get_events_attended_by($personID) {
 
 function get_event_from_id($eventID) {
     $connection = connect();
-    $eventID = mysqli_real_escape_string($connection, $eventID);
-    $query = "SELECT name FROM dbevents WHERE id = '$eventID'";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT name FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result) {
         $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
-        return $row['name'];
+        return $row ? $row['name'] : null;
     } else {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
@@ -864,8 +895,11 @@ function get_event_from_id($eventID) {
 /* @@@ Thomas */
 function get_attended_event_ids($personID) {
     $con = connect();
-    $query = "SELECT DISTINCT eventID FROM dbpersonhours WHERE personID = '" . $personID . "' ORDER BY eventID DESC";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT DISTINCT eventID FROM dbpersonhours WHERE personID = ? ORDER BY eventID DESC";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $personID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result) {
         $rows = [];
@@ -873,9 +907,11 @@ function get_attended_event_ids($personID) {
             $rows[] = $row['eventID'];
         }
         mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return $rows;
     } else {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return [];
     }
@@ -883,8 +919,11 @@ function get_attended_event_ids($personID) {
 
 function get_check_in_outs($personID, $event) {
     $con = connect();
-    $query = "SELECT start_time, end_time FROM dbpersonhours WHERE personID = '" . $personID . "' and eventID = '" . $event . "' AND end_time IS NOT NULL";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT start_time, end_time FROM dbpersonhours WHERE personID = ? and eventID = ? AND end_time IS NOT NULL";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $personID, $event);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result) {
         $rows = [];
@@ -892,9 +931,11 @@ function get_check_in_outs($personID, $event) {
             $rows[] = $row;
         }
         mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return $rows;
     } else {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return [];
     }
