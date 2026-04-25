@@ -30,7 +30,18 @@ $fullName = trim($firstName . ' ' . $lastName);
 $totalHoursDecimal = round($totalMinutes / 60, 1);
 
 $roles = getVolunteerRolesForDateRange($target_id, $sdate, $edate);
-$rolesText = !empty($roles) ? implode(' and ', $roles) : 'volunteer activities';
+$roles = array_unique($roles);
+
+if (empty($roles)) {
+    $rolesText = 'various volunteer activities';
+} elseif (count($roles) === 1) {
+    $rolesText = $roles[0];
+} elseif (count($roles) === 2) {
+    $rolesText = $roles[0] . ' and ' . $roles[1];
+} else {
+    $lastRole = array_pop($roles);
+    $rolesText = implode(', ', $roles) . ', and ' . $lastRole;
+}
 
 $formattedStartDate = date("F j, Y", strtotime($sdate));
 $formattedEndDate = date("F j, Y", strtotime($edate));
