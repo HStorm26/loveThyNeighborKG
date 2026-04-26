@@ -94,17 +94,21 @@ function request_event_signup($event_name_str, $account_name, $role, $notes) {
     // Kept for backwards compatibility only.
     $connection = connect();
     
-    $safe_name = mysqli_real_escape_string($connection, $event_name_str);
-    $query1 = "SELECT id FROM dbevents WHERE name = '$safe_name'";
-    $result1 = mysqli_query($connection, $query1);
+    $query1 = "SELECT id FROM dbevents WHERE name = ?";
+    $stmt = mysqli_prepare($connection, $query1);
+    mysqli_stmt_bind_param($stmt, "s", $event_name_str);
+    mysqli_stmt_execute($stmt);
+    $result1 = mysqli_stmt_get_result($stmt);
     
     if (!$result1 || mysqli_num_rows($result1) === 0) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
 
     $row = mysqli_fetch_assoc($result1);
     $eventID = $row['id'];
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $eventID;
 }
@@ -162,7 +166,7 @@ function check_if_signed_up($eventID, $userID) {
     $connection = connect();
     $query1 = "SELECT * FROM dbeventpersons WHERE eventID = ? AND userID = ?";
     $stmt = mysqli_prepare($connection, $query1);
-    mysqli_stmt_bind_param($stmt, "ss", $eventID, $userID);
+    mysqli_stmt_bind_param($stmt, "is", $eventID, $userID);
     mysqli_stmt_execute($stmt);
     $result1 = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result1);
@@ -184,10 +188,15 @@ function check_if_signed_up($eventID, $userID) {
  */
 function fetch_event_signups($eventID) {
     $connection = connect();
-    $query = "SELECT userID, notes FROM dbeventpersons WHERE eventID = '$eventID'";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT userID, notes FROM dbeventpersons WHERE eventID = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
         die('Query failed: ' . mysqli_error($connection));
     }
 
@@ -196,6 +205,7 @@ function fetch_event_signups($eventID) {
         $signups[] = $row;
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $signups;
 }
@@ -206,10 +216,15 @@ function fetch_event_signups($eventID) {
  */
 function fetch_pending($eventID) {
     $connection = connect();
-    $query = "SELECT username, role, notes FROM dbpendingsignups WHERE eventname = '$eventID'";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT username, role, notes FROM dbpendingsignups WHERE eventname = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
         die('Query failed: ' . mysqli_error($connection));
     }
 
@@ -475,8 +490,11 @@ function retrieve_event3() {
 // not in use, may be useful for future iterations in changing how events are edited (i.e. change the remove and create new event process)
 function update_event_date($id, $new_event_date) {
 	$con=connect();
-	$query = 'UPDATE dbevents SET event_date = "' . $new_event_date . '" WHERE id = "' . $id . '"';
-	$result = mysqli_query($con,$query);
+	$query = 'UPDATE dbevents SET event_date = ? WHERE id = ?';
+	$stmt = mysqli_prepare($con, $query);
+	mysqli_stmt_bind_param($stmt, "si", $new_event_date, $id);
+	$result = mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
 	mysqli_close($con);
 	return $result;
 }
@@ -548,12 +566,11 @@ function get_all_events_sorted_by_date_not_archived() {
     $today = date('Y-m-d');
     $now = date('H:i');
 
-    $query = "SELECT * FROM dbevents
-              WHERE date > '$today'
-                 OR (date = '$today' AND endTime >= '$now')
-              ORDER BY date ASC, startTime ASC";
-
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbevents WHERE date > ? OR (date = ? AND endTime >= ?) ORDER BY date ASC, startTime ASC";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "sss", $today, $today, $now);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $theEvents = array();
 
     while ($result_row = mysqli_fetch_assoc($result)) {
@@ -561,6 +578,7 @@ function get_all_events_sorted_by_date_not_archived() {
         $theEvents[] = $theEvent;
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $theEvents;
 }
@@ -587,12 +605,11 @@ function get_all_events_sorted_by_date_and_archived() {
     $today = date('Y-m-d');
     $now = date('H:i');
 
-    $query = "SELECT * FROM dbevents
-              WHERE date < '$today'
-                 OR (date = '$today' AND endTime < '$now')
-              ORDER BY date ASC, startTime ASC";
-
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbevents WHERE date < ? OR (date = ? AND endTime < ?) ORDER BY date ASC, startTime ASC";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "sss", $today, $today, $now);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $theEvents = array();
 
     while ($result_row = mysqli_fetch_assoc($result)) {
@@ -600,6 +617,7 @@ function get_all_events_sorted_by_date_and_archived() {
         $theEvents[] = $theEvent;
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $theEvents;
 }
@@ -607,11 +625,13 @@ function get_all_events_sorted_by_date_and_archived() {
 // retrieve only those events that match the criteria given in the arguments
 function getonlythose_dbEvents($name, $day, $venue) {
    $con=connect();
-   $query = "SELECT * FROM dbevents WHERE event_name LIKE '%" . $name . "%'" .
-           " AND event_name LIKE '%" . $name . "%'" .
-           " AND venue = '" . $venue . "'" . 
-           " ORDER BY event_name";
-   $result = mysqli_query($con,$query);
+   $name_pattern = "%" . $name . "%";
+   $venue_val = $venue;
+   $query = "SELECT * FROM dbevents WHERE event_name LIKE ? AND event_name LIKE ? AND venue = ? ORDER BY event_name";
+   $stmt = mysqli_prepare($con, $query);
+   mysqli_stmt_bind_param($stmt, "sss", $name_pattern, $name_pattern, $venue_val);
+   mysqli_stmt_execute($stmt);
+   $result = mysqli_stmt_get_result($stmt);
    $theEvents = array();
    while ($result_row = mysqli_fetch_assoc($result)) {
        $theEvent = make_an_event($result_row);
@@ -649,16 +669,14 @@ function getonlythose_dbEvents($name, $day, $venue) {
 
 function fetch_events_in_date_range($start_date, $end_date) {
     $connection = connect();
-    $start_date = mysqli_real_escape_string($connection, $start_date);
-    $end_date = mysqli_real_escape_string($connection, $end_date);
-
-    $query = "SELECT * FROM dbevents
-              WHERE date >= '$start_date' AND date <= '$end_date'
-              ORDER BY date ASC, startTime ASC";
-
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT * FROM dbevents WHERE date >= ? AND date <= ? ORDER BY date ASC, startTime ASC";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $start_date, $end_date);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
@@ -675,28 +693,25 @@ function fetch_events_in_date_range($start_date, $end_date) {
         }
     }
 
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $events;
 }
 
 function fetch_events_on_date($startDate, $loggedIn) {
-    echo "<script> console.log('fetch_events_on_date IN:', '\" . $startDate . \"');</script>";
     $connection = connect();
-    $date = mysqli_real_escape_string($connection, $startDate);
     if ($loggedIn) {
-        $query = "select * from dbevents
-              where startDate = '$startDate' order by startTime asc";
-
+        $query = "select * from dbevents where startDate = ? order by startTime asc";
     }
     else {
-        $query = "select * from dbevents
-              where startDate = '$startDate'
-              and access = 'Public'
-              order by startTime asc";
+        $query = "select * from dbevents where startDate = ? and access = 'Public' order by startTime asc";
     }
-
-    $results = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $startDate);
+    mysqli_stmt_execute($stmt);
+    $results = mysqli_stmt_get_result($stmt);
     if (!$results) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
@@ -705,16 +720,20 @@ function fetch_events_on_date($startDate, $loggedIn) {
     foreach ($results as $row) {
         $events []= hsc($row);
     }
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $events;
 }
 
 function fetch_event_by_id($id) {
     $connection = connect();
-    $id = mysqli_real_escape_string($connection, $id);
-    $query = "select * from dbevents where id = '$id'";
-    $result = mysqli_query($connection, $query);
+    $query = "select * from dbevents where id = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $event = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     if ($event) {
         // require_once('include/output.php');
         // $event = hsc($event);
@@ -727,10 +746,13 @@ function fetch_event_by_id($id) {
 // JUST ADDED
 function fetch_num_signups($id) {
     $connection = connect();
-    $id = mysqli_real_escape_string($connection, $id);
-    $query = "select count(*) as RowCount from dbeventpersons where eventID = '$id'";
-    $result = mysqli_query($connection, $query);
+    $query = "select count(*) as RowCount from dbeventpersons where eventID = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $event = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     if ($event) {
         require_once('include/output.php');
         $event = hsc($event);
@@ -743,10 +765,13 @@ function fetch_num_signups($id) {
 
 function fetch_num_attendees($id) {
     $connection = connect();
-    $id = mysqli_real_escape_string($connection, $id);
-    $query = "select count(*) as RowCount from dbeventpersons where eventID = '$id' and attended=1";
-    $result = mysqli_query($connection, $query);
+    $query = "select count(*) as RowCount from dbeventpersons where eventID = ? and attended=1";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $event = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     if ($event) {
         require_once('include/output.php');
         $event = hsc($event);
@@ -817,8 +842,11 @@ function create_event($event) {
 function add_services_to_event($eventID, $serviceIDs) {
     $connection = connect();
     foreach($serviceIDs as $serviceID) {
-        $query = "insert into dbeventsservices (eventID, serviceID) values ('$eventID', '$serviceID')";
-        $result = mysqli_query($connection, $query);
+        $query = "insert into dbeventsservices (eventID, serviceID) values (?, ?)";
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, "ii", $eventID, $serviceID);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
         if (!$result) {
             return null;
         }
@@ -902,15 +930,21 @@ function update_services_for_event($eventID, $serviceIDs) {
     // add new services
     foreach($serviceIDs as $serviceID) {
         if (!in_array($serviceID, $curr_servIDs)) {
-            $query = "insert into dbeventsservices (eventID, serviceID) values ('$eventID', '$serviceID')";
-            $result = mysqli_query($connection, $query);
+            $query = "insert into dbeventsservices (eventID, serviceID) values (?, ?)";
+            $stmt = mysqli_prepare($connection, $query);
+            mysqli_stmt_bind_param($stmt, "ii", $eventID, $serviceID);
+            $result = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
         }
     }
     // remove old services
     foreach($curr_servIDs as $curr_serv) {
         if (!in_array($curr_serv, $serviceIDs)) {
-            $query = "delete from dbeventsservices where serviceID='$curr_serv'";
-            $result = mysqli_query($connection, $query);
+            $query = "delete from dbeventsservices where serviceID=?";
+            $stmt = mysqli_prepare($connection, $query);
+            mysqli_stmt_bind_param($stmt, "i", $curr_serv);
+            $result = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
         }
     }
     mysqli_commit($connection);
@@ -919,32 +953,36 @@ function update_services_for_event($eventID, $serviceIDs) {
 
 function find_event($nameLike) {
     $connection = connect();
-    $query = "
-        select * from dbevents
-        where name like '%$nameLike%'
-    ";
-    $result = mysqli_query($connection, $query);
+    $name_pattern = "%" . $nameLike . "%";
+    $query = "select * from dbevents where name like ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $name_pattern);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
         return null;
     }
     $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $all;
 }
 
 function fetch_events_in_date_range_as_array($start_date, $end_date) {
     $connection = connect();
-    $start_date = mysqli_real_escape_string($connection, $start_date);
-    $end_date = mysqli_real_escape_string($connection, $end_date);
-    $query = "select * from dbevents
-              where date >= '$start_date' and date <= '$end_date'
-              order by date, startTime asc";
-    $result = mysqli_query($connection, $query);
+    $query = "select * from dbevents where date >= ? and date <= ? order by date, startTime asc";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $start_date, $end_date);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $events = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $events;
 }
@@ -965,23 +1003,32 @@ function fetch_all_events() {
 
 function get_animal($id) {
     $connection = connect();
-    $query = "select * from dbanimals
-              where id='$id'";
-    $result = mysqli_query($connection, $query);
+    $query = "select * from dbanimals where id=?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
         return [];
     }
     $animal = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $animal;
 }
 
 function get_description($id) {
     $connection = connect();
-    $query = "select description from dbevents
-              where id='$id'";
-    $result = mysqli_query($connection, $query);
+    $query = "select description from dbevents where id=?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
         return [];
     }
     $description = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -1037,19 +1084,25 @@ function get_services($eventID) {
 // }
 
 function delete_event($id) {
-    $query = "delete from dbevents where id='$id'";
+    $query = "delete from dbevents where id=?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
     $result = boolval($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
 
 function cancel_event($event_id, $account_name) {
-    $query = "DELETE from dbeventpersons where userID LIKE '$account_name' AND eventID LIKE $event_id";
+    $query = "DELETE from dbeventpersons where userID = ? AND eventID = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $account_name, $event_id);
+    $result = mysqli_stmt_execute($stmt);
     $result = boolval($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
@@ -1063,18 +1116,20 @@ function cancel_event($event_id, $account_name) {
  */
 function approve_signup($event_id, $account_name, $position, $notes) {
     $connection = connect();
-    $safe_event = mysqli_real_escape_string($connection, $event_id);
-    $safe_user = mysqli_real_escape_string($connection, $account_name);
-    $safe_pos = mysqli_real_escape_string($connection, $position);
-    $safe_notes = mysqli_real_escape_string($connection, $notes);
 
     // 1. Delete from Pending (Using userID)
-    $query = "DELETE FROM dbpendingsignups WHERE userID = '$safe_user' AND eventname = '$safe_event'";
-    mysqli_query($connection, $query);
+    $query = "DELETE FROM dbpendingsignups WHERE userID = ? AND eventname = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $account_name, $event_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // 2. Add to Active
-    $query2 = "INSERT INTO dbeventpersons (eventID, userID, position, notes) VALUES ('$safe_event', '$safe_user', '$safe_pos', '$safe_notes')";
-    $result2 = mysqli_query($connection, $query2);
+    $query2 = "INSERT INTO dbeventpersons (eventID, userID, position, notes) VALUES (?, ?, ?, ?)";
+    $stmt2 = mysqli_prepare($connection, $query2);
+    mysqli_stmt_bind_param($stmt2, "isss", $event_id, $account_name, $position, $notes);
+    $result2 = mysqli_stmt_execute($stmt2);
+    mysqli_stmt_close($stmt2);
     
     mysqli_commit($connection);
     
@@ -1108,10 +1163,13 @@ function approve_multiple_signups($event_id, $account_names, $notes = '') {
  * @return bool True if successfull, false if the rejection failed
  */
 function reject_signup($event_id, $account_name, $position, $notes) {
-    $query = "DELETE from dbpendingsignups where username = '$account_name' AND eventname = '$event_id'";
+    $query = "DELETE from dbpendingsignups where username = ? AND eventname = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $account_name, $event_id);
+    $result = mysqli_stmt_execute($stmt);
     $result = boolval($result);
+    mysqli_stmt_close($stmt);
     /*if ($result == true) Wrong number for email
     {
         emailHandler($event_id, $account_name, 2, "Sign-up DENIED.");
