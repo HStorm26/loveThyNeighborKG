@@ -677,18 +677,44 @@ function update_person_required(
     $emergency_contact_phone
 ) {
     $query = "update dbpersons set
-            first_name='$first_name', last_name='$last_name',
-            `t-shirt_size`='$t_shirt_size', street_address='$street_address',
-            city='$city', state='$state', zip_code='$zip_code',
-            email='$email', phone_number='$phone1',
-            emergency_contact_first_name='$emergency_contact_first_name',
-            emergency_contact_relation='$emergency_contact_relation',
-            emergency_contact_phone='$emergency_contact_phone',
-            email_prefs='$email_consent'
-            where id='$id'";
+            first_name=?, last_name=?,
+            `t-shirt_size`=?, street_address=?,
+            city=?, state=?, zip_code=?,
+            email=?, phone_number=?,
+            emergency_contact_first_name=?,
+            emergency_contact_relation=?,
+            emergency_contact_phone=?,
+            email_prefs=?
+            where id=?";
 
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return false;
+    }
+    
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ssssssssssssss",
+        $first_name,
+        $last_name,
+        $t_shirt_size,
+        $street_address,
+        $city,
+        $state,
+        $zip_code,
+        $email,
+        $phone1,
+        $emergency_contact_first_name,
+        $emergency_contact_relation,
+        $emergency_contact_phone,
+        $email_consent,
+        $id
+    );
+    
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_commit($connection);
     mysqli_close($connection);
     return $result;
@@ -965,11 +991,20 @@ function get_events_attended_by_2($personID) {
 
 function get_events_attended_by_and_date($personID, $fromDate, $toDate) {
     $query = "select * from dbEventVolunteers, dbEvents
-                  where userID='$personID' and eventID=id
-                  and date<='$toDate' and date >= '$fromDate'
+                  where userID=? and eventID=id
+                  and date<=? and date >= ?
                   order by date desc";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return [];
+    }
+    mysqli_stmt_bind_param($stmt, "sss", $personID, $toDate, $fromDate);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+    
     if ($result) {
         require_once('include/time.php');
         $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -988,11 +1023,20 @@ function get_events_attended_by_and_date($personID, $fromDate, $toDate) {
 function get_events_attended_by_desc($personID) {
     $today = date("Y-m-d");
     $query = "select * from dbEventVolunteers, dbEvents
-                  where userID='$personID' and eventID=id
-                  and date<='$today'
+                  where userID=? and eventID=id
+                  and date<=?
                   order by date desc";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return [];
+    }
+    mysqli_stmt_bind_param($stmt, "ss", $personID, $today);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+    
     if ($result) {
         require_once('include/time.php');
         $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);

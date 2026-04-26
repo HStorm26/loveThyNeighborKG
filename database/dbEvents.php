@@ -452,12 +452,15 @@ function retrieve_event2($id) {
     $query = "SELECT * FROM dbevents WHERE id = ?";
     $stmt = mysqli_prepare($con, $query);
     mysqli_stmt_bind_param($stmt, "i", $id);
-    $result = mysqli_query($con,$query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (mysqli_num_rows($result) !== 1) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
     $result_row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
 //    var_dump($result_row);
     return $result_row;
 }
@@ -469,10 +472,19 @@ function retrieve_event3() {
 
     $query = "SELECT * FROM dbevents
               WHERE archived = 0
-                AND (date > '$today' OR (date = '$today' AND endTime >= '$now'))
+                AND (date > ? OR (date = ? AND endTime >= ?))
               ORDER BY date ASC, startTime ASC";
 
-    $result = mysqli_query($con, $query);
+    $stmt = mysqli_prepare($con, $query);
+    if (!$stmt) {
+        mysqli_close($con);
+        return [];
+    }
+    
+    mysqli_stmt_bind_param($stmt, "sss", $today, $today, $now);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
 
     $theEvents = array();
 
@@ -1040,12 +1052,22 @@ function get_description($id) {
 function get_location($id) {
     $connection = connect();
     $query = "select * from dblocations
-              where id='$id'";
-    $result = mysqli_query($connection, $query);
+              where id=?";
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return [];
+    }
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
+        mysqli_close($connection);
         return [];
     }
     $location = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $location;
 }
@@ -1283,11 +1305,42 @@ function update_animal2($animal) {
     }
 	$microchip_done = $animal["microchip_done"];
     $query = "
-        UPDATE dbanimals set odhs_id='$odhsid', name='$name', breed='$breed', age='$age', gender='$gender', notes='$notes', spay_neuter_done='$spay_neuter_done', spay_neuter_date='$spay_neuter_date', rabies_given_date='$rabies_given_date', rabies_due_date='$rabies_due_date', heartworm_given_date='$heartworm_given_date', heartworm_due_date='$heartworm_due_date', distemper1_given_date='$distemper1_given_date', distemper1_due_date='$distemper1_due_date', distemper2_given_date='$distemper2_given_date', distemper2_due_date='$distemper2_due_date', distemper3_given_date='$distemper3_given_date', distemper3_due_date='$distemper3_due_date', microchip_done='$microchip_done'
-        where id='$id'
+        UPDATE dbanimals set odhs_id=?, name=?, breed=?, age=?, gender=?, notes=?, spay_neuter_done=?, spay_neuter_date=?, rabies_given_date=?, rabies_due_date=?, heartworm_given_date=?, heartworm_due_date=?, distemper1_given_date=?, distemper1_due_date=?, distemper2_given_date=?, distemper2_due_date=?, distemper3_given_date=?, distemper3_due_date=?, microchip_done=?
+        where id=?
         ";
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return null;
+    }
+    mysqli_stmt_bind_param(
+        $stmt,
+        "sssssssssssssssssssi",
+        $odhsid,
+        $name,
+        $breed,
+        $age,
+        $gender,
+        $notes,
+        $spay_neuter_done,
+        $spay_neuter_date,
+        $rabies_given_date,
+        $rabies_due_date,
+        $heartworm_given_date,
+        $heartworm_due_date,
+        $distemper1_given_date,
+        $distemper1_due_date,
+        $distemper2_given_date,
+        $distemper2_due_date,
+        $distemper3_given_date,
+        $distemper3_due_date,
+        $microchip_done,
+        $id
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     if (!$result) {
+        mysqli_close($connection);
         return null;
     }
     mysqli_commit($connection);
@@ -1306,14 +1359,23 @@ function update_animal2($animal) {
 {
     $connection = connect();
     
-    $query = "SELECT access FROM dbevents WHERE id = $event_id";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT access FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return false;
+    }
+    mysqli_stmt_bind_param($stmt, "i", $event_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
     // Fetch the row
     $eventStatusRow = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    mysqli_close($connection);
     
     // Return true/false based on the comparison
-    return ($eventStatusRow['access'] == "Approval_Needed");
+    return ($eventStatusRow && $eventStatusRow['access'] == "Approval_Needed");
 }
 
  function getPAttendance($eventID) {
