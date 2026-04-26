@@ -84,10 +84,6 @@
                     require_once('database/dbinfo.php');
                     $con = connect();
 
-                    $series_id = bin2hex(random_bytes(16));
-                    $esc = mysqli_real_escape_string($con, $series_id);
-                    mysqli_query($con, "UPDATE dbevents SET series_id = '$esc' WHERE id = " . intval($id));
-
                     $counts = [
                         'daily'   => 30,
                         'weekly'  => 12,

@@ -156,14 +156,18 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT roleID, start_time, end_time FROM dbpersonhours WHERE personID = '" . $args['user_id'] . "' AND eventID = '" . $args['event_id'] . "'";
-                                $result = mysqli_query($con, $query);
+                                $query = "SELECT roleID, start_time, end_time FROM dbpersonhours WHERE personID = ? AND eventID = ?";
+                                $stmt = mysqli_prepare($con, $query);
+                                mysqli_stmt_bind_param($stmt, "ss", $args['user_id'], $args['event_id']);
+                                mysqli_stmt_execute($stmt);
+                                $result = mysqli_stmt_get_result($stmt);
                                 $rolesPerformed = array();
                                 foreach($result as $row){
                                     $startTime = substr($row['start_time'], 11, 5);
                                     $endTime = substr($row['end_time'], 11, 5);
                                     $rolesPerformed[$row['roleID']] = $startTime . ' ' . $endTime;
                                 }
+                                mysqli_stmt_close($stmt);
                             ?>
                             <?php foreach ($allRoles as $role): ?>
                                 <form method=POST>
