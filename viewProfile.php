@@ -34,9 +34,6 @@
     $user = retrieve_person($id);
     // $verified_ids = get_verified_ids($user->get_id());
 
-    
-    }
-
     $viewingOwnProfile = $id == $userID;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
