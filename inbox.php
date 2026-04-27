@@ -65,7 +65,7 @@ if (isset($_SESSION['_id'])) {
             align-items: center;
         }
     </style>
-    <title>Inbox</title>
+    <title>Notifications | Love Thy Neighbor Community Food Pantry</title>
 </head>
 <body>
 <?php require_once('header.php') ?>
@@ -74,7 +74,7 @@ if (isset($_SESSION['_id'])) {
     <!-- Main -->
     <div class="main">
         <div class="page-header">
-            <h1>Inbox</h1>
+            <h1>Notifications</h1>
         </div>
 
         <?php
@@ -95,10 +95,11 @@ if (isset($_SESSION['_id'])) {
         <?php if (count($allMessages) > 0): ?>
             <form id="bulkDeleteForm" action="deleteNotification.php" method="POST">
                 <div class="top-bar">
-                <button type="submit" name="delete_all" class="button delete" style="width:10%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
+                <!-- <button type="submit" name="delete_all" class="button delete" style="width:10%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button> -->
+                 <button type="submit" name="delete_all" class="cancel-btn" style="width:10%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
                     <div id="bulk-actions" style="display:none;">
                         <span><strong>With Selected:</strong></span>
-                        <button type="submit" name="bulk_delete" class="button delete" style="margin-bottom: 10px;" onclick="return confirm('Delete selected notifications?');">Delete</button>
+                        <button type="submit" name="bulk_delete" class="cancel-btn" style="margin-bottom: 10px;" onclick="return confirm('Delete selected notifications?');">Delete</button>
                     </div>
                 </div>
 

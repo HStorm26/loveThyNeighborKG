@@ -186,7 +186,7 @@ html, body {
                 <a href="https://www.facebook.com/kglovethyneighbor/" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                 <a href="https://www.instagram.com/love_thy_neighbor_kg/" class="social-icon"><i class="fab fa-instagram"></i></a>
                 <a href="https://www.youtube.com/@lovethyneighborkg2741" class="social-icon"><i class="fab fa-youtube"></i></a>
-                <a href="https://www.youtube.com/@lovethyneighborkg2741" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.linkedin.com/company/love-thy-neighbor-king-george/" class="social-icon"><i class="fab fa-linkedin"></i></a>
                 <a href="https://www.kgfood.org/contact" class="social-icon"><i class="fas fa-envelope"></i></a>
                 <a href="https://www.kgfood.org/contact" class="social-icon"><i class="fas fa-phone"></i></a>
             </div>

@@ -450,4 +450,137 @@ function getRolesForPersonEvent($personID, $eventID)
     return $roles;
 }
 
+function get_event_role_capacities($eventID) {
+    $con = connect();
+    $stmt = $con->prepare("
+        SELECT roleID, capacity
+        FROM dbroleevents
+        WHERE eventID = ?
+    ");
+    $stmt->bind_param("i", $eventID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+
+    $caps = [];
+    while ($row = $result->fetch_assoc()) {
+        $caps[(int)$row['roleID']] = (int)$row['capacity'];
+    }
+
+
+    $stmt->close();
+    $con->close();
+    return $caps;
+}
+
+
+function get_event_role_signup_counts($eventID) {
+    $con = connect();
+    $stmt = $con->prepare("
+        SELECT role_id, COUNT(*) AS assigned_count
+        FROM person_roles
+        WHERE event_id = ?
+        GROUP BY role_id
+    ");
+    $stmt->bind_param("i", $eventID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+
+    $counts = [];
+    while ($row = $result->fetch_assoc()) {
+        $counts[(int)$row['role_id']] = (int)$row['assigned_count'];
+    }
+
+
+    $stmt->close();
+    $con->close();
+    return $counts;
+}
+
+
+function count_people_signed_up_for_role_event($eventID, $roleID) {
+    $con = connect();
+    $stmt = $con->prepare("
+        SELECT COUNT(*)
+        FROM person_roles
+        WHERE event_id = ? AND role_id = ?
+    ");
+    $stmt->bind_param("ii", $eventID, $roleID);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+
+
+    $stmt->close();
+    $con->close();
+
+
+    return (int)$count;
+}
+
+
+function upsert_role_event_capacity($eventID, $roleID, $capacity) {
+    $con = connect();
+
+
+    $check = $con->prepare("
+        SELECT COUNT(*)
+        FROM dbroleevents
+        WHERE eventID = ? AND roleID = ?
+    ");
+    $check->bind_param("ii", $eventID, $roleID);
+    $check->execute();
+    $check->bind_result($exists);
+    $check->fetch();
+    $check->close();
+
+
+    if ($exists > 0) {
+        $stmt = $con->prepare("
+            UPDATE dbroleevents
+            SET capacity = ?
+            WHERE eventID = ? AND roleID = ?
+        ");
+        $stmt->bind_param("iii", $capacity, $eventID, $roleID);
+    } else {
+        $stmt = $con->prepare("
+            INSERT INTO dbroleevents (eventID, roleID, capacity)
+            VALUES (?, ?, ?)
+        ");
+        $stmt->bind_param("iii", $eventID, $roleID, $capacity);
+    }
+
+
+    $success = $stmt->execute();
+    $stmt->close();
+    $con->close();
+
+
+    return $success;
+}
+
+
+
+
+function get_role_name_by_id($roleID) {
+    $con = connect();
+    $stmt = $con->prepare("
+        SELECT role
+        FROM dbroles
+        WHERE role_id = ?
+    ");
+    $stmt->bind_param("i", $roleID);
+    $stmt->execute();
+    $stmt->bind_result($roleName);
+    $stmt->fetch();
+
+
+    $stmt->close();
+    $con->close();
+
+
+    return $roleName ?: '';
+}
+
 ?>
