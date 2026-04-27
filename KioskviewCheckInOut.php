@@ -243,8 +243,10 @@ include 'infoBox.php';
     <title>Volunteer Check-In</title>
     <link href="css/normal_tw.css" rel="stylesheet">
     <style>
+    
+
         .results-scroll-box {
-            max-height: 275px;
+            max-height: 20rem;
             overflow-y: auto;
             overflow-x: hidden;
             border: 1px solid #d1d5db;
@@ -264,7 +266,7 @@ include 'infoBox.php';
         }
         .main-content-box {
             background: #fff;
-            width: 100%;
+            width: 45rem;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
