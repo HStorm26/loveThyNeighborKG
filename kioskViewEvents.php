@@ -49,7 +49,7 @@ $todaysEvents = array_filter($events, function($event) use ($today) {
     <head>
         <?php require_once('universal.inc') ?>
         <link rel="stylesheet" href="css/event.css">
-        <title>kKiosk View Events | Love Thy Neighbor</title>
+        <title>Kiosk View Events | Love Thy Neighbo Community Food Pantry</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

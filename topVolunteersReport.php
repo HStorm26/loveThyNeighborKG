@@ -25,57 +25,40 @@ $fiscalYearEnd = $fiscalYearStart + 1;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Top Volunteer Report | Love Thy Neighbor Community Food Pantry</title>
     <!--<script src="js/data-filters.js" defer></script>-->
-    <link href="css/base.css" rel="stylesheet">
+    <!-- <link href="css/base.css" rel="stylesheet"> -->
+    <link href="layoutInfo.css" rel="stylesheet">
     <?php require_once('header.php'); ?>
 </head>
 <body>
-    <?php require_once('database/dbEvents.php');?>
-    <?php require_once('database/dbPersons.php');?>
+    <?php require_once('database/dbEvents.php'); ?>
+    <?php require_once('database/dbPersons.php'); ?>
 
-    <!-- Hero Section with Title -->
-        <div class="center-header">
-            <h1 style="color:black;">Generate Top Volunteers Report</h1>
-        </div>
-                <!-- Info Section -->
-        <section class="section-box">
-            <p style="margin-top: 1rem;text-align:center;">
-                Use this tool to generate a list of the top ten volunteers by total hours. Reports are available in Excel or CSV format.
-            </p>
-        </section>
+    <div class="page-wrapper">
+        <div class="info-card">
+            <div class="info-header">
+                <h1>Generate Top Volunteers Report</h1>
+                <p>Use this tool to generate a list of the top ten volunteers by total hours. Reports are available in PDF, Excel, or CSV format.</p>
+            </div>
 
-    <main>
-
-        <div class="main-content-box">
-            <!--<div class="text-center">
-                <p style="font-size: 18px; color: #c2c2c2ff; margin-top: 0.5rem; margin-bottom: 0.5rem;">Fiscal Year: <?= $fiscalYearStart ?> - <?= $fiscalYearEnd ?></p>
-            </div>-->
-
-            <form method="POST" action="processTop10Report.php">
-                <!-- Format -->
+            <form method="POST" action="processTop10Report.php" class="info-form">
                 <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
                     <label for="format" style="font-weight: 600;">File Format</label>
                     <select name="format" id="format">
+                        <option value="pdf">PDF (.pdf)</option>
                         <option value="excel">Excel (.xls)</option>
                         <option value="csv">CSV (.csv)</option>
                     </select>
                 </div>
 
-                <div style="text-align: center; margin-top: 2rem;">
+                <div class="email-actions">
                     <input type="hidden" value="<?php echo $_SESSION['_id']; ?>" name="admin" id="admin">
-                    <input type="hidden" value="<?php echo date("d-M-Y H:i:s e") ?>" name="time" id="time">
-                    <input type="submit" value="Generate Report" class="button generate-btn">
+                    <input type="hidden" value="<?php echo date("d-M-Y H:i:s e"); ?>" name="time" id="time">
+                    <button type="submit" name="action" value="send" class="submit-btn">Generate Report</button>
                 </div>
             </form>
-
-        <!-- Return Button -->
         </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="index.php" class="button" style="display: inline-block; text-decoration: none; width: 41%;">Return to Dashboard</a>
-        </div>
+    </div>
 
-    </main>
-
-   
+    <?php include 'footer.php'; ?>
 </body>
 </html>
-

@@ -97,14 +97,17 @@
     text-align: left;
 }
 .main-title {
-    font-size: 27px;
+    /*font-size: 27px;*/
+    font-size: 42px;
     color: rgb(0, 74, 173);
     margin: 0;
     font-weight: bold;
+    letter-spacing: 0.2em;
 }
 
 .sub-title {
-    font-size: 55px;
+    /*font-size: 55px;*/
+    font-size: 27px;
     color: rgb(0, 74, 173);
     margin: 0;
     font-weight: bold;
@@ -277,4 +280,20 @@
     .text-group {
         text-align: center;
     }
+}
+
+/* Notifications num */
+.notif-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
 }

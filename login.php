@@ -43,8 +43,14 @@
                 $_SESSION['f_name'] = $user->get_first_name();
                 $_SESSION['l_name'] = $user->get_last_name();
 
-                
-                $_SESSION['type'] = 'admin';
+                $type = $user->get_access_level();
+                if($type == 2){
+                  $_SESSION['type'] = 'admin';
+                }
+                else if($type == 1){
+                  $_SESSION['type'] = 'volunteer';
+                }
+                unset($type);
                 $_SESSION['_id'] = $user->get_id();
                 
                  //hard code root privileges
@@ -58,7 +64,7 @@
                 {
                   $_SESSION['access_level'] = 4;
                   $_SESSION['locked'] = false;
-                  header('Location: kioskviewoveralleventskg.php');
+                  header('Location: KioskviewOverallEventsKG.php');
                 }
             
                 //if ($changePassword) {
@@ -142,7 +148,7 @@
               <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
             </div>
             <div class="flex justify-between items-center mb-4">
-              <a href="#" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
+              <a href="forgotPassword.php" class="text-[rgb(0,74,173)] text-sm hover:underline">Forgot password?</a>
               <a href="https://www.kgfood.org/" class="text-[rgb(0,74,173)] text-sm hover:underline">Love Thy Neighbor Website</a>
             </div>
             <button class="cursor-pointer w-full bg-[rgb(0,74,173)] hover:bg-[rgb(203,37,26)] text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>

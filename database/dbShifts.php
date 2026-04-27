@@ -88,13 +88,21 @@ function get_open_shift($person_id, $date) {
 // get the person_id and check-in time from a shift_id
 function get_checkin_info_from_shift_id($shift_id){
     $con=connect();
-    $query = "SELECT * FROM dbshifts WHERE shift_id = '" . $shift_id . "'";
-    $result = mysqli_query($con,$query);
+    $query = "SELECT * FROM dbshifts WHERE shift_id = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $shift_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (mysqli_num_rows($result) !== 1) {
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
         return false;
     }
     $shift = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    mysqli_close($con);
+    
     $check_in_info = [
         'person_id' => $shift['person_id'],
         'startTime' => $shift['startTime'],

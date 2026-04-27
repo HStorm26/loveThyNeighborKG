@@ -1,13 +1,13 @@
 <?php
     session_cache_expire(30);
     session_start();
-    header("refresh:2; url=viewAllEvents.php");
+    header("refresh:2; url=viewMyUpcomingEvents.php");
 ?>
     <!DOCTYPE html>
     <html>
         <head>
             <?php require_once('universal.inc') ?>
-            <title>Whiskey Valor | Sign-Up for Event</title>
+            <title>Sign-Up for Event | Love Thy Neighbor Community Food Pantry</title>
             <style>
 
                 h1 {

@@ -34,27 +34,6 @@
     $user = retrieve_person($id);
     // $verified_ids = get_verified_ids($user->get_id());
 
-    if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_hours'])) {
-        $con = connect();
-        $newHours = floatval($_POST['new_hours']);
-        $safeID = mysqli_real_escape_string($con, $id);
-        $update = mysqli_query($con, "
-            UPDATE dbpersons 
-            SET total_hours_volunteered = $newHours 
-            WHERE id = '$safeID'
-        ");
-        if ($update) {
-            $user = retrieve_person($id);
-            echo '
-            <div id="success-message" style="position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;background:#166534;color:#fff;padding:1rem 2rem;border-radius:0.5rem;font-size:1.1rem;">
-              Hours updated successfully!
-            </div>
-            ';
-        } else {
-            echo '<div style="position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;background:#991b1b;color:#fff;padding:1rem 2rem;border-radius:0.5rem;font-size:1.1rem;">Failed to update hours.</div>';
-        }
-    }
-
     $viewingOwnProfile = $id == $userID;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,6 +130,18 @@
         <span class="field-label">T-Shirt Size</span>
         <span class="field-value"><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $user->get_t_shirt_size()))); ?></span>
       </div>
+      <div class="field-row">
+        <span class="field-label">Account Type</span>
+        <span class="field-value"><?php
+          $type = $user->get_access_level();
+          if($type >= 2){
+            echo "Administrator";
+          }
+          else{
+            echo "Volunteer";
+          }
+        ?></span>
+      </div>
     </div>
 
     <!-- Contact Information panel -->
@@ -204,5 +195,6 @@
     </div>
   </div>
 </main>
+<?php include 'footer.php'; ?>
 </body>
 </html>

@@ -24,8 +24,11 @@
 
     if ($event && !empty($event['series_id'])) {
     $con = connect(); // uses the same DB connection from dbEvents.php
-    $series_id = mysqli_real_escape_string($con, $event['series_id']);
-    mysqli_query($con, "DELETE FROM dbevents WHERE series_id = '$series_id'");
+    $series_id = $event['series_id'];
+    $stmt = mysqli_prepare($con, "DELETE FROM dbevents WHERE series_id = ?");
+    mysqli_stmt_bind_param($stmt, "s", $series_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     header('Location: calendar.php?deleteSuccess');

@@ -25,6 +25,9 @@
 
     require_once('include/input-validation.php');
     require_once('database/dbEvents.php');
+    require_once('database/dbRoles.php');
+    require_once('database/dbRoleEvents.php');
+
 
     $errors = '';
 
@@ -70,6 +73,18 @@
                     die();
                 }
 
+                $postedRoleCaps = $_POST['role_capacity'] ?? [];
+
+
+                foreach ($postedRoleCaps as $roleID => $cap) {
+                    $roleID = (int)$roleID;
+                    $cap = (int)$cap;
+
+
+                    upsert_role_event_capacity($id, $roleID, $cap);
+                }
+
+
                 $isRecurring    = isset($_POST['recurring']) ? 1 : 0;
                 $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
                 $customDays     = ($isRecurring && $recurrenceType === 'custom')
@@ -83,10 +98,6 @@
                 ) {
                     require_once('database/dbinfo.php');
                     $con = connect();
-
-                    $series_id = bin2hex(random_bytes(16));
-                    $esc = mysqli_real_escape_string($con, $series_id);
-                    mysqli_query($con, "UPDATE dbevents SET series_id = '$esc' WHERE id = " . intval($id));
 
                     $counts = [
                         'daily'   => 30,
@@ -153,123 +164,211 @@
 
     include_once('database/dbinfo.php'); 
     $con = connect();
+
+    $allRoles = get_roles(); // For displaying the form
+    $eventRoleCaps = get_event_role_capacities($id);   // [roleID => capacity]
+    $assignedByRole = get_event_role_signup_counts($id); // [roleID => assigned count]
+
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-        <?php require_once('universal.inc') ?>
-        <title>Edit Event | Love Thy Neighbor Community Food Pantry</title>
-    </head>
-    <body>
-        <?php require_once('header.php') ?>
-        <h1>Edit Event</h1>
-        <main class="date">
-        <?php if ($errors): ?>
-            <div class="error-toast"><?php echo $errors ?></div>
-        <?php endif ?>
-            <h2>Event Details</h2>
+<head>
+    <!-- <?php require_once('universal.inc') ?> -->
+    <title>Edit Event | Love Thy Neighbor Community Food Pantry</title>
+    <link rel="stylesheet" href="layoutInfo.css">
+</head>
+
+<body>
+<?php require_once('header.php') ?>
+
+<div class="info-form">
+    <div class="page-wrapper">
+        <div class="info-card">
+
+            <div class="info-header">
+                <h1>Edit Event</h1>
+            </div>
+
+            <?php if ($errors): ?>
+                <div class="error-toast"><?php echo $errors ?></div>
+            <?php endif; ?>
+
             <form id="new-event-form" method="post">
-                <label for="name">Event Name </label>
-                <input type="hidden" name="id" value="<?php echo $id ?>"/> 
-                <input type="text" id="name" name="name" value="<?php echo $event['name'] ?>" required placeholder="Enter name"> 
 
-                <label for="name">Date </label>
-                <input type="date" id="date" name="date" value="<?php echo $event['date'] ?>" min="<?php echo date('Y-m-d'); ?>" required>
+                <!-- Hidden ID -->
+                <input type="hidden" name="id" value="<?php echo $id ?>" />
 
-                <label for="name">Start Time </label>
-                <input type="text" id="start-time" name="start-time" value="<?php echo time24hto12h($event['startTime']) ?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
+                <!-- Event Name -->
+                <label for="name">Event Name</label>
+                <input type="text" id="name" name="name"
+                       value="<?php echo $event['name'] ?>"
+                       required placeholder="Enter name">
 
-                <label for="name">End Time </label>
-                <input type="text" id="end-time" name="end-time" value="<?php echo time24hto12h($event['endTime']) ?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
+                <!-- Date -->
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date"
+                       value="<?php echo $event['date'] ?>"
+                       min="<?php echo date('Y-m-d'); ?>"
+                       required>
 
-                <label for="name">Description </label>
-                <input type="text" id="description" name="description" value="<?php echo $event['description'] ?>" required placeholder="Enter description">
+                <!-- Start Time -->
+                <label for="start-time">Start Time</label>
+                <input type="text" id="start-time" name="start-time"
+                       value="<?php echo time24hto12h($event['startTime']) ?>"
+                       pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])"
+                       required placeholder="Ex. 12:00 PM">
 
-                <label for="name">Location </label>
-                <input type="text" name="location" value="<?= htmlspecialchars($event['location'], ENT_QUOTES, 'UTF-8') ?>">
+                <!-- End Time -->
+                <label for="end-time">End Time</label>
+                <input type="text" id="end-time" name="end-time"
+                       value="<?php echo time24hto12h($event['endTime']) ?>"
+                       pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])"
+                       required placeholder="Ex. 12:00 PM">
 
-                <label for="name">Capacity </label>
-                <input type="number" id="capacity" name="capacity" value="<?php echo $event['capacity'] ?>" placeholder="Enter capacity (e.g. 1-99)">
+                <!-- Description -->
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description"
+                       value="<?php echo $event['description'] ?>"
+                       required placeholder="Enter description">
 
-                <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <legend>Make this a recurring event</legend>
+                <!-- Location -->
+                <label for="location">Location</label>
+                <input type="text" name="location"
+                       value="<?= htmlspecialchars($event['location'], ENT_QUOTES, 'UTF-8') ?>">
 
-                    <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
-                        <input
-                            type="checkbox"
-                            id="recurring"
-                            name="recurring"
-                            value="1"
-                            <?php if (!empty($event['series_id'])) echo 'checked'; ?>
-                        >
-                        Recurring
-                    </label>
+                <!-- Total Capacity -->
+                <label for="capacity">Total Capacity</label>
+                <input type="number" id="capacity" name="capacity"
+                       value="<?php echo (int)$event['capacity']; ?>" readonly>
 
-                    <div id="recurring-options" style="display:none; margin-top:6px;">
-                        <label for="recurrence_type">Recurrence:</label>
-                        <select name="recurrence_type" id="recurrence_type">
-                            <option value="">-- Select --</option>
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="custom">Custom</option>
-                        </select>
+                <small style="display:block; margin-top:4px; color:#666;">
+                    This is automatically calculated from the role capacities below.
+                </small>
 
-                        <div id="custom-interval" style="display:none; margin-top:8px;">
-                            <label for="custom_days">Repeat every:</label>
-                            <input type="number" min="1" id="custom_days" name="custom_days" placeholder="e.g. 10">
-                            <span>days</span>
-                        </div>
-                    </div>
-                </fieldset>
+                <!-- Roles Table -->
+                <div class="event-sect">
+                    <label>* Edit Role Capacities</label>
 
-                <input type="submit" value="Update Event">
-                <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>
+                    <table class="roles-table">
+                        <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Currently Assigned</th>
+                            <th>Capacity</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <?php if (!empty($allRoles)): ?>
+                            <?php foreach ($allRoles as $role): ?>
+
+                                <?php
+                                $roleID = (int)$role['role_id'];
+                                $roleName = $role['role'] ?? '';
+                                $roleDescription = $role['role_description'] ?? '';
+
+                                $currentCapacity = isset($eventRoleCaps[$roleID])
+                                    ? (int)$eventRoleCaps[$roleID] : 0;
+
+                                $assignedCount = isset($assignedByRole[$roleID])
+                                    ? (int)$assignedByRole[$roleID] : 0;
+
+                                $minAllowed = $assignedCount;
+                                ?>
+
+                                <tr>
+                                    <td><?php echo htmlspecialchars($roleName); ?></td>
+
+                                    <td><?php echo $assignedCount; ?></td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="role_capacity[<?php echo $roleID; ?>]"
+                                            value="<?php echo $currentCapacity; ?>"
+                                            min="<?php echo $minAllowed; ?>"
+                                            step="1"
+                                            class="role-cap-input"
+                                            data-assigned="<?php echo $assignedCount; ?>"
+                                        >
+
+                                        <?php if ($assignedCount > 0): ?>
+                                            <small style="display:block; margin-top:4px; color:#666;">
+                                                Cannot go below <?php echo $assignedCount; ?>
+                                            </small>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td><?php echo htmlspecialchars($roleDescription); ?></td>
+                                </tr>
+
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4">No roles available.</td>
+                            </tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Buttons -->
+                <div class="email-actions">
+                    <button type="submit" name="action" value="send" class="submit-btn">
+                        Update Event
+                    </button>
+                </div>
+
+                <div class="email-actions">
+                    <a class="submit-btn"
+                       href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>"
+                       style="margin-top: .5rem">
+                        Cancel
+                    </a>
+                </div>
+
             </form>
 
-            <script type="text/javascript">
-                $(document).ready(function(){
-                    var checkboxes = $('.checkboxes');
-                    checkboxes.change(function(){
-                        if($('.checkboxes:checked').length>0) {
-                            checkboxes.removeAttr('required');
-                        } else {
-                            checkboxes.attr('required', 'required');
-                        }
-                    });
-                });
+        </div>
+    </div>
+</div>
 
-                (function(){
-                    const recurring     = document.getElementById('recurring');
-                    const options       = document.getElementById('recurring-options');
-                    const recurrenceType= document.getElementById('recurrence_type');
-                    const customBlock   = document.getElementById('custom-interval');
-                    const customDays    = document.getElementById('custom_days');
+<?php include 'footer.php'; ?>
 
-                    function toggleOptions(){
-                        const on = recurring && recurring.checked;
-                        if (options) options.style.display = on ? 'block' : 'none';
-                        if (!on) {
-                            if (recurrenceType) recurrenceType.value = '';
-                            if (customBlock) customBlock.style.display = 'none';
-                            if (customDays) customDays.value = '';
-                        }
-                    }
-                    function toggleCustom(){
-                        if (!recurrenceType || !customBlock) return;
-                        customBlock.style.display = (recurrenceType.value === 'custom') ? 'block' : 'none';
-                    }
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleInputs = document.querySelectorAll('.role-cap-input');
+    const totalCapacityInput = document.getElementById('capacity');
 
-                    if (recurring) {
-                        recurring.addEventListener('change', toggleOptions);
-                        toggleOptions();
-                    }
-                    if (recurrenceType) {
-                        recurrenceType.addEventListener('change', toggleCustom);
-                        toggleCustom();
-                    }
-                })();
-            </script>
-        </main>
-    </body>
+    function updateTotalCapacity() {
+        let total = 0;
+
+        roleInputs.forEach(input => {
+            let assigned = parseInt(input.dataset.assigned || '0', 10);
+            let value = parseInt(input.value || '0', 10);
+
+            if (value < assigned) {
+                value = assigned;
+                input.value = assigned;
+            }
+
+            total += value;
+        });
+
+        if (totalCapacityInput) {
+            totalCapacityInput.value = total;
+        }
+    }
+
+    roleInputs.forEach(input => {
+        input.addEventListener('input', updateTotalCapacity);
+        input.addEventListener('change', updateTotalCapacity);
+    });
+
+    updateTotalCapacity();
+});
+</script>
+
+</body>
 </html>

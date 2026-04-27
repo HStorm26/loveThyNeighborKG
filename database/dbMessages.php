@@ -7,15 +7,22 @@ date_default_timezone_set("America/New_York");
 
 function get_user_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID'
+              where recipientID=?
               order by prioritylevel desc";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -28,15 +35,22 @@ function get_user_messages($userID) {
 
 function get_user_unread_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID' AND wasread = 0
+              where recipientID=? AND wasread = 0
               order by time ASC";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -48,15 +62,22 @@ function get_user_unread_messages($userID) {
 }
 function get_user_read_messages($userID) {
     $query = "select * from dbmessages
-              where recipientID='$userID' AND wasread = 1
+              where recipientID=? AND wasread = 1
               order by time ASC";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $messages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    
     foreach ($messages as &$message) {
         foreach ($message as $key => $value) {
             $message[$key] = htmlspecialchars($value);
@@ -69,29 +90,41 @@ function get_user_read_messages($userID) {
 
 function get_user_unread_count($userID) {
     $query = "select count(*) from dbmessages 
-        where recipientID='$userID' and wasRead=0";
+        where recipientID=? and wasRead=0";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
 
     $row = mysqli_fetch_row($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return intval($row[0]);
 }
 
 function get_message_by_id($id) {
-    $query = "select * from dbmessages where id='$id'";
+    $query = "SELECT * FROM dbmessages WHERE id = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
 
     $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     if ($row == null) {
         return null;
@@ -106,17 +139,23 @@ function get_message_by_id($id) {
 function send_message($from, $to, $title, $body) {
     $time = date('Y-m-d-H:i');
     $connection = connect();
-    $title = mysqli_real_escape_string($connection, $title);
-    $body = mysqli_real_escape_string($connection, $body);
     $query = "insert into dbmessages
         (senderID, recipientID, title, body, time)
-        values ('$from', '$to', '$title', '$body', '$time')";
-    $result = mysqli_query($connection, $query);
+        values (?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($connection, $query);
+    if (!$stmt) {
+        mysqli_close($connection);
+        return null;
+    }
+    mysqli_stmt_bind_param($stmt, "sssss", $from, $to, $title, $body, $time);
+    $result = mysqli_stmt_execute($stmt);
     if (!$result) {
+        mysqli_stmt_close($stmt);
         mysqli_close($connection);
         return null;
     }
     $id = mysqli_insert_id($connection);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $id; // get row id
 }
@@ -126,10 +165,12 @@ function send_system_message($to, $title, $body) {
 }
 
 function mark_read($id) {
-    $query = "update dbmessages set wasRead=1
-              where id='$id'";
+    $query = "update dbmessages set wasRead=1 where id=?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     if (!$result) {
         mysqli_close($connection);
         return false;
@@ -139,10 +180,12 @@ function mark_read($id) {
 }
 
 function mark_all_as_read($userID) {
-    $query = "update dbmessages set wasRead=1
-              where recipientID='$userID'";
+    $query = "update dbmessages set wasRead=1 where recipientID=?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     if (!$result) {
         mysqli_close($connection);
         return false;
@@ -186,15 +229,22 @@ function system_message_all_admins($title, $body) {
 
 function system_message_all_users_except($except, $title, $body) {
     $time = date('Y-m-d-H:i');
-    $query = "select id from dbpersons where id!='$except'";
+    $query = "select id from dbpersons where id!=?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $except);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_fetch_all($result, MYSQLI_NUM);
+    mysqli_stmt_close($stmt);
     foreach ($rows as $row) {
         $to = $row[0];
-        $query = "insert into dbmessages (senderID, recipientID, title, body, time)
-                  values ('vmsroot', '$to', '$title', '$body', '$time')";
-        $result = mysqli_query($connection, $query);
+        $query = "insert into dbmessages (senderID, recipientID, title, body, time) values (?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($connection, $query);
+        $sender = 'vmsroot';
+        mysqli_stmt_bind_param($stmt, "sssss", $sender, $to, $title, $body, $time);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
     mysqli_close($connection);    
     return true;
@@ -208,11 +258,15 @@ function message_all_users($from, $title, $body) {
     $result = mysqli_query($connection, $query);
     $rows = mysqli_fetch_all($result, MYSQLI_NUM); //get all the users in the database dbPersons
     foreach ($rows as $row) { //for every user in db person, generate a notification
-        $to = json_encode($row); //converting the array of users into strings to put into the database of messages
-        $to = substr($to,2,-2); //getting rid of the brackets and quotes in the string: ie - ["user"]
+        $to = $row[0]; //get the user ID directly
         $query = "insert into dbmessages (senderID, recipientID, title, body, time)
-                  values ('$from', '$to', '$title', '$body', '$time')"; //inserting the notification in that users inbox
-        $result = mysqli_query($connection, $query); 
+                  values (?, ?, ?, ?, ?)"; //inserting the notification in that users inbox
+        $stmt = mysqli_prepare($connection, $query);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "sssss", $from, $to, $title, $body, $time);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
     }
     mysqli_close($connection);    
     return true;
@@ -220,41 +274,56 @@ function message_all_users($from, $title, $body) {
 
 function message_all_users_prio($from, $title, $body, $prio) {
     $time = date('Y-m-d-H:i');
-    $query = "select id from dbpersons where id!='$from'";
+    $query = "select id from dbpersons where id!=?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $rows = mysqli_fetch_all($result, MYSQLI_NUM); //get all the users in the database dbPersons
-    foreach ($rows as $row) { //for every user in db person, generate a notification
-        $to = json_encode($row); //converting the array of users into strings to put into the database of messages
-        $to = substr($to,2,-2); //getting rid of the brackets and quotes in the string: ie - ["user"]
-        $query = "insert into dbmessages (senderID, recipientID, title, body, time, prioritylevel)
-                  values ('$from', '$to', '$title', '$body', '$time', '$prio')"; //inserting the notification in that users inbox
-        $result = mysqli_query($connection, $query); 
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $from);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = mysqli_fetch_all($result, MYSQLI_NUM);
+    mysqli_stmt_close($stmt);
+    foreach ($rows as $row) {
+        $to = json_encode($row);
+        $to = substr($to,2,-2);
+        $query = "insert into dbmessages (senderID, recipientID, title, body, time, prioritylevel) values (?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, "sssssi", $from, $to, $title, $body, $time, $prio);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
     mysqli_close($connection);    
     return true;
 }
 function delete_message($id) {
-    $query = "delete from dbmessages where id='$id'";
+    $query = "DELETE FROM dbmessages WHERE id = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
+
 function delete_all_messages_for_user($userId) {
-    $query = "DELETE FROM dbmessages WHERE recipientID = '$userId'";
+    $query = "DELETE FROM dbmessages WHERE recipientID = ?";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userId);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
     return $result;
 }
+
 function delete_messages_by_ids($ids, $userID) {
     $ids_str = implode(',', array_map('intval', $ids));
-    $query = "DELETE FROM dbmessages WHERE recipientID='$userID' AND id IN ($ids_str)";
+    $query = "DELETE FROM dbmessages WHERE recipientID = ? AND id IN ($ids_str)";
     $connection = connect();
-    $result = mysqli_query($connection, $query);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "s", $userID);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     mysqli_close($connection);
-    return boolval($result);
+    return $result;
 }

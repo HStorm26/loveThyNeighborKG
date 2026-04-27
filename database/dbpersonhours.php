@@ -8,7 +8,6 @@
 
 include_once('dbinfo.php');
 
-
 /* this will retun nothing.
  * this should add a person to a scheduled event
  */ 
@@ -21,10 +20,7 @@ function registerPersonForEvent($eventid,$personid,$roleid)
         {
             $stmt->bind_param("sii", $personid,$eventid,$roleid);
             $stmt->execute();
-
-
-            }
-
+        }
     mysqli_close($con);
 }
 
@@ -38,10 +34,7 @@ function unregisterPersonForEvent($eventid,$personid)
         {
             $stmt->bind_param("si", $personid,$eventid,);
             $stmt->execute();
-
-
-            }
-
+        }
     mysqli_close($con);
 }
 
@@ -50,28 +43,30 @@ function unregisterPersonForEvent($eventid,$personid)
 function updateStartTime($eventid,$personid,$roleid)
 {
     $con = connect();
-    $querey = 'UPDATE `dbpersonhours` SET `start_time` = NOW() where `eventID` = ? AND `personID` = ? AND `roleID` = ?';
+    $querey = "UPDATE `dbpersonhours` SET `start_time` = NOW() WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
     $stmt = $con->prepare($querey);
     if ($stmt)
         {
             $stmt->bind_param("isi", $eventid,$personid,$roleid);
             $stmt->execute();
         }
-        mysqli_close($con);
+    mysqli_close($con);
 }
+
 //update end time
 function updateEndTime($eventid,$personid,$roleid)
 {
     $con = connect();
-    $querey = 'UPDATE `dbpersonhours` SET `end_time` = NOW() where `eventID` = ? AND `personID` = ? AND `roleID` = ?';
+    $querey = "UPDATE `dbpersonhours` SET `end_time` = NOW() WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
     $stmt = $con->prepare($querey);
     if ($stmt)
         {
             $stmt->bind_param("isi", $eventid,$personid,$roleid);
             $stmt->execute();
         }
-        mysqli_close($con);
+    mysqli_close($con);
 }
+
 //calc person hours
 function calcPersonHours($personid)
 {
@@ -86,17 +81,16 @@ function calcPersonHours($personid)
             
             $hours = $result->fetch_row();
             
-            
             return (int)$hours[0];
         }
-        mysqli_close($con);
-    
+    mysqli_close($con);
 }
 
+//calculate the top 10 users with the highest number of volunteer hours
 function calcTop10()
 {
      $con = connect();
-    $querey = "SELECT p.first_name,p.last_name, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` FROM `dbpersonhours` as `h` left join `dbpersons` as `p` on h.personID = p.id GROUP BY p.id, p.first_name, p.last_name order by m desc limit 10";
+    $querey = "SELECT p.first_name,p.last_name, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) AS `m` FROM `dbpersonhours` AS `h` LEFT JOIN `dbpersons` AS `p` ON h.personID = p.id GROUP BY p.id, p.first_name, p.last_name ORDER BY m DESC LIMIT 10";
     $stmt = $con->prepare($querey);
     $stmt->execute();
     $stmt->bind_result($f,$l,$tm);
@@ -111,10 +105,31 @@ function calcTop10()
     return $rows;
 }
 
+function calcTotalHoursForRange($startDateTime, $endDateTime)
+{
+    $con = connect();
+    $querey = "SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, `start_time`, `end_time`)), 0) FROM `dbpersonhours` WHERE `start_time` >= ? AND `start_time` < ? AND `end_time` IS NOT NULL";
+    $stmt = $con->prepare($querey);
+
+    if ($stmt) {
+        $stmt->bind_param("ss", $startDateTime, $endDateTime);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $minutes = $result->fetch_row();
+        $stmt->close();
+        $con->close();
+
+        return ((int)$minutes[0]) / 60;
+    }
+
+    mysqli_close($con);
+    return 0;
+}
+
 function roleHoursForDateRange($sd,$ed)
 {
     $con = connect();
-    $querey = "SELECT r.role, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) as `m` FROM `dbpersonhours` as `h` left join `dbroles` as `r` on h.roleID = r.role_id WHERE h.start_time >= ? AND h.start_time <  ? GROUP BY r.role order by m desc";
+    $querey = "SELECT r.role, sum(TIMESTAMPDIFF(MINUTE, h.start_time, h.end_time)) AS `m` FROM `dbpersonhours` AS `h` LEFT JOIN `dbroles` AS `r` ON h.roleID = r.role_id WHERE h.start_time >= ? AND h.start_time <  ? GROUP BY r.role ORDER BY m DESC";
     $stmt = $con->prepare($querey);
     $stmt->bind_param('ss',$sd,$ed);
     $stmt->execute();
@@ -149,9 +164,9 @@ function roleHoursForDateRange($sd,$ed)
     */
 
 //get event partisipants
-
-function getEventParticipants($eventid){
-$con = connect();
+function getEventParticipants($eventid)
+{
+    $con = connect();
     $querey = "SELECT DISTINCT`personID` FROM `dbpersonhours` WHERE `eventID` = ?";
     $stmt = $con->prepare($querey);
     if ($stmt)
@@ -166,9 +181,40 @@ $con = connect();
                 {
                     $persons[$i] = $persons[$i][0];
                 }
-        
             return $persons;
         }
-        mysqli_close($con);
-    
+    mysqli_close($con);
 }
+
+//allows admins to adjust volunteer hours
+function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime) 
+{
+    $con = connect();
+    $query = "UPDATE `dbpersonhours` SET `start_time` = ?, `end_time` = ? WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
+    $stmt = $con->prepare($query);
+    if ($stmt){
+        $stmt->bind_param("ssisi", $startTime,$endTime,$eventid,$personid,$roleid);
+        $stmt->execute();
+        $success = $stmt->affected_rows > 0;
+        if(!$success){
+            $query = "INSERT INTO `dbpersonhours`(`personID`, `eventID`, `roleID`, `start_time`, `end_time`) VALUES ?, ?, ?, ?, ?";
+            $stmt = $con->prepare($query);
+            if($stmt){
+                $stmt->bind_param("siiss", $personid,$eventid,$roleid,$startTime,$endTime);
+                $stmt->execute();
+                $success = $stmt->affected_rows > 0;                
+            }
+        }
+        $stmt->close();
+    }
+    mysqli_close($con);
+    return $success;
+}
+function getActiveUsers(){
+    $con = connect();
+    $query = "SELECT DISTINCT `personID` FROM `dbpersonhours` join `dbevents` on `dbpersonhours`.`eventID` = `dbevents`.`id` where `dbevents`.`date` >= CURDATE()";    
+    $result = mysqli_query($con,$query);
+    mysqli_close($con);
+    return $result;
+    }
+    

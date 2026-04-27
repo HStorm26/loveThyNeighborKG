@@ -1,7 +1,18 @@
-<!-- This looks really, really great!  -Thomas -->
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/New_York');
 require_once('database/dbPersons.php');
+require_once('database/dbMessages.php');
+
+$userID = $_SESSION['_id'] ?? null;   // change this after print_r
+$unread_count = 0;
+
+if ($userID) {
+    $unread_count = get_user_unread_count($userID);
+}
+
 /*
  * Copyright 2013 by Allen Tucker. 
  * This program is part of RMHP-Homebase, which is free software.  It comes with 
@@ -144,9 +155,16 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['viewoveralleventskg.php'] = 0;
         $permission_array['adjusteventhours.php'] = 2;
         $permission_array['viewallreports.php'] = 2;
-        $permission_array['kioskviewOverallEventsKG.php'] = 4;
+        $permission_array['KioskviewOverallEventsKG.php'] = 4;
         $permission_array['totalhoursreport.php'] = 2;
         $permission_array['topvolunteersreport.php'] = 2;
+        $permission_array['archive_people_list.php'] = 2;
+        $permission_array['uniquevolunteerreport.php'] = 2;
+        $permission_array['inactivevolunteersreport.php'] = 2;
+        $permission_array['hourcategoryreport.php'] = 2;
+        $permission_array['serviceletterreport.php'] = 2;
+        
+
         // LOWERCASE
 
 
@@ -193,12 +211,16 @@ if (date("H:i:s") > "18:19:59") {
                         </a>
 
                         <div class="text-group">
-                            <h1 class="main-title">King George County Community Food Pantry</h1>
-                            <p class="sub-title">LOVE THY NEIGHBOR</p>
+                            <h1 class="main-title">LOVE THY NEIGHBOR</h1>
+                            <p class="sub-title">King George County Community Food Pantry</p>
                         </div>
                     </div>
 
                     <div class="header-nav">
+                        <a href="calendar.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'calendar.php' ? 'active' : '' ?>">
+                        Calendar
+                        </a>
                         <a href="index.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
                         Dashboard
@@ -213,6 +235,16 @@ if (date("H:i:s") > "18:19:59") {
                         class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
+                        <a href="Archive_People_List.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'Archive_People_List.php' ? 'active' : '' ?>">
+                        Archive
+                        </a>
+
+                        <a href="viewMyUpcomingEvents.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewMyUpcomingEvents.php' ? 'active' : '' ?>">
+                        Signed-Up
+                        </a>
+
                         <a href="createEmail.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'createEmail.php' ? 'active' : '' ?>">
                         Email
@@ -224,9 +256,14 @@ if (date("H:i:s") > "18:19:59") {
                         <a href="inbox.php"
                         class="<?= basename($_SERVER['PHP_SELF']) == 'inbox.php' ? 'active' : '' ?>">
                         Notification
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notif-badge">
+                                <?php echo $unread_count; ?>
+                            </span>
+                        <?php endif; ?>
                         </a>
-                        <a href="kioskviewOverallEventsKG.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'kioskviewOverallEventsKG.php' ? 'active' : '' ?>">
+                        <a href="KioskviewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'KioskviewOverallEventsKG.php' ? 'active' : '' ?>">
                         Kiosk
                         </a>
                         
@@ -283,8 +320,8 @@ if (date("H:i:s") > "18:19:59") {
                         </a>
 
                         <div class="text-group">
-                            <h1 class="main-title">King George County Community Food Pantry</h1>
-                            <p class="sub-title">LOVE THY NEIGHBOR</p>
+                            <h1 class="main-title">LOVE THY NEIGHBOR</h1>
+                            <p class="sub-title">King George County Community Food Pantry</p>
                         </div>
                     </div>
 
@@ -299,8 +336,8 @@ if (date("H:i:s") > "18:19:59") {
                         Dashboard
                         </a>
 
-                        <a href="EventSignUp.php"
-                        class="<?= basename($_SERVER['PHP_SELF']) == 'EventSignUp.php' ? 'active' : '' ?>">
+                        <a href="viewOverallEventsKG.php"
+                        class="<?= basename($_SERVER['PHP_SELF']) == 'viewOverallEventsKG.php' ? 'active' : '' ?>">
                         Event
                         </a>
 

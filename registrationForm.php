@@ -235,7 +235,7 @@
             <p class="mb-2">Please review the following before creating your account.</p>
         <div class="blue-div"></div>
             <label><em>* </em> Privacy Policy</label>
-            <p>I confirm that I have read the <a href="https://www.kgfood.org/privacy">Privacy Policy</a> and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
+            <p>I confirm that I have read the <u><a href="https://www.kgfood.org/privacy">Privacy Policy</a> </u>and consent to the Love Thy Neighbor Community Food Pantry in King George, Virginia, collecting and storing my information for the purposes outlined therein.</p>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="agree" name="privacy_consent" value="yes" required>
@@ -254,10 +254,10 @@
                     <input type="radio" id="agree" name="photo_release" value="yes" required>
                     <label for="agree">Yes</label>
                 </div>
-                <!--<div class="radio-element">
+                <div class="radio-element">
                     <input type="radio" id="disagree" name="photo_release" value="no">
-                    <label for="disagree">I do not agree.</label>
-                </div>-->
+                    <label for="disagree">No</label>
+                </div>
             </div>   
         </fieldset>
         <p class="text-center notice"></p>
