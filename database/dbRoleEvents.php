@@ -264,12 +264,14 @@ function addPersonRoleToEvent($personID, $roleID, $eventID) {
 function getRoleEventCapacity($eventID, $roleID) {
     $con = connect();
 
-    $query = "SELECT capacity FROM dbroleevents WHERE eventID = '$eventID' AND roleID = '$roleID'";
-
-    $result = mysqli_query($con, $query);
+    $query = "SELECT capacity FROM dbroleevents WHERE eventID = ? AND roleID = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ii", $eventID, $roleID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     $row = mysqli_fetch_assoc($result);
-
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     if (!$row) {
@@ -283,9 +285,11 @@ function getRoleEventCapacity($eventID, $roleID) {
 function updateRoleEventCapacity($eventID, $roleID, $capacity) {
     $con = connect();
 
-    $query = "UPDATE dbroleevents SET capacity = '$capacity' WHERE eventID = '$eventID' AND roleID = '$roleID'";
-
-    $result = mysqli_query($con, $query);
+    $query = "UPDATE dbroleevents SET capacity = ? WHERE eventID = ? AND roleID = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "iii", $capacity, $eventID, $roleID);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     if (!$result) {
         mysqli_close($con);
@@ -302,12 +306,14 @@ function updateRoleEventCapacity($eventID, $roleID, $capacity) {
 function getEventCapacity($eventID) {
     $con = connect();
 
-    $query = "SELECT SUM(capacity) AS totalCap FROM dbroleevents WHERE eventID = '$eventID'";
+    $query = "SELECT SUM(capacity) AS totalCap FROM dbroleevents WHERE eventID = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "i", $eventID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
-    $result = mysqli_query($con, $query);
-
     $row = mysqli_fetch_assoc($result);
-
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
 
     if (!$row || $row['totalCap'] === null) {
@@ -320,6 +326,7 @@ function getEventCapacity($eventID) {
 // Save the selected roles
 function save_event_roles($eventID, $roles) {
     $connection = connect();
+    $eventID = (int)$eventID;
 
     foreach ($roles as $roleID => $count) {
         $roleID = (int)$roleID;
@@ -328,9 +335,14 @@ function save_event_roles($eventID, $roles) {
         if ($count > 0) {
             $query = "
                 INSERT INTO dbroleevents (eventID, roleID, capacity)
-                VALUES ($eventID, $roleID, $count)
+                VALUES (?, ?, ?)
             ";
-            mysqli_query($connection, $query);
+            $stmt = mysqli_prepare($connection, $query);
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "iii", $eventID, $roleID, $count);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
         }
     }
 
