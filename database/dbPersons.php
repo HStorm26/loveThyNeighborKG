@@ -809,8 +809,16 @@ function find_users($name, $id, $phone, $zip, $type, $status) {
 function searchUsers($query) {
     $conn = connect();
 
-    $stmt = $conn->prepare("SELECT id FROM dbpersons WHERE id LIKE CONCAT(?, '%') LIMIT 10");
-    $stmt->bind_param("s", $query);
+    $stmt = $conn->prepare("
+        SELECT id 
+        FROM dbpersons 
+        WHERE id LIKE CONCAT('%', ?, '%')
+           OR first_name LIKE CONCAT('%', ?, '%')
+           OR last_name LIKE CONCAT('%', ?, '%')
+        LIMIT 10
+    ");
+
+    $stmt->bind_param("sss", $query, $query, $query);
     $stmt->execute();
 
     $result = $stmt->get_result();
@@ -1455,5 +1463,14 @@ function toggleArchiveStatus($id) {
     $stmt->close();
     mysqli_close($con);
 
+    return $result;
+}
+
+function updateUsername()
+{
+    $con = connect();
+    $query = "UPDATE dbpersons SET id = CONCAT(first_name, last_name, FLOOR(RAND() * 1000)) where id != 'vmsroot' and id != 'vmsKiosk'";
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
     return $result;
 }
