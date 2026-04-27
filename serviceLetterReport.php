@@ -101,42 +101,17 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <div class="page">
     <div class="main">
 
-    <div class="filter-card">
-        <form method="GET" action="serviceLetterReport.php">
-
-            <!-- Keep existing filters when applying date -->
-            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
-            <input type="hidden" name="search_by" value="<?php echo htmlspecialchars($search_by); ?>">
-            <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
-            <input type="hidden" name="page" value="1">
-
-            <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-                <div class="Start date">
-                    <label for="sdate">* Start Date </label>
-                    <input type="date" id="sdate" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>" required>
-                </div>
-
-                <div class="End date">
-                    <label for="edate">* End Date </label>
-                    <input type="date" id="edate" name="edate" value="<?php echo htmlspecialchars($edate); ?>" required>
-                </div>
-            </div>
-
-            <div style="text-align: center;">
-                <button type="submit" class="button">Apply Date Range</button>
-            </div>
-
-        </form>
-    </div>
+   
 
         <div class="page-header">
             <h1>Users</h1>
         </div>
 
+
+
         <div class="filter-card">
             <form class="filter-form" method="GET" action="serviceLetterReport.php">
-                <input type="hidden" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>">
-                <input type="hidden" name="edate" value="<?php echo htmlspecialchars($edate); ?>">
+                <input type="hidden" name="page" value="1">
 
                 <select name="search_by">
                     <option value="all" <?php echo ($search_by === 'all' ? 'selected' : ''); ?>>All</option>
@@ -146,7 +121,12 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     <option value="phone" <?php echo ($search_by === 'phone' ? 'selected' : ''); ?>>Phone</option>
                 </select>
 
-                <input type="text" name="search" placeholder="Search users..." value="<?php echo htmlspecialchars($search); ?>">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search users..." 
+                    value="<?php echo htmlspecialchars($search); ?>"
+                >
 
                 <select name="status">
                     <option value="all" <?php echo ($status === 'all' ? 'selected' : ''); ?>>All</option>
@@ -155,6 +135,23 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                 </select>
 
                 <button type="submit">Filter</button>
+
+                <input 
+                    type="date" 
+                    id="sdate" 
+                    name="sdate" 
+                    value="<?php echo htmlspecialchars($sdate); ?>" 
+                    min="2026-04-01"
+                    required
+                >
+
+                <input 
+                    type="date" 
+                    id="edate" 
+                    name="edate" 
+                    value="<?php echo htmlspecialchars($edate); ?>" 
+                    required
+                >
             </form>
         </div>
 
