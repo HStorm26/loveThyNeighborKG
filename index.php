@@ -184,13 +184,17 @@
     }
   
     $inactiveCount = 0;
-    $searchQuery = '';
-    $countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'$searchQuery";
-    $countResult = mysqli_query($con, $countQuery);
-    if ($countResult) {
-        $countRow = mysqli_fetch_assoc($countResult);
-        $inactiveCount = intval($countRow['cnt']);
-        mysqli_free_result($countResult);
+    $countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'";
+    $stmt = mysqli_prepare($con, $countQuery);
+    if ($stmt) {
+        mysqli_stmt_execute($stmt);
+        $countResult = mysqli_stmt_get_result($stmt);
+        if ($countResult) {
+            $countRow = mysqli_fetch_assoc($countResult);
+            $inactiveCount = intval($countRow['cnt']);
+            mysqli_free_result($countResult);
+        }
+        mysqli_stmt_close($stmt);
     }
 ?>
 

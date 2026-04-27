@@ -11,15 +11,15 @@
         $id = $args['id'];
         $editingSelf = $id == $_SESSION['_id'];
         // Check to see if user is a lower-level manager here
-        if(isset($_POST['adminID'])){
-            setUserType($_POST['adminID'], "Admin");
-        }
-        if(isset($_POST['unAdminID'])){
-            setUserType($_POST['unAdminID'], "Volunteer");
-        }
     } else {
         $editingSelf = true;
         $id = $_SESSION['_id'];
+    }
+    if(isset($_POST['adminID'])){
+        setUserType($_POST['adminID'], "Admin");
+    }
+    if(isset($_POST['unAdminID'])){
+        setUserType($_POST['unAdminID'], "Volunteer");
     }
 
     $person = retrieve_person($id);

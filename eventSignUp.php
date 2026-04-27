@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $notes = isset($args['notes']) ? trim($args['notes']) : '';
 
         // Create the event signup record
-        $id = sign_up_for_event($name, $account_name, $event_id, $notes);
+        $id = sign_up_for_event($event_id, $account_name, '', $notes);
 
         if ($id) {
             $allRolesAdded = true;

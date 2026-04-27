@@ -83,7 +83,7 @@
             }
             $startTime = $date . ' ' . $startTime . ':00';
             $endTime = $date . ' ' . $endTime . ':00';
-            if(!adjustVolunteerHours($_POST['event_id'], $_POST['user_id'], $_POST['role_id'], $startTime, $endTime)){
+            if(!adjustVolunteerHours($args['event_id'], $args['user_id'], $args['role_id'], $startTime, $endTime)){
                 echo "Failed to update hours.";
             }
             else{
@@ -153,18 +153,21 @@
                                 <th>Clock Out Time</th>
                                 <th></th>
                             </tr>
-                        </thead> 
-                        <tbody>
+                        </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT roleID, start_time, end_time FROM dbpersonhours WHERE personID = '" . $args['user_id'] . "' AND eventID = '" . $args['event_id'] . "'";
-                                $result = mysqli_query($con, $query);
+                                $query = "SELECT roleID, start_time, end_time FROM dbpersonhours WHERE personID = ? AND eventID = ?";
+                                $stmt = mysqli_prepare($con, $query);
+                                mysqli_stmt_bind_param($stmt, "ss", $args['user_id'], $args['event_id']);
+                                mysqli_stmt_execute($stmt);
+                                $result = mysqli_stmt_get_result($stmt);
                                 $rolesPerformed = array();
                                 foreach($result as $row){
                                     $startTime = substr($row['start_time'], 11, 5);
                                     $endTime = substr($row['end_time'], 11, 5);
                                     $rolesPerformed[$row['roleID']] = $startTime . ' ' . $endTime;
                                 }
+                                mysqli_stmt_close($stmt);
                             ?>
                             <?php foreach ($allRoles as $role): ?>
                                 <form method=POST>
@@ -182,7 +185,7 @@
                                                 <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
                                             </td>
                                             <td>
-                                                <input type="text" id="start-time" name="start_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
+                                                <input type="text" id="end-time" name="end_time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
                                             </td>
                                         <?php endif; ?>
                                     <td>
@@ -190,7 +193,7 @@
                                     </td>
                                 </tr>
                                 <input type="hidden" name="nav" value="adjustEventHours"/>
-                                <input type="hidden" name="user_id" value="<?php echo $_POST['user_id'];?>"/>
+                                <input type="hidden" name="user_id" value="<?php echo $args['user_id'];?>"/>
                                 <input type="hidden" name="role_id" value="<?php echo $role['roleID'];?>"/>
                                 <input type="hidden" name="event_id" value="<?php echo $role['eventID'];?>"/>
                                 </form>

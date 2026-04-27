@@ -103,13 +103,7 @@ function renderArchivePagination($currentPage, $totalPages, $activePage, $archiv
 $currentDate = date('F j, Y');
 $message = '';
 $searchValue = isset($_REQUEST['search']) ? trim($_REQUEST['search']) : '';
-$searchQuery = '';
-
-if ($searchValue !== '') {
-    $escapedSearch = mysqli_real_escape_string($con, $searchValue);
-    $searchTerm = "%$escapedSearch%";
-    $searchQuery = " AND (first_name LIKE '$searchTerm' OR last_name LIKE '$searchTerm' OR email LIKE '$searchTerm' OR id LIKE '$searchTerm')";
-}
+$searchTerm = $searchValue !== '' ? "%$searchValue%" : '';
 
 $perPage = 10;
 $activePage = isset($_GET['active_page']) ? max(1, intval($_GET['active_page'])) : 1;
@@ -128,26 +122,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             SELECT p.id
             FROM dbpersons AS p
             WHERE (p.status = 'Active' OR p.status IS NULL)
-            " . str_replace(
-                ['first_name', 'last_name', 'email', 'id'],
-                ['p.first_name', 'p.last_name', 'p.email', 'p.id'],
-                $searchQuery
-            ) . "
+            " . ($searchTerm !== '' ? "AND (p.first_name LIKE ? OR p.last_name LIKE ? OR p.email LIKE ? OR p.id LIKE ?)" : "") . "
             AND NOT EXISTS (
                 SELECT 1
                 FROM dbpersonhours AS h
                 WHERE h.personID COLLATE utf8mb4_unicode_ci = p.id COLLATE utf8mb4_unicode_ci
-                AND COALESCE(h.end_time, h.start_time) >= '$oneYearAgo'
+                AND COALESCE(h.end_time, h.start_time) >= ?
             )
         ";
 
-        $archiveListResult = mysqli_query($con, $archiveListQuery);
+        $stmt = mysqli_prepare($con, $archiveListQuery);
+        if ($stmt) {
+            if ($searchTerm !== '') {
+                mysqli_stmt_bind_param($stmt, 'sssss', $searchTerm, $searchTerm, $searchTerm, $searchTerm, $oneYearAgo);
+            } else {
+                mysqli_stmt_bind_param($stmt, 's', $oneYearAgo);
+            }
+            mysqli_stmt_execute($stmt);
+            $archiveListResult = mysqli_stmt_get_result($stmt);
+        } else {
+            $archiveListResult = false;
+        }
 
         if ($archiveListResult) {
             while ($row = mysqli_fetch_assoc($archiveListResult)) {
                 $idsToArchive[] = $row['id'];
             }
             mysqli_free_result($archiveListResult);
+            if (isset($stmt)) {
+                mysqli_stmt_close($stmt);
+            }
 
             $archivedCount = 0;
             foreach ($idsToArchive as $personId) {
@@ -164,14 +168,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($archiveAction === 'unarchive_all') {
         $idsToRestore = [];
-        $restoreListQuery = "SELECT id FROM dbpersons WHERE status = 'Inactive'$searchQuery";
-        $restoreListResult = mysqli_query($con, $restoreListQuery);
+        $restoreListQuery = "SELECT id FROM dbpersons WHERE status = 'Inactive'" . ($searchTerm !== '' ? " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?)" : "");
+        $stmt = mysqli_prepare($con, $restoreListQuery);
+        if ($stmt) {
+            if ($searchTerm !== '') {
+                mysqli_stmt_bind_param($stmt, 'ssss', $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+            }
+            mysqli_stmt_execute($stmt);
+            $restoreListResult = mysqli_stmt_get_result($stmt);
+        } else {
+            $restoreListResult = false;
+        }
 
         if ($restoreListResult) {
             while ($row = mysqli_fetch_assoc($restoreListResult)) {
                 $idsToRestore[] = $row['id'];
             }
             mysqli_free_result($restoreListResult);
+            if (isset($stmt)) {
+                mysqli_stmt_close($stmt);
+            }
 
             $restoredCount = 0;
             foreach ($idsToRestore as $personId) {
@@ -223,8 +239,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $activeCount = 0;
-$countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE (status = 'Active' OR status IS NULL)$searchQuery";
-$countResult = mysqli_query($con, $countQuery);
+$countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE (status = 'Active' OR status IS NULL)" . ($searchTerm !== '' ? " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?)" : "");
+$stmt = mysqli_prepare($con, $countQuery);
+if ($stmt) {
+    if ($searchTerm !== '') {
+        mysqli_stmt_bind_param($stmt, 'ssss', $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    }
+    mysqli_stmt_execute($stmt);
+    $countResult = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+} else {
+    $countResult = false;
+}
 if ($countResult) {
     $countRow = mysqli_fetch_assoc($countResult);
     $activeCount = intval($countRow['cnt']);
@@ -240,10 +266,22 @@ if ($activePage > $activePageCount) {
 $archivePeople = [];
 $query = "SELECT id, first_name, last_name, email, phone_number, `type`
           FROM dbpersons
-          WHERE (status = 'Active' OR status IS NULL)$searchQuery
+          WHERE (status = 'Active' OR status IS NULL)" . ($searchTerm !== '' ? " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?)" : "") . "
           ORDER BY last_name ASC, first_name ASC
-          LIMIT $perPage OFFSET $activeOffset";
-$result = mysqli_query($con, $query);
+          LIMIT ? OFFSET ?";
+$stmt = mysqli_prepare($con, $query);
+if ($stmt) {
+    if ($searchTerm !== '') {
+        mysqli_stmt_bind_param($stmt, 'ssssii', $searchTerm, $searchTerm, $searchTerm, $searchTerm, $perPage, $activeOffset);
+    } else {
+        mysqli_stmt_bind_param($stmt, 'ii', $perPage, $activeOffset);
+    }
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+} else {
+    $result = false;
+}
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $archivePeople[] = $row;
@@ -252,8 +290,18 @@ if ($result) {
 }
 
 $inactiveCount = 0;
-$countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'$searchQuery";
-$countResult = mysqli_query($con, $countQuery);
+$countQuery = "SELECT COUNT(*) AS cnt FROM dbpersons WHERE status = 'Inactive'" . ($searchTerm !== '' ? " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?)" : "");
+$stmt = mysqli_prepare($con, $countQuery);
+if ($stmt) {
+    if ($searchTerm !== '') {
+        mysqli_stmt_bind_param($stmt, 'ssss', $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    }
+    mysqli_stmt_execute($stmt);
+    $countResult = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+} else {
+    $countResult = false;
+}
 if ($countResult) {
     $countRow = mysqli_fetch_assoc($countResult);
     $inactiveCount = intval($countRow['cnt']);
@@ -269,10 +317,22 @@ if ($archivedPage > $archivedPageCount) {
 $archivedPeople = [];
 $query = "SELECT id, first_name, last_name, email, phone_number, `type`
           FROM dbpersons
-          WHERE status = 'Inactive'$searchQuery
+          WHERE status = 'Inactive'" . ($searchTerm !== '' ? " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?)" : "") . "
           ORDER BY last_name ASC, first_name ASC
-          LIMIT $perPage OFFSET $archivedOffset";
-$result = mysqli_query($con, $query);
+          LIMIT ? OFFSET ?";
+$stmt = mysqli_prepare($con, $query);
+if ($stmt) {
+    if ($searchTerm !== '') {
+        mysqli_stmt_bind_param($stmt, 'ssssii', $searchTerm, $searchTerm, $searchTerm, $searchTerm, $perPage, $archivedOffset);
+    } else {
+        mysqli_stmt_bind_param($stmt, 'ii', $perPage, $archivedOffset);
+    }
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+} else {
+    $result = false;
+}
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $archivedPeople[] = $row;

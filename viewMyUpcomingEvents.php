@@ -57,10 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch event name by ID
 function fetch_event_name($event_id) {
     $connection = connect();
-    $query = "SELECT name FROM dbevents WHERE id = '$event_id'";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT name FROM dbevents WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $event_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
+        mysqli_stmt_close($stmt);
         die('Query failed: ' . mysqli_error($connection));
     }
 

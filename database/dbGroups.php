@@ -10,17 +10,26 @@ function add_group($group) {
     if (!$group instanceof Group)
         die("Error: add_group type mismatch");
     $con = connect();
-    $query = "SELECT * FROM dbgroups WHERE group_name = '" . $group->get_group_name() . "'";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM dbgroups WHERE group_name = ?";
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $group->get_group_name());
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
     if ($result == null || mysqli_num_rows($result) == 0) {
-        mysqli_query($con, 'INSERT INTO dbgroups (group_name, color_level) VALUES ("' .
-            $group->get_group_name() . '", "' .
-            $group->get_color_level() . '");'
+        $insert_query = 'INSERT INTO dbgroups (group_name, color_level) VALUES (?, ?)';
+        $stmt_insert = mysqli_prepare($con, $insert_query);
+        mysqli_stmt_bind_param($stmt_insert, "ss", 
+            $group->get_group_name(), 
+            $group->get_color_level()
         );
+        $insert_result = mysqli_stmt_execute($stmt_insert);
+        mysqli_stmt_close($stmt_insert);
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
-        return true;
+        return $insert_result;
     }
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
     return false;
 }
