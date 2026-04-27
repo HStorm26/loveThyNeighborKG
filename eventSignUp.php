@@ -251,32 +251,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $group = trim($role['shift_group'] ?? 'Main');
                             $isFull = ($capacity > 0 && $remaining <= 0);
                             ?>
-                            <tr>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        name="roleIDs[]"
-                                        value="<?php echo $roleID; ?>"
-                                        <?php echo in_array($roleID, array_map('intval', $roleIDs), true) ? 'checked' : ''; ?>
-                                        <?php echo $isFull ? 'disabled' : ''; ?>
-                                    >
-                                </td>
+                            <?php if ($capacity > 0): ?>
+                                <tr>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            name="roleIDs[]"
+                                            value="<?php echo $roleID; ?>"
+                                            <?php echo in_array($roleID, array_map('intval', $roleIDs), true) ? 'checked' : ''; ?>
+                                            <?php echo $isFull ? 'disabled' : ''; ?>
+                                        >
+                                    </td>
 
-                                <td><?php echo htmlspecialchars($role['role_name'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars($group); ?></td>
+                                    <td><?php echo htmlspecialchars($role['role_name'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($group); ?></td>
 
-                                <td class="role-capacity">
-                                    <?php
-                                    if ($remaining <= 0) {
-                                        echo 'Full (0/' . $capacity . ')';
-                                    } else {
-                                        echo $remaining . '/' . $capacity . ' spots left';
-                                    }
-                                    ?>
-                                </td>
+                                    <td class="role-capacity">
+                                        <?php
+                                        if ($remaining <= 0) {
+                                            echo 'Full (0/' . $capacity . ')';
+                                        } else {
+                                            echo $remaining . '/' . $capacity . ' spots left';
+                                        }
+                                        ?>
+                                    </td>
 
-                                <td><?php echo htmlspecialchars($role['role_description'] ?? ''); ?></td>
-                            </tr>
+                                    <td><?php echo htmlspecialchars($role['role_description'] ?? ''); ?></td>
+                                </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
