@@ -94,6 +94,15 @@ if (isset($_SESSION['_id'])) {
             return intval($b['id']) - intval($a['id']);
         });
 
+        // Pagination logic
+        $total = count($allMessages);
+        $limit = 10;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = max(1, $page); // Ensure page is at least 1
+        $offset = ($page - 1) * $limit;
+        $paginatedMessages = array_slice($allMessages, $offset, $limit);
+        $total_pages = ceil($total / $limit);
+
         mark_all_as_read($userID);
         ?>
         <?php if (count($allMessages) > 0): ?>
@@ -121,7 +130,7 @@ if (isset($_SESSION['_id'])) {
                         <tbody class="standout">
                             <?php 
                                 $id_to_name_hash = [];
-                                foreach ($allMessages as $message):
+                                foreach ($paginatedMessages as $message):
                                     $sender = $id_to_name_hash[$message['senderID']] ?? get_name_from_id($message['senderID']);
                                     $id_to_name_hash[$message['senderID']] = $sender;
 
@@ -152,6 +161,48 @@ if (isset($_SESSION['_id'])) {
                     </table>
                 </div>
             </form>
+
+            <?php if ($total_pages > 1): ?>
+            <div class="pagination-container">
+                <div class="pagination">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?php echo $page - 1; ?>" class="page-btn">Previous</a>
+                    <?php endif; ?>
+
+                    <?php $window = 2; ?>
+                    <a href="?page=1" class="page-btn <?php echo ($page == 1) ? 'active' : ''; ?>">1</a>
+
+                    <?php if ($page > $window + 2): ?>
+                        <span class="page-btn">...</span>
+                    <?php endif; ?>
+
+                    <?php
+                    $start = max(2, $page - $window);
+                    $end = min($total_pages - 1, $page + $window);
+
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>" class="page-btn <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_pages - ($window + 1)): ?>
+                        <span class="page-btn">...</span>
+                    <?php endif; ?>
+
+                    <?php if ($total_pages > 1): ?>
+                        <a href="?page=<?php echo $total_pages; ?>" class="page-btn <?php echo ($page == $total_pages) ? 'active' : ''; ?>">
+                        <?php echo $total_pages; ?>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if ($page < $total_pages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>" class="page-btn">Next</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <?php else: ?>
                 <p class="no-messages standout">You currently have no notifications.</p>
             <?php endif; ?>
