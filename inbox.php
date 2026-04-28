@@ -87,7 +87,11 @@ if (isset($_SESSION['_id'])) {
         $allMessages = array_merge($newMessages, $oldMessages);
 
         usort($allMessages, function($a, $b) {
-            return strtotime(str_replace('-', ' ', $b['time'])) - strtotime(str_replace('-', ' ', $a['time']));
+            $timeComparison = strcmp($b['time'], $a['time']);
+            if ($timeComparison !== 0) {
+                return $timeComparison;
+            }
+            return intval($b['id']) - intval($a['id']);
         });
 
         mark_all_as_read($userID);

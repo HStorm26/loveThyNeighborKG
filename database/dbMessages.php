@@ -36,7 +36,7 @@ function get_user_messages($userID) {
 function get_user_unread_messages($userID) {
     $query = "select * from dbmessages
               where recipientID=? AND wasread = 0
-              order by time ASC";
+              order by time DESC, id DESC";
     $connection = connect();
     $stmt = mysqli_prepare($connection, $query);
     mysqli_stmt_bind_param($stmt, "s", $userID);
@@ -63,7 +63,7 @@ function get_user_unread_messages($userID) {
 function get_user_read_messages($userID) {
     $query = "select * from dbmessages
               where recipientID=? AND wasread = 1
-              order by time ASC";
+              order by time DESC, id DESC";
     $connection = connect();
     $stmt = mysqli_prepare($connection, $query);
     mysqli_stmt_bind_param($stmt, "s", $userID);
@@ -331,7 +331,7 @@ function delete_messages_by_ids($ids, $userID) {
 function get_last_3_messages($userID) {
     $query = "SELECT * FROM dbmessages 
               WHERE recipientID = ? 
-              ORDER BY time DESC 
+              ORDER BY time DESC, id DESC 
               LIMIT 3";
     $connection = connect();
     $stmt = mysqli_prepare($connection, $query);
