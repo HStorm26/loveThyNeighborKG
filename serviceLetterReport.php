@@ -143,6 +143,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     value="<?php echo htmlspecialchars($sdate); ?>" 
                     min="2026-04-01"
                     required
+                    onchange="this.form.submit()"
                 >
 
                 <input 
@@ -151,6 +152,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                     name="edate" 
                     value="<?php echo htmlspecialchars($edate); ?>" 
                     required
+                    onchange="this.form.submit()"
                 >
             </form>
         </div>
@@ -186,7 +188,7 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
                                 <?php endif; ?>
                             </td>
                             <td class="action">
-                                <form method="GET" action="processServiceLetterReport.php" class="service-letter-action-form">
+                                <form method="GET" action="processServiceLetterReport.php" class="service-letter-action-form" onsubmit="return validateServiceLetterForm(this)">
                                     <input type="hidden" name="target_id" value="<?php echo htmlspecialchars($user['id']); ?>">
                                     <input type="hidden" name="sdate" value="<?php echo htmlspecialchars($sdate); ?>">
                                     <input type="hidden" name="edate" value="<?php echo htmlspecialchars($edate); ?>">
@@ -249,5 +251,25 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
     </div>
 </div>
 <?php include 'footer.php'; ?>
+
+<script>
+function validateServiceLetterForm(form) {
+    const sdate = form.sdate.value;
+    const edate = form.edate.value;
+
+    if (!sdate || !edate) {
+        alert('Please select both start and end dates in the filter form before generating a report.');
+        return false;
+    }
+
+    if (sdate < '2026-04-01') {
+        alert('Start date cannot be before April 1, 2026.');
+        return false;
+    }
+
+    return true;
+}
+</script>
+
 </body>
 </html>
