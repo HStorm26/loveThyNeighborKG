@@ -425,6 +425,7 @@ function archiveUser(userId, archiveAction) {
         window.location.href = 'viewOverallUsersKG.php';
     });
 }
+
 </script>
 </body>
 </html>
