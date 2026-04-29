@@ -17,6 +17,7 @@
 include_once('dbinfo.php');
 include_once(dirname(__FILE__) . '/../domain/Person.php');
 
+
 /*
  * add a person to dbPersons table: if already there, return false
  */
@@ -507,7 +508,9 @@ function make_a_person($result_row) {
 
 function getvolunteers_byevent($id) {
     $con = connect();
-    $query = 'SELECT * FROM dbeventpersons JOIN dbpersons WHERE eventID = ? AND dbeventpersons.userID = dbpersons.id';
+    $query = 'SELECT * FROM dbeventpersons JOIN dbpersons ON dbeventpersons.userID COLLATE utf8mb4_unicode_ci = dbpersons.id COLLATE utf8mb4_unicode_ci
+    WHERE eventID = ?
+';
     $stmt = mysqli_prepare($con, $query);
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);

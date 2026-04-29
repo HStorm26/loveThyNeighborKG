@@ -187,27 +187,38 @@ function getEventParticipants($eventid)
 }
 
 //allows admins to adjust volunteer hours
-function adjustVolunteerHours($eventid,$personid,$roleid,$startTime,$endTime) 
+function adjustVolunteerHours($eventid, $personid, $roleid, $startTime, $endTime) 
 {
     $con = connect();
-    $query = "UPDATE `dbpersonhours` SET `start_time` = ?, `end_time` = ? WHERE `eventID` = ? AND `personID` = ? AND `roleID` = ?";
+
+    $query = "
+        INSERT INTO dbpersonhours (personID, eventID, roleID, start_time, end_time)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            start_time = ?,
+            end_time = ?
+    ";
+
     $stmt = $con->prepare($query);
-    if ($stmt){
-        $stmt->bind_param("ssisi", $startTime,$endTime,$eventid,$personid,$roleid);
-        $stmt->execute();
-        $success = $stmt->affected_rows > 0;
-        if(!$success){
-            $query = "INSERT INTO `dbpersonhours`(`personID`, `eventID`, `roleID`, `start_time`, `end_time`) VALUES ?, ?, ?, ?, ?";
-            $stmt = $con->prepare($query);
-            if($stmt){
-                $stmt->bind_param("siiss", $personid,$eventid,$roleid,$startTime,$endTime);
-                $stmt->execute();
-                $success = $stmt->affected_rows > 0;                
-            }
-        }
-        $stmt->close();
+
+    if (!$stmt) {
+        mysqli_close($con);
+        return false;
     }
+
+    $stmt->bind_param(
+        "siissss",
+        $personid, $eventid, $roleid, $startTime, $endTime,
+        $startTime, $endTime
+    );
+
+    $stmt->execute();
+
+    $success = ($stmt->affected_rows >= 0);
+
+    $stmt->close();
     mysqli_close($con);
+
     return $success;
 }
 function getActiveUsers(){
