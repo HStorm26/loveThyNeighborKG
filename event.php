@@ -356,9 +356,7 @@
                         <input type="hidden" name="unarchiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <div class="event-archive-btn">
-                            <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
-                        </div>  
+                        <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
                     </form>
 
                 <?php else : ?>
