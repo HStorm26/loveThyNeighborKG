@@ -1,6 +1,4 @@
 <?php
-/* Brooke did this page */
-/* It is the event hub for the admins */
 session_start();
 // Added
 ini_set("display_errors", 1);
@@ -51,7 +49,7 @@ require_once('database/dbEvents.php');
 // Search and filter values
 $search = trim($_GET['search'] ?? '');
 $search_by = $_GET['search_by'] ?? 'all';
-$status = $_GET['status'] ?? 'all';
+$status = $_GET['status'] ?? 'active';
 $date_from = $_GET['date_from'] ?? '';
 $date_to = $_GET['date_to'] ?? '';
 $archive_past_events=auto_Archive();
@@ -124,7 +122,7 @@ $theEvents = getEventsForViewPage($search, $search_by, $status, $date_from, $dat
             <form class="filter-form" method="GET" action="viewOverallEventsKG.php">
                 <!-- SEARCH TYPE -->
                 <select name="search_by">
-                    <option value="all" <?php echo ($search_by === 'all') ? 'selected' : ''; ?>>All</option>
+                    <option value="active" <?php echo ($status === 'active') ? 'selected' : ''; ?>>Active</option>
                     <option value="name" <?php echo ($search_by === 'name') ? 'selected' : ''; ?>>Name</option>
                     <!--<option value="date" <?php echo ($search_by === 'date') ? 'selected' : ''; ?>>Date</option>-->
                     <option value="location" <?php echo ($search_by === 'location') ? 'selected' : ''; ?>>Location</option>
@@ -156,7 +154,7 @@ $theEvents = getEventsForViewPage($search, $search_by, $status, $date_from, $dat
                 <button type="submit">Apply Filters</button>
 
        
-                <?php if ($search !== '' || $status !== 'all' || $date_from !== '' || $date_to !== '' || $search_by !== 'all'): ?>
+                <?php if ($search !== '' || $status !== 'active' || $date_from !== '' || $date_to !== '' || $search_by !== 'all'): ?>
                     <a href="viewOverallEventsKG.php" class="clear-btn">Reset Filters</a>
                 <?php endif; ?>
             </form>
