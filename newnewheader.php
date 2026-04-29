@@ -32,9 +32,8 @@ if (!isset($currentDate)) {
         </div>
         <div class="header-center">
             <div class="header-top">
-                <a href="index.php">
-                    <img src="images/LoveThyNeighbor_logo2.jpeg" class="logo" alt="Logo">
-                </a>
+                <img src="images/LoveThyNeighbor_logo2_NoBackground1.png" class="logo" alt="Logo">
+
 
                 <div class="text-group">
                     <h1 class="main-title">LOVE THY NEIGHBOR</h1>
