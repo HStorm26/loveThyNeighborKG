@@ -216,7 +216,7 @@
     <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
         <script src="js/event.js"></script>
     <?php endif ?>
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -356,9 +356,7 @@
                         <input type="hidden" name="unarchiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <div class="event-archive-btn">
-                            <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
-                        </div>  
+                        <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
                     </form>
 
                 <?php else : ?>

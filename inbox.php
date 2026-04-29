@@ -31,7 +31,7 @@ if (isset($_SESSION['_id'])) {
 <head>
     <!-- <?php require_once('universal.inc') ?> -->
     <!-- <link rel="stylesheet" href="css/messages.css"> -->
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
     <script>
         function toggleBulkActions() {
             const checkboxes = document.querySelectorAll('.messageCheckbox');

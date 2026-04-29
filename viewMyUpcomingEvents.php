@@ -82,8 +82,8 @@ $upcoming_events = fetch_user_upcoming_signups($user_id, $sortDirection);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Upcoming Events</title>
-    <link rel="stylesheet" href="layoutInfo.css" />
+    <title>My Upcoming Events | Love Thy Neighbor Community Food Pantry</title>
+    <link rel="stylesheet" href="css/layoutInfo.css" />
 </head>
 <body>
 <?php include('header.php'); ?>

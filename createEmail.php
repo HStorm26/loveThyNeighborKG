@@ -310,7 +310,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])
 <html>
 <head>
     <title>Send Email | Love Thy Neighbor Community Food Pantry</title>
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
 </head>
 <body>
 <?php require_once('header.php'); ?>
