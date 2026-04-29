@@ -52,7 +52,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile Page | Love Thy Neighbor Community Food Pantry</title>
-  <link rel="stylesheet" href="layoutInfo.css" />
+  <link rel="stylesheet" href="css/layoutInfo.css" />
 </head>
 <body>
   <?php

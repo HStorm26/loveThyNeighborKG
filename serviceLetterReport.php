@@ -55,9 +55,9 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php require_once('database/dbPersons.php'); ?>
-<title>Love Thy Neighbor | Generate Service Letters</title>
+<title>Generate Service Letters | Love Thy Neighbor Community Food Pantry</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="layoutInfo.css">
+<link rel="stylesheet" href="css/layoutInfo.css">
 <style>
     .date-card {
         margin-bottom: 1.5rem;

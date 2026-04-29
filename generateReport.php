@@ -26,7 +26,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
     <title>Attendance Reports | Love Thy Neighbor Community Food Pantry</title>
     <!--<script src="js/data-filters.js" defer></script>-->
     <!-- <link href="css/base.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
     <?php require_once('header.php'); ?>
 </head>
 <body>
