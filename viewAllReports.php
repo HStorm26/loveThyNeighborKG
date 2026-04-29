@@ -39,7 +39,7 @@ if (!$con) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
     <title>Admin Reports | Love Thy Neighbor Community Food Pantry</title>
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
 </head>
 <body>
 
