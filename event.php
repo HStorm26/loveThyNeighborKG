@@ -216,7 +216,7 @@
     <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
         <script src="js/event.js"></script>
     <?php endif ?>
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -345,14 +345,10 @@
             <form action="eventSignUp.php" method="get">
                 <input type="hidden" name="event_name" value="<?php echo htmlspecialchars($event_info['name']); ?>">
                 <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_info['id']); ?>">
-                <div class="signup-btn">
-                    <button type="submit" id="submit" name="submit" value="send" class="signup-btn">Sign Up</button>
-                </div>
+                <button type="submit" id="submit" name="submit" value="send" class="signup-btn">Sign Up</button>
             </form>
             <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-            <div class="event-attendance-btn">
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>"class = "event-attendance-btn">Attendance</a>
-            </div>
                 <!-- Archive and Unarchive buttons by Thomas -->
 
                 <?php if (is_archived($event_info['id']))  : ?>
@@ -360,9 +356,7 @@
                         <input type="hidden" name="unarchiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <div class="event-archive-btn">
-                            <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
-                        </div>  
+                        <button type="submit"  id="submit" name="submit" value="send" class="event-archive-btn">Unarchive</button>
                     </form>
 
                 <?php else : ?>
@@ -370,9 +364,7 @@
                         <input type="hidden" name="archiving" value="1">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <div class="event-archive-btn">
-                            <button type="submit" class="event-archive-btn">Archive</button>
-                        </div>
+                        <button type="submit" class="event-archive-btn">Archive</button>
                     </form>
 
                 <?php endif ?>

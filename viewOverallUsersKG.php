@@ -70,9 +70,9 @@ $users = getUsersForViewPage($search, $per_page, $offset, $search_by, $status, $
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbPersons.php'); ?>
-    <title>Love Thy Neighbor | View Users</title>
+    <title>View Users | Love Thy Neighbor Community Food Pantry</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
 </head>
 
 <body>
@@ -363,6 +363,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.removeAttribute('name');
+            });
+
             hiddenSelectedUsers.innerHTML = '';
             selectedIds.forEach(function (id) {
                 const input = document.createElement('input');
@@ -425,6 +429,7 @@ function archiveUser(userId, archiveAction) {
         window.location.href = 'viewOverallUsersKG.php';
     });
 }
+
 </script>
 </body>
 </html>

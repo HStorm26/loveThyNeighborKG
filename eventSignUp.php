@@ -37,7 +37,12 @@ if (isset($_GET['id'])) {
 
 // Stop signup if event has already ended
 if ($event_id !== 0 && is_archived($event_id)) {
-    echo "This event has already ended and signups are closed.";
+    echo "
+    <script>
+        alert('This event has already ended and signups are closed.');
+        window.history.back();
+    </script>
+    ";
     exit();
 }
 

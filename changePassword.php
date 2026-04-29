@@ -75,7 +75,7 @@
     <head>
         <!-- <?php require_once('universal.inc') ?> -->
         <title>Change Password | Love Thy Neighbor Community Food Pantry</title>  
-        <link rel="stylesheet" href="layoutInfo.css">
+        <link rel="stylesheet" href="css/layoutInfo.css">
 
     </head>
     <body>

@@ -35,6 +35,11 @@
     $year = substr($month, 0, 4);
     $month2digit = substr($month, 5, 2);
 
+    $day = substr($month, 8, 2);
+    if (empty($day)) {
+        $day = date('d');
+    }
+
     $today = strtotime(date("Y-m-d"));
 
     $first = $month . '-01';
@@ -71,7 +76,7 @@
         <?php require('universal.inc'); ?>
         <?php require('header.php'); ?>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="js/calendar.js"></script>
+        <!-- <script src="js/calendar.js"></script> -->
         <script src="js/view-switcher.js" defer></script>
         <title>Events Calendar | Love Thy Neighbor Community Food Pantry</title>
         <!-- <link rel="stylesheet" href="css/calendar.css"> -->
@@ -105,11 +110,10 @@
                     </select>
                     <input id="jumper-year" type="number" value="<?php echo $year ?>" required min="2023">
                     
-                    <?Php
-                    //Logic for getting the last day of the month for input protection.
-                    $finalDayofMonth = date("t", strtotime($year. "-". $month . 01));
+                    <?php
+                    $finalDayofMonth = date("t", strtotime($year . "-" . $month2digit . "-01"));
                     ?>
-                    <input id="jumper-day" type="number" value="<?php echo $day?>" required min="1" required max="<?php echo $finalDayofMonth?>" >
+                <input id="jumper-day" type="number" value="<?php echo $day; ?>" min="1" max="<?php echo $finalDayofMonth; ?>" required>
                 </div>
                 <input type="hidden" id="jumper-value" name="month" value="<?php echo 'test' ?>">
                 <input type="submit" value="View">
@@ -146,19 +150,6 @@
                 <!-- to be replaced -Blue -->
 
             <div class="table-wrapper" id="event-viewer">
-                <!-- <table id="calendar">
-                    <thead>
-                        <tr>
-                            <th>Sunday</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
-                        </tr>
-                    </thead>
-                    <tbody>
                     <?php
                         $date = $calendarStart;
                         $start = date('Y-m-d', $calendarStart);
@@ -268,7 +259,36 @@
   </a>
 </div>
 </div>
+        <script>
+            $(function () {
+                $('.calendar-day:not(.other-month)').click(function () {
+                    document.location = 'date.php?date=' + $(this).data('date');
+                });
+
+                $('#calendar-heading-month').click(function () {
+                    $('#month-jumper-wrapper').removeClass('hidden');
+                });
+
+                $('#month-jumper').submit(function () {
+                    let month = $('#jumper-month').val();
+                    let year = $('#jumper-year').val();
+                    let day = $('#jumper-day').val().padStart(2, '0');
+                    $('#jumper-value').val(year + '-' + month + '-' + day);
+                });
+
+                $('#jumper-cancel').click(function () {
+                    $('#month-jumper-wrapper').addClass('hidden');
+                });
+
+                $('#month-jumper-wrapper').click(function (e) {
+                    if (e.target === this) {
+                        $('#month-jumper-wrapper').addClass('hidden');
+                    }
+                });
+            });
+        </script>
 
         </main>
     </body>
+
 </html>

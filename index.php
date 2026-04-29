@@ -27,6 +27,7 @@
     include_once('database/dbEvents.php');
     include_once('database/dbPersons.php');
     include_once('database/dbpersonhours.php');
+    include_once('database/dbMessages.php');
     include_once('domain/Person.php');
 
     $currentDate = date('F j, Y');
@@ -196,6 +197,9 @@
         }
         mysqli_stmt_close($stmt);
     }
+
+    // Fetch the last 3 notifications for the current user
+    $notifications = get_last_3_messages($personId);
 ?>
 
 <!DOCTYPE html>
@@ -236,7 +240,7 @@
 
     <section class="welcome-banner">
       <div>
-        <h1>Welcome back, Admin</h1>
+        <h1>Welcome back, <?php echo safeHtml($_SESSION['f_name'] ?? 'Volunteer'); ?>!</h1>
         <p>Here’s what’s happening in your volunteer program today.</p>
       </div>
 
@@ -382,20 +386,19 @@
           <div class="section-box soft-maroon">
             <h2>Alerts</h2>
 
-          <div class="alert-item">
-            <strong>Food Lion Pickup event canceled due to weather</strong><br>
-            <span class="status yellow">Canceled</span>
-          </div>
-
-          <div class="alert-item">
-            <strong>Apple Distribution event is full</strong><br>
-            <span class="status red">Capacity Reached</span>
-          </div>
-
-          <div class="alert-item">
-            <strong>Bill Thomas became a new volunteer</strong><br>
-            <span class="status green">Active</span>
-          </div>
+            <?php if (!empty($notifications)): ?>
+              <?php foreach ($notifications as $notification): ?>
+                <div class="alert-item">
+                  <strong><?= safeHtml($notification['title'] ?? '') ?></strong><br>
+                  <span><?= safeHtml($notification['body'] ?? '') ?></span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="alert-item">
+                <strong>No new alerts</strong><br>
+                <span>You're all caught up!</span>
+              </div>
+            <?php endif; ?>
         </div>
 
         <div class="section-box soft-yellow">
@@ -546,20 +549,19 @@
             <h2>Alerts</h2>
             <p class="muted">Important reminders and updates.</p>
 
-            <div class="alert-item">
-                <strong>Reminder:</strong><br>
-                Please arrive 10 minutes early for your next event.
-            </div>
-
-            <div class="alert-item">
-                <strong>New Opportunity:</strong><br>
-                A new pantry support shift was posted for next week.
-            </div>
-
-            <div class="alert-item">
-                <strong>Check-In Notice:</strong><br>
-                Remember to use the kiosk when you arrive.
-            </div>
+            <?php if (!empty($notifications)): ?>
+              <?php foreach ($notifications as $notification): ?>
+                <div class="alert-item">
+                  <strong><?= safeHtml($notification['title'] ?? '') ?></strong><br>
+                  <span><?= safeHtml($notification['body'] ?? '') ?></span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="alert-item">
+                <strong>No new alerts</strong><br>
+                <span>You're all caught up!</span>
+              </div>
+            <?php endif; ?>
         </div>
 
     </section>
