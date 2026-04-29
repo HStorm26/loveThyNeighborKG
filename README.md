@@ -8,10 +8,10 @@ Henry Zeigler
 Daniel Leaman
 
 
-# Fredericksburg SPCA Volunteer Management Web Application 
+# Love Thy Neighbor Volunteer Management Network
 
 ## Purpose
-This project is the result of a semester's worth of collaboration among UMW students. The goal of the project was to create a web application that better suits the needs of Fredericksburg SPCA, specifically as a system to manage their volunteers. The system allows volunteers to check-in and out of shifts on site, view their hours volunteered and sign up for events. For the Fred SPCA staff the system allows them to keep track of volunteer hours, create events, share announcements, and managed volunteer accounts.
+The Love Thy Neighbor Volunteer Management Network is a system designed for the Love Thy Neighbor KG volunteer org to manage their volunteers, volunteer events, and the hours worked by each volunteer. This was assigned in the spring of 2026 as part of our Software Engineering class at University of Mary Washington.
 
 ## Authors
 The ODHS Medicine Tracker is based on an old open source project named "Homebase". [Homebase](https://a.link.will.go.here/) was originally developed for the Ronald McDonald Houses in Maine and Rhode Island by Oliver Radwan, Maxwell Palmer, Nolan McNair, Taylor Talmage, and Allen Tucker.
@@ -26,8 +26,10 @@ The ODHS Medicine Tracker code was modified in the Fall of 2024, changing the co
 
 In Spring 2025, the Step VA Volunteer Management code was adapted to develop the Fredericksburg SCPA Volunteer Management Web Application. Numerous existing database tables were retained with modifications or renamed, while new tables were introduced as needed. Certain files and functionalities from the original system were integrated, while additional features were designed specifically for the Fredericksburg SCPA Volunteer Management system. The team responsible for these updates and enhancements included Yalda Alemy, Luke Blair, Madison Van Buren, Sean Foley, Luke Gibson, Aiden Meyer, and Israel Ortiz.
 
+In Spring 2026, the Fredercksburg SCPA Volunteer Management Web Application was updated to create the Love Thy Neighbor Volunteer Management System. Similar changes were made as previous changes to support the needs of the client. The team responsible for this included Josh Sullivan, Emily Halferty, DT Nesimi, Brooke Breneman, Oscar Sheehe, Henry Zeigler, and Daniel Leaman.
+
 ## User Types
-There are two types of users (also referred to as 'roles') within FredSPCA.
+There are two types of users (also referred to as 'roles') within LTNKG.
 * Admins
 * Volunteers
 
@@ -35,7 +37,7 @@ Admins can create and edit events, view and approve sign-ups, and view sign-ups 
 
 Volunteers can create and edit their profile, sign up for events, check-in and check-out of events, and view their hours. Volunteer accounts can be archived by the Admin if the account is no longer in use.
 
-There is also a root admin account with username 'vmsroot'. The default password for this account is 'vmsroot'. This account has hardcoded Admin privileges. It is crucial that this account be given a strong password and that the password be easily remembered, as it cannot easily be reset. This account should be used for system administration purposes only.
+There is also a root admin account with username 'vmsroot'. This account has hardcoded Admin privileges. It is crucial that this account be given a strong password and that the password be easily remembered, as it cannot easily be reset. This account should be used for system administration purposes only.
 
 ## Features
 Below is an in-depth list of features that were implemented within the system
@@ -64,9 +66,9 @@ Below is an in-depth list of features that were implemented within the system
 * Reports (print-friendly)
   * Volunteer Hour Reports
 * Notification system, with notifications generated when
-  * A volunteer has requested sign-up
-  * A user has canceled their sign-up
-  * Approved sign-up
+  * A volunteer has requested signed up
+  * A volunteer has canceled their sign-up
+  * An event has been created
 
 ## Design Documentation
 Several types of diagrams describing the design of the Step VA, including sequence diagrams and use case diagrams, are available. Please contact Dr. Polack for access.
@@ -78,18 +80,18 @@ Below are the steps required to run the project on your local machine for develo
   * For Mac, the htdocs path is `/Applications/XAMPP/xamppfiles/htdocs`
   * For Ubuntu, the htdocs path is `/opt/lampp/htdocs/`
   * For Windows, the htdocs path is `C:\xampp\htdocs`
-3. Clone the Step VA repo by running the following command: 'https://github.com/aidanmeyer32/FredSPCA.git'
+3. Clone the LTN repo by running the following command: 'https://github.com/HStorm26/loveThyNeighborKG.git'
 4. Start the XAMPP MySQL server and Apache server
 5. Open the PHPMyAdmin console by navigating to [http://localhost/phpmyadmin/](http://localhost/phpmyadmin/)
-6. Create a new database named `stepvadb`. With the database created, navigate to it by clicking on it in the lefthand pane
-7. Import the `FredSPCA.sql` file located in `FredSPCA/sql` into this new database
+6. Create a new database named `neighbordb`. With the database created, navigate to it by clicking on it in the lefthand pane
+7. Import the `neighbordb.sql` file located in `/sql` into this new database
 8. Create a new user by navigating to `Privileges -> New -> Add user account`
 9. Enter the following credentials for the new user:
-  * Name: `stepvadb`
-  * Hostname: `Local`
-  * Password: `stepvadb`
+  * Name: `neighbordb`
+  * Hostname: `Localhost`
+  * Password: `neighbordb`
   * Leave everything else untouched
-10. Navigate to [http://localhost/ODHS-Animal/](http://localhost/ODHS-Animal/) 
+10. Navigate to [http://localhost/ODHS-Animal/](http://localhost/loveThyNeighborKG/) 
 11. Log into the root user account using the username `vmsroot` with password `vmsroot`
 
 Installation is now complete.
@@ -136,26 +138,6 @@ Follow these steps to transfter your localhost version of the Step VA code to Si
 4. In the pop-up window, click **Remove All**, then confirm by selecting **Remove Now**.
 
 Clearing your cache will help ensure that you're seeing the latest updates to the application. If you continue experiencing issues, consider reaching out for further support.
-
-# TODO just tailwind?
-### External Libraries and APIs
-The only outside library utilized by the Step VA is the jQuery library. The version of jQuery used by the system is stored locally within the repo, within the lib folder. jQuery was used to implement form validation and the hiding/showing of certain page elements. Additionally, the Font Awesome library was used for some of the icon pictures. This library is linked in the headers of some files "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css".
-
-# TODO make sure we didn't already fix any of these, add any new
-### Potential Improvements
-Below is a list of improvements that could be made to the system in subsequent semesters.
-* Rename the database
-* Adding special buttons across pages (e.g. ‘View and Change Hours’ may have a ‘Return to My Hours’ option rather than only ‘Return to Dashboard’)
-* Added functionality for users who are participants, some participant functionality code exists within the current code, only it is commented out
-* Link calendar to Google calendar, add links to Google forms
-* Edits so screen size may no longer affect alignment of headers and tables
-* Remove the admin's ability to sign up admin account for an event
-* Increase password security
-* Ensure volunteers cannot sign up for events during time frames in which they will be signed up for another event
-* If an admin creates conflicting events, bring it to their attention while allowing the option to continue
-* If an admin exceeds the occupancy limit, bring it to their attention while allowing the option to continue
-* Notifications: add delete functionality to the button, add a ‘view message’ functionality when a message is selected
-* Additonal items related to volunteer training
 
 ## License
 The project remains under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl.txt).
