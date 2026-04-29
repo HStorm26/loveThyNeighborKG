@@ -330,7 +330,7 @@ $theEvents = getEventsForViewPage($search, $search_by, $status, $date_from, $dat
                 <button type="submit">Apply Filters</button>
 
        
-                <?php if ($search !== '' || $status !== 'all' || $date_from !== '' || $date_to !== '' || $search_by !== 'all'): ?>
+                <?php if ($search !== '' || $status !== 'active' || $date_from !== '' || $date_to !== '' || $search_by !== 'all'): ?>
                     <a href="viewOverallEventsKG.php" class="clear-btn">Reset Filters</a>
                 <?php endif; ?>
             </form>
