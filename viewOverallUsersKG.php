@@ -363,6 +363,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.removeAttribute('name');
+            });
+
             hiddenSelectedUsers.innerHTML = '';
             selectedIds.forEach(function (id) {
                 const input = document.createElement('input');
@@ -425,6 +429,7 @@ function archiveUser(userId, archiveAction) {
         window.location.href = 'viewOverallUsersKG.php';
     });
 }
+
 </script>
 </body>
 </html>
