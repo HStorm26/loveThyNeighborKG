@@ -51,8 +51,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Love Thy Neighbor | Profile Page</title>
-  <link rel="stylesheet" href="css/viewProfile.css">
+  <title>Profile Page | Love Thy Neighbor Community Food Pantry</title>
+  <link rel="stylesheet" href="layoutInfo.css" />
 </head>
 <body>
   <?php
