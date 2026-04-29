@@ -363,6 +363,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.removeAttribute('name');
+            });
+
             hiddenSelectedUsers.innerHTML = '';
             selectedIds.forEach(function (id) {
                 const input = document.createElement('input');

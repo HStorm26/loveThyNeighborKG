@@ -240,7 +240,7 @@
 
     <section class="welcome-banner">
       <div>
-        <h1>Welcome back, Admin</h1>
+        <h1>Welcome back, <?php echo safeHtml($_SESSION['f_name'] ?? 'Volunteer'); ?>!</h1>
         <p>Here’s what’s happening in your volunteer program today.</p>
       </div>
 
