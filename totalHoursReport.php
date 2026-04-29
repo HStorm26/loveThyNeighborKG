@@ -23,7 +23,7 @@ $edate = $_POST['edate'] ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Total Hours Report | Love Thy Neighbor Community Food Pantry</title>
     <!-- <link href="css/base.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="layoutInfo.css">
+    <link rel="stylesheet" href="css/layoutInfo.css">
     <?php require_once('header.php'); ?>
 </head>
 <body>

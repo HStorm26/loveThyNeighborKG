@@ -101,8 +101,8 @@ $theEvents = getEventsForViewPage($search, $search_by, $status, $date_from, $dat
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once('database/dbEvents.php'); ?>
-    <title>Love Thy Neighbor | View Events</title>
-    <link rel="stylesheet" href="layoutInfo.css">
+    <title>View Events | Love Thy Neighbor Community Food Pantry</title>
+    <link rel="stylesheet" href="css/layoutInfo.css">
 
 </head>
 <?php if ($_SESSION['access_level'] >= 2): ?>
